@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>School Management System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      .slider {
+        display: flex;
+        transition: transform 1s ease-in-out;
+      }
+    </style>
+  </head>
+  <body class="font-sans text-gray-800">
+    <!-- Header -->
+    <header class="bg-blue-600 text-white">
+      <div class="container mx-auto flex justify-between items-center p-4">
+        <div class="text-2xl font-bold">EduManage</div>
+        <nav>
+          <ul class="flex space-x-6">
+            <li><a href="#about" class="hover:underline">About</a></li>
+            <li><a href="#features" class="hover:underline">Features</a></li>
+            <li><a href="#contact" class="hover:underline">Contact</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <section class="relative h-[70vh] bg-gray-900 text-white overflow-hidden">
+      <!-- Background Image Slider -->
+      <div class="absolute inset-0">
+        <div class="h-full w-full overflow-hidden">
+          <div class="slider flex h-full" style="width: 400%">
+            <img
+              src="/university1.png"
+              alt="University 1"
+              class="w-full h-full object-cover"
+            />
+            <img
+              src="/university4.png"
+              alt="University 2"
+              class="w-full h-full object-cover"
+            />
+            <img
+              src="university3.png"
+              alt="University 3"
+              class="w-full h-full object-cover"
+            />
+            <img
+              src="/university2.png"
+              alt="university4"
+              class="w-full h-full object-cover"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Overlay Content -->
+      <div
+        class="relative z-10 flex flex-col justify-center items-center h-full bg-black bg-opacity-50 text-center p-4"
+      >
+        <p class="text-xl lg:text-2xl mb-6">
+          Welcome to <span class="font-bold">EduManage</span>, the ultimate
+          School Management System designed to:
+        </p>
+        <ul class="text-lg space-y-4">
+          <li>✔ Simplify school administration tasks efficiently.</li>
+          <li>✔ Enhance communication between all stakeholders.</li>
+          <li>✔ Provide a seamless learning experience for students.</li>
+        </ul>
+        <a
+          href="#features"
+          class="mt-8 bg-blue-600 text-white px-8 py-3 rounded-lg shadow-lg hover:bg-blue-700"
+        >
+          Explore Features
+        </a>
+      </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-16 bg-gray-50">
+      <div class="container mx-auto text-center">
+        <h2 class="text-3xl font-bold mb-6">About Us</h2>
+        <p class="text-lg text-gray-600">
+          EduManage is an all-in-one School Management System designed to
+          simplify administrative tasks, enhance communication, and improve the
+          overall learning experience.
+        </p>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-16 bg-white">
+      <div class="container mx-auto">
+        <h2 class="text-3xl font-bold text-center mb-12">Features</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="bg-blue-50 p-6 rounded-lg shadow-md">
+            <h3 class="text-xl font-bold mb-4">Student Management</h3>
+            <p>
+              Track student records, attendance, and performance effortlessly.
+            </p>
+          </div>
+          <div class="bg-blue-50 p-6 rounded-lg shadow-md">
+            <h3 class="text-xl font-bold mb-4">Teacher Management</h3>
+            <p>
+              Manage teacher profiles, schedules, and communication seamlessly.
+            </p>
+          </div>
+          <div class="bg-blue-50 p-6 rounded-lg shadow-md">
+            <h3 class="text-xl font-bold mb-4">Communication Tools</h3>
+            <p>
+              Keep parents, teachers, and students connected through
+              notifications and messaging.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-16 bg-blue-600 text-white">
+      <div class="container mx-auto text-center">
+        <h2 class="text-3xl font-bold mb-6">Contact Us</h2>
+        <p class="text-lg">Have questions? Get in touch with us!</p>
+        <a
+          href="mailto:info@edumanage.com"
+          class="mt-4 inline-block bg-white text-blue-600 px-6 py-3 rounded-md shadow-lg hover:bg-gray-100"
+          >Email Us</a
+        >
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-400 py-4">
+      <div class="container mx-auto text-center">
+        &copy; 2024 EduManage. All rights reserved.
+      </div>
+    </footer>
+  </body>
+
+  <script>
+    // Variables to track the slider and current image index
+    let index = 0; // Start with the first image
+    const slider = document.querySelector(".slider");
+    const totalSlides = slider.children.length; // Total number of slides
+
+    // Function to move the slider
+    function slide() {
+      // Update the transform property to shift the slider
+      slider.style.transform = `translateX(-${index * 26}%)`;
+
+      // Move to the next slide after 5 seconds
+      index = (index + 1) % totalSlides; // Loop back to the first image after the last one
+    }
+
+    // Start the slider with an interval
+    setInterval(slide, 3000); // Run the slide function every 5 seconds
+  </script>
+</html>
