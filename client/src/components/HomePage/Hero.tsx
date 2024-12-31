@@ -17,7 +17,7 @@ export function Hero() {
           </p>
           <div className="flex justify-center space-x-4">
             <Link
-              to="/signup"
+              to="/institution-signup"
               className="bg-white text-indigo-600 px-8 py-3 rounded-md font-medium hover:bg-gray-100 flex items-center space-x-2"
             >
               <Users size={20} className="text-indigo-600" />
