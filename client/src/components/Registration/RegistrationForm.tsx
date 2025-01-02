@@ -64,12 +64,6 @@ export function RegistrationForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {error && (
-        <div className="bg-red-50 p-4 rounded-md">
-          <p className="text-sm text-red-700">{error}</p>
-        </div>
-      )}
-
       <div className="space-y-4">
         <div>
           <label
@@ -85,7 +79,7 @@ export function RegistrationForm({
             onChange={(e) =>
               setFormData({ ...formData, institutionName: e.target.value })
             }
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            className="mt-2 mb-2 px-4 py-3 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
             required
           />
         </div>
@@ -105,7 +99,7 @@ export function RegistrationForm({
               onChange={(e) =>
                 setFormData({ ...formData, contactName: e.target.value })
               }
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              className="mt-2 mb-2 px-4 py-3 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
               required
             />
           </div>
@@ -123,7 +117,7 @@ export function RegistrationForm({
               onChange={(e) =>
                 setFormData({ ...formData, role: e.target.value })
               }
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              className="mt-2 mb-2 px-4 py-3 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
               required
             />
           </div>
@@ -144,7 +138,7 @@ export function RegistrationForm({
               onChange={(e) =>
                 setFormData({ ...formData, email: e.target.value })
               }
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              className="mt-2 mb-2 px-4 py-3 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
               required
             />
           </div>
@@ -162,7 +156,7 @@ export function RegistrationForm({
               onChange={(e) =>
                 setFormData({ ...formData, phone: e.target.value })
               }
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              className="mt-2 mb-2 px-4 py-3 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
               required
             />
           </div>
@@ -182,7 +176,7 @@ export function RegistrationForm({
             onChange={(e) =>
               setFormData({ ...formData, address: e.target.value })
             }
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            className="mt-2 mb-2 px-4 py-3 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
             required
           />
         </div>
@@ -202,7 +196,7 @@ export function RegistrationForm({
               onChange={(e) =>
                 setFormData({ ...formData, city: e.target.value })
               }
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              className="mt-2 mb-2 px-4 py-3 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
               required
             />
           </div>
@@ -220,7 +214,7 @@ export function RegistrationForm({
               onChange={(e) =>
                 setFormData({ ...formData, country: e.target.value })
               }
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              className="mt-2 mb-2 px-4 py-3 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
               required
             />
           </div>
@@ -238,12 +232,17 @@ export function RegistrationForm({
               onChange={handleImageChange}
               className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
             />
-            <p className="mt-1 text-xs text-gray-500">
+            <p className="mt-2 mb-2 px-4 py-3 text-xs text-gray-500">
               Upload up to 5 images (max 10MB each, JPEG or PNG)
             </p>
           </div>
           {images.length > 0 && <ImagePreview images={images} />}
         </div>
+        {error && (
+          <div className="bg-red-50 p-4 rounded-md">
+            <p className="text-sm text-red-700">{error}</p>
+          </div>
+        )}
       </div>
 
       <button

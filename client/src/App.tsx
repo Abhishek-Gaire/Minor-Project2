@@ -9,6 +9,7 @@ import { InstitutionSignup } from "./pages/InstitutionSignup";
 import { Login } from "./pages/Login.tsx";
 import { RouteNotFound } from "./pages/RouteNotFound";
 import { Signup } from "./pages/Signup.tsx";
+import { MeetingRoom } from "./components/Meetings/MeetingRoom.tsx";
 
 export default function App() {
   return (
@@ -21,6 +22,7 @@ export default function App() {
         <Route path="/institution-signup" element={<InstitutionSignup />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/meeting/:meetingId" element={<MeetingRoom />} />
         {/*Other Routes*/}
         <Route path="*" element={<RouteNotFound />} />
       </Routes>
