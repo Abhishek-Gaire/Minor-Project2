@@ -47,7 +47,7 @@ export function Navbar() {
 
           {/* Right-Aligned Actions */}
           <div className="hidden sm:flex items-center space-x-4">
-            <HostMeetingButton />
+            <HostMeetingButton from="desktopNav" />
             <Link
               to="/login"
               className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-500 transition-transform duration-200 transform hover:scale-105"
@@ -110,42 +110,54 @@ export function Navbar() {
       {isMobileMenuOpen && (
         <div className="sm:hidden bg-white shadow-lg">
           <div className="flex flex-col space-y-4 px-4 py-2">
-            <Link
-              to="/features"
-              className="text-gray-600 hover:text-gray-900 transition-colors duration-200"
-              onClick={toggleMobileMenu}
-            >
-              Features
-            </Link>
-            <Link
-              to="/about"
-              className="text-gray-600 hover:text-gray-900 transition-colors duration-200"
-              onClick={toggleMobileMenu}
-            >
-              About
-            </Link>
-            <Link
-              to="/contact"
-              className="text-gray-600 hover:text-gray-900 transition-colors duration-200"
-              onClick={toggleMobileMenu}
-            >
-              Contact
-            </Link>
-            <HostMeetingButton />
-            <Link
-              to="/login"
-              className="text-indigo-600 hover:text-indigo-500 transition-colors duration-200"
-              onClick={toggleMobileMenu}
-            >
-              Login
-            </Link>
-            <Link
-              to="/institution-signup"
-              className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-500 transition-transform duration-200 transform hover:scale-105 inline-block"
-              onClick={toggleMobileMenu}
-            >
-              Get Started
-            </Link>
+            <div className="flex justify-center border-b pb-2">
+              <Link
+                to="/features"
+                className="text-gray-600 hover:text-gray-900 transition-colors duration-200"
+                onClick={toggleMobileMenu}
+              >
+                Features
+              </Link>
+            </div>
+            <div className="flex justify-center border-b pb-2">
+              <Link
+                to="/about"
+                className="text-gray-600 hover:text-gray-900 transition-colors duration-200"
+                onClick={toggleMobileMenu}
+              >
+                About
+              </Link>
+            </div>
+            <div className="flex justify-center border-b pb-2">
+              <Link
+                to="/contact"
+                className="text-gray-600 hover:text-gray-900 transition-colors duration-200"
+                onClick={toggleMobileMenu}
+              >
+                Contact
+              </Link>
+            </div>
+
+            <HostMeetingButton from="mobileNav" />
+            <div className="flex justify-center border-b pb-2">
+              <Link
+                to="/login"
+                className="text-indigo-500 py-2 rounded-md font-semibold transition-transform duration-200 transform hover:scale-105 inline w-fit"
+                onClick={toggleMobileMenu}
+              >
+                Login
+              </Link>
+            </div>
+
+            <div className="flex justify-center pb-2">
+              <Link
+                to="/institution-signup"
+                className="text-indigo-500 py-2 rounded-md font-semibold transition-transform duration-200 transform hover:scale-105 inline w-fit"
+                onClick={toggleMobileMenu}
+              >
+                Get Started
+              </Link>
+            </div>
           </div>
         </div>
       )}

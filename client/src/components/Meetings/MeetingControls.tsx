@@ -17,7 +17,7 @@ export function MeetingControls({
 }: MeetingControlProps) {
   return (
     <div className="bg-gray-800 p-4">
-      <div className="max-w-3xlmx-autoflexjustify-centerspace-x-4">
+      <div className="max-w-3xl mx-auto flex justify-center space-x-4">
         <button
           onClick={onVideoToggle}
           className={`p-3 rounded-full ${

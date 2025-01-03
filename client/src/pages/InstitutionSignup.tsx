@@ -2,7 +2,6 @@ import React, { useState } from "react";
 // import { Navigate } from "react-router-dom";
 // import { useAuth } from "../contexts/AuthContext";
 import { School } from "lucide-react";
-// import { ImagePreview } from "../components/Registration/ImagePreview";
 import { RegistrationForm } from "../components/Registration/RegistrationForm";
 import { RegistrationBenefits } from "../components/Registration/RegistrationBenefits";
 import { Navbar } from "../components/HomePage/Navbar";

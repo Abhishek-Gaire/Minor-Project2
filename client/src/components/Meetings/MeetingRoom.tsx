@@ -11,6 +11,7 @@ export function MeetingRoom() {
 
   const [isVideoOn, setIsVideoOn] = useState(true);
   const [isAudioOn, setIsAudioOn] = useState(true);
+  const [stream, setStream] = useState<MediaStream | null>(null);
 
   const query = new URLSearchParams(useLocation().search);
   const hostName = query.get("host");
@@ -24,6 +25,7 @@ export function MeetingRoom() {
           video: true,
           audio: true,
         });
+        setStream(stream);
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
         }
@@ -34,6 +36,27 @@ export function MeetingRoom() {
 
     setupStream();
   }, []);
+
+  const handleVideoToggle = () => {
+    if (stream) {
+      const videoTrack = stream.getVideoTracks()[0];
+      if (videoTrack) {
+        videoTrack.enabled = !isVideoOn; // Toggle video track
+      }
+    }
+    setIsVideoOn(!isVideoOn);
+  };
+
+  const handleAudioToggle = () => {
+    if (stream) {
+      const audioTrack = stream.getAudioTracks()[0];
+      if (audioTrack) {
+        audioTrack.enabled = !isAudioOn; // Toggle audio track
+      }
+    }
+    setIsAudioOn(!isAudioOn);
+  };
+
   return (
     <div className="h-screen flex flex-col bg-gray-900">
       {/* Meeting header */}
@@ -69,8 +92,8 @@ export function MeetingRoom() {
       <MeetingControls
         isVideoOn={isVideoOn}
         isAudioOn={isAudioOn}
-        onVideoToggle={() => setIsVideoOn(!isVideoOn)}
-        onAudioToggle={() => setIsAudioOn(!isAudioOn)}
+        onVideoToggle={handleVideoToggle}
+        onAudioToggle={handleAudioToggle}
         onLeave={() => window.close()}
       />
     </div>
