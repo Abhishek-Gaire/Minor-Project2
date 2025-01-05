@@ -1,11 +1,13 @@
 {
   "name": "server",
+  "type": "module",
   "version": "1.0.0",
   "description": "\"Server for Minor_Project2\"",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node --watch index.js"
+    "dev": "ts-node src/app.ts",
+    "build": "tsc",
+    "start": "node dist/app.js"
   },
   "author": "",
   "license": "ISC",
@@ -21,6 +23,10 @@
     "sequelize": "^6.37.5"
   },
   "devDependencies": {
-    "dotenv": "^16.4.7"
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.10.5",
+    "dotenv": "^16.4.7",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.2"
   }
 }
