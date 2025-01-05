@@ -1,19 +1,22 @@
-import express, { Request, Response } from 'express';
-import cors from 'cors';
-import userRoutes from './routes/userRoutes';
-
+import express, { Request, Response } from "express";
+import cors from "cors";
+import userRoutes from "./src/routes/userRoutes";
+import bodyParser from "body-parser";
+import cookieParser from "cookie-parser";
 const app = express();
 
 // Middlewares
 app.use(cors());
 app.use(express.json()); // To parse JSON bodies
+app.use(bodyParser.urlencoded());
+app.use(cookieParser());
 
 // Routes
-app.use('/api/users', userRoutes);
+app.use("/api/users", userRoutes);
 
 // Default route
-app.get('/', (req: Request, res: Response) => {
-  res.send('Hello from the backend!');
+app.get("/", (req: Request, res: Response) => {
+  res.send("Hello from the backend!");
 });
 
 // Start the server
