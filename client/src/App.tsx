@@ -10,22 +10,25 @@ import { Login } from "./pages/Login.tsx";
 import { RouteNotFound } from "./pages/RouteNotFound";
 import { Signup } from "./pages/Signup.tsx";
 import { MeetingRoom } from "./components/Meetings/MeetingRoom.tsx";
+import { AuthProvider } from "./contexts/AuthContext.tsx";
 
 export default function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/about" element={<AboutPage />} />
-        <Route path="/contact" element={<ContactPage />} />
-        <Route path="/features" element={<FeaturesPage />} />
-        <Route path="/institution-signup" element={<InstitutionSignup />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/meeting/:meetingId" element={<MeetingRoom />} />
-        {/*Other Routes*/}
-        <Route path="*" element={<RouteNotFound />} />
-      </Routes>
-    </Router>
+    <AuthProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/features" element={<FeaturesPage />} />
+          <Route path="/institution-signup" element={<InstitutionSignup />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/meeting/:meetingId" element={<MeetingRoom />} />
+          {/*Other Routes*/}
+          <Route path="*" element={<RouteNotFound />} />
+        </Routes>
+      </Router>
+    </AuthProvider>
   );
 }
