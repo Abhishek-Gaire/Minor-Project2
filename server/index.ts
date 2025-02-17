@@ -1,23 +1,15 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
 import cors from 'cors';
-import userRoutes from './routes/userRoutes';
+import dotenv from 'dotenv';
+import authRoutes from './routes/authRoutes';
+
+dotenv.config();
 
 const app = express();
-
-// Middlewares
+app.use(express.json());
 app.use(cors());
-app.use(express.json()); // To parse JSON bodies
 
-// Routes
-app.use('/api/users', userRoutes);
+app.use('/auth', authRoutes);
 
-// Default route
-app.get('/', (req: Request, res: Response) => {
-  res.send('Hello from the backend!');
-});
-
-// Start the server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
