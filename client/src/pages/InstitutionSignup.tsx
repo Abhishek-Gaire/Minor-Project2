@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-// import { Navigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 // import { useAuth } from "../contexts/AuthContext";
 import { School } from "lucide-react";
 import { RegistrationForm } from "../components/Registration/RegistrationForm";
@@ -8,13 +8,14 @@ import { Navbar } from "../components/HomePage/Navbar";
 import { Footer } from "../components/HomePage/Footer";
 
 export function InstitutionSignup() {
-  //   const { user } = useAuth();
+  // use context here
+  const user = false;
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  //   if (user) {
-  //     return <Navigate to="/dashboard" replace />;
-  //   }
+  if (user) {
+    return <Navigate to="/dashboard" replace />;
+  }
 
   return (
     <>

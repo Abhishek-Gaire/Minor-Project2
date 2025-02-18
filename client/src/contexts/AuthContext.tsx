@@ -1,10 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 
-interface AuthContextType {
-  user: null;
-  loading: boolean;
-}
-
 const AuthContext = createContext<AuthContextType>({
   user: null,
   loading: true,

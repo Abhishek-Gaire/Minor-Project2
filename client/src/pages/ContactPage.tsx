@@ -52,7 +52,7 @@ export function ContactPage() {
                     id="name"
                     value={formData.name}
                     onChange={handleChange}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    className="mt-1 px-3 py-3 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                     required
                   />
                 </div>
@@ -69,7 +69,7 @@ export function ContactPage() {
                     id="email"
                     value={formData.email}
                     onChange={handleChange}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    className="mt-1 px-3 py-3 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                     required
                   />
                 </div>
@@ -86,7 +86,7 @@ export function ContactPage() {
                     id="subject"
                     value={formData.subject}
                     onChange={handleChange}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    className="mt-1 px-3 py-3 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                     required
                   />
                 </div>
@@ -103,7 +103,7 @@ export function ContactPage() {
                     rows={4}
                     value={formData.message}
                     onChange={handleChange}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    className="mt-1 px-3 py-3 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                     required
                   />
                 </div>
@@ -132,7 +132,7 @@ export function ContactPage() {
                   <Phone className="h-6 w-6 text-indigo-600 mr-4" />
                   <div>
                     <h3 className="font-medium">Phone</h3>
-                    <p className="text-gray-600">(555) 123-4567</p>
+                    <p className="text-gray-600">(+977) 98400000</p>
                   </div>
                 </div>
                 <div className="flex items-start">
@@ -140,11 +140,11 @@ export function ContactPage() {
                   <div>
                     <h3 className="font-medium">Address</h3>
                     <p className="text-gray-600">
-                      123 Education St
+                      Lamachaur
                       <br />
-                      City, State 12345
+                      Pokhara, Gandaki
                       <br />
-                      United States
+                      Nepal
                     </p>
                   </div>
                 </div>
