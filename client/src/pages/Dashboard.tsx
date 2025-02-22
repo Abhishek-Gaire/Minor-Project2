@@ -1,7 +1,13 @@
 import { StatsCard } from "../components/Dashboard/StatsCard";
 import { RecentActivity } from "../components/Dashboard/RecentActivity";
+import { Navigate } from "react-router-dom";
 
 export function Dashboard() {
+  // use contet here
+  const user = false;
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">

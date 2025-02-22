@@ -1,10 +1,5 @@
 import { User } from "lucide-react";
-
-interface Participant {
-  id: string;
-  name: string;
-  isHost: boolean;
-}
+import { Participant } from "../../utils/types";
 
 interface ParticipantsListProps {
   participants: Participant[];
