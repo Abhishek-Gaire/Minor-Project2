@@ -1,66 +1,123 @@
-import { Request, Response } from 'express';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import supabase from '../config/supabase';
-import dotenv from 'dotenv';
-import { UserRole } from '../types/userTypes';
-
+import { Request, Response, RequestHandler } from "express";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import supabase from "../config/supabase";
+import dotenv from "dotenv";
+import { Prisma, PrismaClient } from "@prisma/client";
 dotenv.config();
 
 const JWT_SECRET = process.env.JWT_SECRET!;
+const prisma = new PrismaClient();
 
-// **Sign Up**
-export const signup = async (req: Request, res: Response) => {
-  const { email, password, role }: { email: string; password: string; role: UserRole } = req.body;
+// **Login For Student and Teacher
+export const login: RequestHandler = async (req: Request, res: Response) => {
+  const { email, password, role } = req.body;
 
   if (!email || !password || !role) {
-    return res.status(400).json({ error: 'All fields are required' });
+    res.status(401).json({
+      success: false,
+      message: "Provide all the fields",
+    });
+    return;
   }
+  let userExists, isMatch, token;
 
-  const hashedPassword = await bcrypt.hash(password, 10);
+  if (role === "Student") {
+    userExists = await prisma.student.findFirst({ where: { email } });
+    if (!userExists) {
+      res.status(404).json({
+        success: false,
+        message: "Student Not Found",
+      });
+      return;
+    }
+    isMatch = password === userExists.password;
 
-  const { data, error } = await supabase.from('users').insert([{ email, password: hashedPassword, role }]);
+    // isMatch = await bcrypt.compare(password, userExists.password);
+    if (!isMatch) {
+      res.status(401).json({
+        success: false,
+        message: "Invalid Credentials",
+      });
+      return;
+    }
+  } else {
+    userExists = await prisma.teacher.findFirst({ where: { email } });
+    if (!userExists) {
+      res.status(404).json({
+        success: false,
+        message: "Teacher Not Found",
+      });
+      return;
+    }
+    isMatch = password === userExists.password;
+    // isMatch = await bcrypt.compare(password, userExists.password);
+    if (!isMatch) {
+      res.status(401).json({
+        success: false,
+        message: "Invalid Credentials",
+      });
+      return;
+    }
+  }
+  token = jwt.sign({ id: userExists.id }, JWT_SECRET, { expiresIn: "1h" });
 
-  if (error) return res.status(400).json({ error: error.message });
+  res.cookie("accessToken", token, {
+    httpOnly: true,
+    secure: true, // Use HTTPS
+    sameSite: "none", // Required for cross-origin requests
+  });
 
-  res.status(201).json({ message: 'User registered successfully', user: data });
+  res.status(200).json({
+    message: "Login successful",
+    accessToken: token,
+    data: {
+      userExists,
+    },
+  });
+  return;
 };
 
-// **Login**
-export const login = async (req: Request, res: Response) => {
-  const { email, password } = req.body;
+// // **Forgot Password**
+// export const forgotPassword: RequestHandler = async (
+//   req: Request,
+//   res: Response
+// ) => {
+//   const { email } = req.body;
 
-  const { data, error } = await supabase.from('users').select('*').eq('email', email).single();
+//   const { data, error } = await supabase
+//     .from("users")
+//     .select("id")
+//     .eq("email", email)
+//     .single();
+//   if (error || !data) {
+//     res.status(400).json({ error: "User not found" });
+//     return;
+//   }
 
-  if (error || !data) return res.status(400).json({ error: 'Invalid email or password' });
+//   // Here, you can integrate an email service to send a reset link.
+//   res.json({ message: "Password reset link sent to your email" });
+//   return;
+// };
 
-  const isMatch = await bcrypt.compare(password, data.password);
-  if (!isMatch) return res.status(400).json({ error: 'Invalid email or password' });
+// // **Reset Password**
+// export const resetPassword: RequestHandler = async (
+//   req: Request,
+//   res: Response
+// ) => {
+//   const { email, newPassword } = req.body;
 
-  const token = jwt.sign({ id: data.id, email: data.email, role: data.role }, JWT_SECRET, { expiresIn: '1h' });
+//   const hashedPassword = await bcrypt.hash(newPassword, 10);
+//   const { error } = await supabase
+//     .from("users")
+//     .update({ password: hashedPassword })
+//     .eq("email", email);
 
-  res.json({ message: 'Login successful', token });
-};
+//   if (error) {
+//     res.status(400).json({ error: "Failed to reset password" });
+//     return;
+//   }
 
-// **Forgot Password**
-export const forgotPassword = async (req: Request, res: Response) => {
-  const { email } = req.body;
-
-  const { data, error } = await supabase.from('users').select('id').eq('email', email).single();
-  if (error || !data) return res.status(400).json({ error: 'User not found' });
-
-  // Here, you can integrate an email service to send a reset link.
-  res.json({ message: 'Password reset link sent to your email' });
-};
-
-// **Reset Password**
-export const resetPassword = async (req: Request, res: Response) => {
-  const { email, newPassword } = req.body;
-
-  const hashedPassword = await bcrypt.hash(newPassword, 10);
-  const { error } = await supabase.from('users').update({ password: hashedPassword }).eq('email', email);
-
-  if (error) return res.status(400).json({ error: 'Failed to reset password' });
-
-  res.json({ message: 'Password reset successful' });
-};
+//   res.json({ message: "Password reset successful" });
+//   return;
+// };

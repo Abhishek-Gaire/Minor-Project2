@@ -12,9 +12,25 @@ import { Signup } from "./pages/Signup.tsx";
 import { MeetingRoom } from "./components/Meetings/MeetingRoom.tsx";
 import { AuthProvider } from "./contexts/AuthContext.tsx";
 
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"; // Import Toastify styles
+
 export default function App() {
   return (
     <AuthProvider>
+      {/* Global Toast Container */}
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
       <Router>
         <Routes>
           <Route path="/" element={<HomePage />} />
