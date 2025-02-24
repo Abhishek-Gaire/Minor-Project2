@@ -15,16 +15,38 @@ export function MeetingModal({ onClose }: MeetingModalProps) {
   const [meetingName, setMeetingName] = useState("");
   const [showForm, setShowForm] = useState(true);
 
+  const fallbackCopy =  () => {
+    const textarea = document.createElement("textarea");
+    textarea.value = meetingLink;
+    document.body.appendChild(textarea);
+    textarea.select();
+    try {
+      document.execCommand("copy"); // Use deprecated execCommand as a fallback
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error("Fallback copy failed:", err);
+    } finally {
+      document.body.removeChild(textarea);
+    }
+  };
+
   const copyToClipboard = async () => {
+    if (!navigator.clipboard) {
+      console.warn("Clipboard API not supported, using fallback.");
+      fallbackCopy();
+      return;
+    }
+
     try {
       await navigator.clipboard.writeText(meetingLink);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
-      console.error("Failed to copy", error);
+      console.error("Primary copy failed, trying fallback:", error);
+      fallbackCopy();
     }
   };
-
   const handleConfirmNames = () => {
     setMeetingLink(generateMeetingLink({ hostName, meetingName }));
     setShowForm(false);

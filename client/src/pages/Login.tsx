@@ -1,17 +1,22 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { School } from "lucide-react";
 
-import { Navbar } from "../components/HomePage/Navbar";
-import { Footer } from "../components/HomePage/Footer";
+import Layout from "../components/Layout.tsx";
 
 const BACKEND_URI = import.meta.env.VITE_BACKEND_URI!;
 
-export function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [role, setRole] = useState<"Student" | "Teacher">("Student");
+const Login =() => {
+  const [loginData, setLoginData] = useState<{
+    email: string;
+    password: string;
+    role: "Student" | "Teacher";
+  }>({
+    email: "",
+    password: "",
+    role: "Student", // Correctly define as union type
+  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -27,17 +32,11 @@ export function Login() {
     setLoading(true);
     setError(null);
 
-    if (!role) {
+    if (!loginData.role) {
       toast.error("Role is required.");
       setLoading(false);
       return;
     }
-
-    const loginData = {
-      email,
-      role,
-      password,
-    };
 
     try {
       const res = await fetch(`${BACKEND_URI}/api/v1/auth/login`, {
@@ -60,21 +59,20 @@ export function Login() {
       const data = await res.json();
       toast.success("Login Successful!");
       console.log(data);
-      navigate("/");
-    } catch (error) {
+      navigate("/dashboard", { replace: true });
+    } catch (error:Error | any) {
       console.error("Login error:", error);
       setError(
         error instanceof Error ? error.message : "An unexpected error occurred."
       );
-      toast.error("An unexpected error occurred. Please try again.");
+      toast.error(`error: ${error.message}`);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <>
-      <Navbar />
+    <Layout>
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
         <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow-md">
           <div className="text-center">
@@ -99,9 +97,9 @@ export function Login() {
                 </label>
                 <select
                   id="role"
-                  value={role}
+                  value={loginData.role}
                   onChange={(e) =>
-                    setRole(e.target.value as "Student" | "Teacher")
+                    setLoginData({ ...loginData, role: e.target.value as "Student" | "Teacher" })
                   }
                   className="mt-1 mb-4 mr-1 block w-full rounded-md border border-gray-300 px-6 py-4 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
                 >
@@ -119,8 +117,8 @@ export function Login() {
                   type="email"
                   id="email"
                   name="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={loginData.email}
+                  onChange={(e) => setLoginData({...loginData, email :e.target.value})}
                   className="mt-1 block w-full rounded-md border border-gray-300 px-6 py-4 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
                   required
                 />
@@ -136,8 +134,8 @@ export function Login() {
                   type="password"
                   id="password"
                   name="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  value={loginData.password}
+                  onChange={(e) => setLoginData({...loginData, password :e.target.value})}
                   className="mt-1 block w-full rounded-md border border-gray-300 px-6 py-4 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
                   required
                 />
@@ -154,7 +152,7 @@ export function Login() {
                 <span className="font-medium text-indigo-500">
                   Don't have an account?
                   <p className=" hover:text-indigo-900">
-                    Contact your adminstrator
+                    Contact your administrator
                   </p>
                 </span>
               </div>
@@ -162,7 +160,8 @@ export function Login() {
           </form>
         </div>
       </div>
-      <Footer />
-    </>
+    </Layout>
   );
 }
+
+export default Login;

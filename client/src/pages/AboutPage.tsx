@@ -1,12 +1,9 @@
-import React from "react";
-import { Navbar } from "../components/HomePage/Navbar";
-import { Footer } from "../components/HomePage/Footer";
+import Layout from "../components/Layout";
 import { Target, Heart, Users } from "lucide-react";
 
-export function AboutPage() {
+const AboutPage =() =>{
   return (
-    <div className="min-h-screen">
-      <Navbar />
+    <Layout>
       <div className="bg-gradient-to-b from-indigo-50 to-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center mb-16">
@@ -67,7 +64,8 @@ export function AboutPage() {
           </div>
         </div>
       </div>
-      <Footer />
-    </div>
+    </Layout>
   );
 }
+
+export default AboutPage;

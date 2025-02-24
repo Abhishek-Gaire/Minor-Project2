@@ -1,9 +1,8 @@
 import React, { useState } from "react";
-import { Navbar } from "../components/HomePage/Navbar";
-import { Footer } from "../components/HomePage/Footer";
-import { Mail, Phone, MapPin } from "lucide-react";
+import Layout from  "../components/Layout.tsx"
+import ContactInformation from "../components/HomePage/ContactInformation.tsx";
 
-export function ContactPage() {
+const ContactPage =() =>{
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -21,8 +20,7 @@ export function ContactPage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
   return (
-    <div className="min-h-screen">
-      <Navbar />
+    <Layout>
       <div className="bg-gradient-to-b from-indigo-50 to-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
@@ -116,44 +114,12 @@ export function ContactPage() {
               </form>
             </div>
 
-            <div>
-              <h2 className="text-2xl font-semibold mb-6">
-                Contact Information
-              </h2>
-              <div className="space-y-6">
-                <div className="flex items-start">
-                  <Mail className="h-6 w-6 text-indigo-600 mr-4" />
-                  <div>
-                    <h3 className="font-medium">Email</h3>
-                    <p className="text-gray-600">info@educonnect.com</p>
-                  </div>
-                </div>
-                <div className="flex items-start">
-                  <Phone className="h-6 w-6 text-indigo-600 mr-4" />
-                  <div>
-                    <h3 className="font-medium">Phone</h3>
-                    <p className="text-gray-600">(+977) 98400000</p>
-                  </div>
-                </div>
-                <div className="flex items-start">
-                  <MapPin className="h-6 w-6 text-indigo-600 mr-4" />
-                  <div>
-                    <h3 className="font-medium">Address</h3>
-                    <p className="text-gray-600">
-                      Lamachaur
-                      <br />
-                      Pokhara, Gandaki
-                      <br />
-                      Nepal
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <ContactInformation/>
           </div>
         </div>
       </div>
-      <Footer />
-    </div>
+    </Layout>
   );
 }
+
+export default ContactPage;

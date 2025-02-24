@@ -25,25 +25,43 @@ export function RegistrationForm({
     city: "",
     state: "",
   });
-  const [images, setImages] = useState<File[]>([]);
+  // Combined state for images and mainImage
+  const [imageState, setImageState] = useState<{
+    images: File[];
+    mainImage: File | null;
+  }>({
+    images: [],
+    mainImage: null,
+  });
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const setInstitutionRegularImages = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-    if (files.length + images.length > 5) {
+    if (files.length + imageState.images.length > 5) {
       setError("Maximum 5 images allowed");
       return;
     }
 
     const validFiles = files.filter((file) => {
       const isValid =
-        file.type.startsWith("image/") && file.size <= 10 * 1024 * 1024;
+          file.type.startsWith("image/") && file.size <= 10 * 1024 * 1024; // 10MB
       if (!isValid) {
         setError("Invalid file type or size exceeds 10MB");
       }
       return isValid;
     });
 
-    setImages((prev) => [...prev, ...validFiles]);
+    setImageState((prevState) => ({
+      ...prevState,
+      images: [...prevState.images, ...validFiles],
+    }));
+  }
+  // Function to set the main image
+  const setMainImage = (e :React.ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0] || null;
+    setImageState((prevState) => ({
+      ...prevState,
+      mainImage: file
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -54,7 +72,7 @@ export function RegistrationForm({
     try {
       // Handle registration logic here
       console.log("Form submitted:", formData);
-      console.log("Images:", images);
+      console.log("Images:", imageState.images);
     } catch (error) {
       setError(error instanceof Error ? error.message : "An error occurred");
     } finally {
@@ -229,14 +247,33 @@ export function RegistrationForm({
               type="file"
               accept="image/*"
               multiple
-              onChange={handleImageChange}
+              onChange={setInstitutionRegularImages}
               className="text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
             />
             <p className="mt-2 mb-2 px-4 py-3 text-xs text-gray-500">
               Upload up to 5 images (max 10MB each, JPEG or PNG)
             </p>
           </div>
-          {images.length > 0 && <ImagePreview images={images} />}
+          {imageState.images.length > 0 && <ImagePreview images={imageState.images} />}
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Main Image
+          </label>
+          <div className="mt-1">
+            <input
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={setMainImage}
+                className="text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+            />
+            <p className="mt-2 mb-2 px-4 py-3 text-xs text-gray-500">
+              Upload only 1 image (max 10MB, JPEG or PNG)
+            </p>
+          </div>
+          {imageState.mainImage && <ImagePreview images={[imageState.mainImage]} />}
         </div>
         {error && (
           <div className="bg-red-50 p-4 rounded-md">

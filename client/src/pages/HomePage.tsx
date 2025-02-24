@@ -1,19 +1,18 @@
-// import React from "react";
+import Layout from "../components/Layout.tsx";
 
-import { Navbar } from "../components/HomePage/Navbar.tsx";
+
 import { Hero } from "../components/HomePage/Hero.tsx";
-import { Features } from "../components/HomePage/Features.tsx";
-import { Footer } from "../components/HomePage/Footer.tsx";
+import { Features } from "../components/HomePage/Features/Features.tsx";
 import { ImageSlider } from "../components/HomePage/ImageSlider/ImageSlider.tsx";
 
-export function HomePage() {
+const HomePage =() => {
   return (
-    <div className="min-h-screen">
-      <Navbar />
-      <ImageSlider />
-      <Hero />
-      <Features />
-      <Footer />
-    </div>
+      <Layout>
+          <ImageSlider/>
+          <Hero/>
+          <Features/>
+      </Layout>
   );
 }
+
+export default HomePage;

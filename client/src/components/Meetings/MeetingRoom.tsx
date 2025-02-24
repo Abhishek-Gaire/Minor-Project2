@@ -6,7 +6,7 @@ import { MeetingControls } from "./MeetingControls";
 import { Users } from "lucide-react";
 
 export function MeetingRoom() {
-  const { meetingId } = useParams();
+  // const { meetingId } = useParams();
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const [isVideoOn, setIsVideoOn] = useState(true);
@@ -34,7 +34,7 @@ export function MeetingRoom() {
       }
     }
 
-    setupStream();
+    setupStream().then();
   }, []);
 
   const handleVideoToggle = () => {

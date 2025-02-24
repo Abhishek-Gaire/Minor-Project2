@@ -1,13 +1,12 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 import { Navigate } from "react-router-dom";
 // import { useAuth } from "../contexts/AuthContext";
 import { School } from "lucide-react";
 import { RegistrationForm } from "../components/Registration/RegistrationForm";
 import { RegistrationBenefits } from "../components/Registration/RegistrationBenefits";
-import { Navbar } from "../components/HomePage/Navbar";
-import { Footer } from "../components/HomePage/Footer";
+import Layout from "../components/Layout.tsx";
 
-export function InstitutionSignup() {
+const InstitutionSignup =()=> {
   // use context here
   const user = false;
   const [loading, setLoading] = useState(false);
@@ -18,8 +17,7 @@ export function InstitutionSignup() {
   }
 
   return (
-    <>
-      <Navbar />
+    <Layout>
       <div className="min-h-screen bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="text-center mb-12">
@@ -46,7 +44,8 @@ export function InstitutionSignup() {
           </div>
         </div>
       </div>
-      <Footer />
-    </>
+    </Layout>
   );
 }
+
+export default InstitutionSignup;

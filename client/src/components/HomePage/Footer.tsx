@@ -1,5 +1,4 @@
-// import React from "react";
-// import { Link } from "react-router-dom";
+
 import { School } from "lucide-react";
 import FooterLink from "./Footer/FooterLinks";
 import FooterContact from "./Footer/FooterContact";

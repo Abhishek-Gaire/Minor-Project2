@@ -1,34 +1,15 @@
-import { Outlet, Navigate } from "react-router-dom";
+import {ReactNode} from "react";
+import {Navbar} from "./HomePage/Navbar.tsx";
+import {Footer} from "./HomePage/Footer.tsx";
 
-import { useAuth } from "../contexts/AuthContext";
-
-import { Sidebar } from "./Sidebar";
-import { Header } from "./Header";
-
-export function Layout() {
-  const { user, loading } = useAuth();
-
-  if (loading) {
+const Layout = ({children}:{children:ReactNode}) => {
     return (
-      <div className="min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return <Navigate to="/login" replace />;
-  }
-
-  return (
-    <div className="min-h-screen bg-gray-100">
-      <Header />
-      <div className="flex">
-        <Sidebar />
-        <main className="flex-1p-6">
-          <Outlet />
+        <main className="min-h-screen">
+            <Navbar/>
+            {children}
+            <Footer/>
         </main>
-      </div>
-    </div>
-  );
+    )
 }
+
+export default Layout;
