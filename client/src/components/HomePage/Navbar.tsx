@@ -1,17 +1,20 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { School } from "lucide-react";
-import { HostMeetingButton } from "../Meetings/HostMeetingButton";
 
-export function Navbar() {
+import { HostMeetingButton } from "../Meetings/HostMeetingButton";
+import { navigation } from "../../constants/constants";
+
+const Navbar = () => {
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const location = useLocation();
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!isMobileMenuOpen);
   };
   return (
-    <nav className="bg-white shadow-sm sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <header className="sticky w-full bg-white/90 backdrop-blur-sm z-50 shadow-sm top-0">
+      <nav className="container mx-auto px-6 py-4">
         <div className="flex justify-between h-16 items-center">
           {/* Logo and Branding */}
           <div className="flex items-center">
@@ -23,34 +26,32 @@ export function Navbar() {
             </Link>
           </div>
 
-          {/* Centered Navigation Links */}
-          <div className="hidden sm:flex items-center space-x-8">
-            <Link
-              to="/features"
-              className="text-gray-600 hover:text-gray-900 transition-colors duration-200"
-            >
-              Features
-            </Link>
-            <Link
-              to="/about"
-              className="text-gray-600 hover:text-gray-900 transition-colors duration-200"
-            >
-              About
-            </Link>
-            <Link
-              to="/contact"
-              className="text-gray-600 hover:text-gray-900 transition-colors duration-200"
-            >
-              Contact
-            </Link>
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center space-x-8">
+            {navigation.map((item) => (
+              <Link
+                key={item.name}
+                to={item.href}
+                className={`px-3 py-3 text-black-600 hover:text-bblack-900 hover:font-medium transition-colors ${
+                  location.pathname === item.href
+                    ? "text-blue-900 font-bold"
+                    : ""
+                }`}
+              >
+                {item.name}
+              </Link>
+            ))}
           </div>
 
           {/* Right-Aligned Actions */}
           <div className="hidden sm:flex items-center space-x-4">
-            <HostMeetingButton from="desktopNav" />
+            <HostMeetingButton
+              from="desktopNav"
+              className="hidden sm:block lg:block md:hidden"
+            />
             <Link
               to="/login"
-              className="bg-indigo-600 text-white md:hidden px-4 py-2 rounded-md hover:bg-indigo-500 transition-transform duration-200 transform hover:scale-105"
+              className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-500 transition-transform duration-200 transform hover:scale-105"
             >
               Login
             </Link>
@@ -104,63 +105,50 @@ export function Navbar() {
             </button>
           </div>
         </div>
-      </div>
 
-      {/* Mobile Menu */}
-      {isMobileMenuOpen && (
-        <div className="sm:hidden bg-white shadow-lg">
-          <div className="flex flex-col space-y-4 px-4 py-2">
-            <div className="flex justify-center border-b pb-2">
-              <Link
-                to="/features"
-                className="text-gray-600 hover:text-gray-900 transition-colors duration-200"
-                onClick={toggleMobileMenu}
-              >
-                Features
-              </Link>
-            </div>
-            <div className="flex justify-center border-b pb-2">
-              <Link
-                to="/about"
-                className="text-gray-600 hover:text-gray-900 transition-colors duration-200"
-                onClick={toggleMobileMenu}
-              >
-                About
-              </Link>
-            </div>
-            <div className="flex justify-center border-b pb-2">
-              <Link
-                to="/contact"
-                className="text-gray-600 hover:text-gray-900 transition-colors duration-200"
-                onClick={toggleMobileMenu}
-              >
-                Contact
-              </Link>
-            </div>
+        {/* Mobile Menu */}
+        {isMobileMenuOpen && (
+          <div className="sm:hidden bg-white shadow-lg">
+            <div className="flex flex-col space-y-4 px-4 py-2">
+              {navigation.map((item) => (
+                <div className="flex justify-center border-b pb-2">
+                  <Link
+                    key={item.name}
+                    to={item.href}
+                    className="text-gray-600 hover:text-gray-900 transition-colors duration-200"
+                    onClick={toggleMobileMenu}
+                  >
+                    {item.name}
+                  </Link>
+                </div>
+              ))}
 
-            <HostMeetingButton from="mobileNav" />
-            <div className="flex justify-center border-b pb-2">
-              <Link
-                to="/login"
-                className="text-indigo-500 py-2 rounded-md font-semibold transition-transform duration-200 transform hover:scale-105 inline w-fit"
-                onClick={toggleMobileMenu}
-              >
-                Login
-              </Link>
-            </div>
+              <HostMeetingButton from="mobileNav" />
+              <div className="flex justify-center border-b pb-2">
+                <Link
+                  to="/login"
+                  className="text-indigo-500 py-2 rounded-md font-semibold transition-transform duration-200 transform hover:scale-105 inline w-fit"
+                  onClick={toggleMobileMenu}
+                >
+                  Login
+                </Link>
+              </div>
 
-            <div className="flex justify-center pb-2">
-              <Link
-                to="/institution-signup"
-                className="text-indigo-500 py-2 rounded-md font-semibold transition-transform duration-200 transform hover:scale-105 inline w-fit"
-                onClick={toggleMobileMenu}
-              >
-                Get Started
-              </Link>
+              <div className="flex justify-center pb-2">
+                <Link
+                  to="/institution-signup"
+                  className="text-indigo-500 py-2 rounded-md font-semibold transition-transform duration-200 transform hover:scale-105 inline w-fit"
+                  onClick={toggleMobileMenu}
+                >
+                  Get Started
+                </Link>
+              </div>
             </div>
           </div>
-        </div>
-      )}
-    </nav>
+        )}
+      </nav>
+    </header>
   );
-}
+};
+
+export default Navbar;

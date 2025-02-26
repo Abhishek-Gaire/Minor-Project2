@@ -5,15 +5,16 @@ import { School } from "lucide-react";
 import { RegistrationForm } from "../components/Registration/RegistrationForm";
 import { RegistrationBenefits } from "../components/Registration/RegistrationBenefits";
 import Layout from "../components/Layout.tsx";
+import {useAuth} from "../contexts/UseAuth.tsx";
 
 const InstitutionSignup =()=> {
   // use context here
-  const user = false;
+  const {user} = useAuth()
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   if (user) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to={`/dashboard/${user?.role}`} replace />;
   }
 
   return (

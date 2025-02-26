@@ -49,7 +49,7 @@ export function ImageSlider() {
 
   return (
     <div
-      className="relative h-[600px] overflow-hidden"
+      className="relative h-[600px] overflow-hidden "
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
       onTouchStart={handleTouchStart}

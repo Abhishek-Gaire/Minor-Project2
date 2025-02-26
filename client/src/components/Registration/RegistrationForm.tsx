@@ -33,28 +33,28 @@ export function RegistrationForm({
     images: [],
     mainImage: null,
   });
-
-  const setInstitutionRegularImages = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    if (files.length + imageState.images.length > 5) {
-      setError("Maximum 5 images allowed");
-      return;
-    }
-
-    const validFiles = files.filter((file) => {
-      const isValid =
-          file.type.startsWith("image/") && file.size <= 10 * 1024 * 1024; // 10MB
-      if (!isValid) {
-        setError("Invalid file type or size exceeds 10MB");
-      }
-      return isValid;
-    });
-
-    setImageState((prevState) => ({
-      ...prevState,
-      images: [...prevState.images, ...validFiles],
-    }));
-  }
+  //
+  // const setInstitutionRegularImages = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const files = Array.from(e.target.files || []);
+  //   if (files.length + imageState.images.length > 5) {
+  //     setError("Maximum 5 images allowed");
+  //     return;
+  //   }
+  //
+  //   const validFiles = files.filter((file) => {
+  //     const isValid =
+  //         file.type.startsWith("image/") && file.size <= 10 * 1024 * 1024; // 10MB
+  //     if (!isValid) {
+  //       setError("Invalid file type or size exceeds 10MB");
+  //     }
+  //     return isValid;
+  //   });
+  //
+  //   setImageState((prevState) => ({
+  //     ...prevState,
+  //     images: [...prevState.images, ...validFiles],
+  //   }));
+  // }
   // Function to set the main image
   const setMainImage = (e :React.ChangeEvent<HTMLInputElement>) => {
   const file = e.target.files?.[0] || null;
@@ -238,24 +238,24 @@ export function RegistrationForm({
           </div>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Institution Images
-          </label>
-          <div className="mt-1">
-            <input
-              type="file"
-              accept="image/*"
-              multiple
-              onChange={setInstitutionRegularImages}
-              className="text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
-            />
-            <p className="mt-2 mb-2 px-4 py-3 text-xs text-gray-500">
-              Upload up to 5 images (max 10MB each, JPEG or PNG)
-            </p>
-          </div>
-          {imageState.images.length > 0 && <ImagePreview images={imageState.images} />}
-        </div>
+        {/*<div>*/}
+        {/*  <label className="block text-sm font-medium text-gray-700">*/}
+        {/*    Institution Images*/}
+        {/*  </label>*/}
+        {/*  <div className="mt-1">*/}
+        {/*    <input*/}
+        {/*      type="file"*/}
+        {/*      accept="image/*"*/}
+        {/*      multiple*/}
+        {/*      onChange={setInstitutionRegularImages}*/}
+        {/*      className="text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"*/}
+        {/*    />*/}
+        {/*    <p className="mt-2 mb-2 px-4 py-3 text-xs text-gray-500">*/}
+        {/*      Upload up to 5 images (max 10MB each, JPEG or PNG)*/}
+        {/*    </p>*/}
+        {/*  </div>*/}
+        {/*  {imageState.images.length > 0 && <ImagePreview images={imageState.images} />}*/}
+        {/*</div>*/}
 
         <div>
           <label className="block text-sm font-medium text-gray-700">

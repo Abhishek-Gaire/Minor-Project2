@@ -1,18 +1,19 @@
-import  { useState } from "react";
+import { useState } from "react";
 import { Video } from "lucide-react";
 
 import { MeetingModal } from "./MeetingModal";
 
 interface Props {
   from: string;
+  className?: string;
 }
 
-export function HostMeetingButton({ from }: Props) {
+export function HostMeetingButton({ from, className }: Props) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
     <div
-      className={`${
+      className={`${className} ${
         from === "mobileNav" ? "flex justify-center border-b pb-2" : ""
       }`}
     >

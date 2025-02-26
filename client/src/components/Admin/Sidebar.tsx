@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 
 const navigation = [
-  { name: "Dashboard", to: "/", icon: LayoutDashboard },
+  { name: "Dashboard", to: "/dashboard", icon: LayoutDashboard },
   { name: "Students", to: "/students", icon: Users },
   { name: "Courses", to: "/courses", icon: BookOpen },
   { name: "Grades", to: "/grades", icon: GraduationCap },

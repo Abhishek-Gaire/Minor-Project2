@@ -1,20 +1,11 @@
 import { Outlet, Navigate } from "react-router-dom";
 
-import { useAuth } from "../../contexts/AuthContext.tsx";
-
 import { Sidebar } from "./Sidebar.tsx";
 import { Header } from "./Header.tsx";
+import {useAuth} from "../../contexts/UseAuth.tsx";
 
-export function Layout() {
-  const { user, loading } = useAuth();
-
-  if (loading) {
-    return (
-      <div className="min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-      </div>
-    );
-  }
+const Layout = ()=> {
+  const { user } = useAuth();
 
   if (!user) {
     return <Navigate to="/login" replace />;
@@ -32,3 +23,5 @@ export function Layout() {
     </div>
   );
 }
+
+export default Layout;

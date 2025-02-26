@@ -2,10 +2,9 @@ import React, { useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { School } from "lucide-react";
+import {useAuth} from "../contexts/UseAuth.tsx";
 
 import Layout from "../components/Layout.tsx";
-
-const BACKEND_URI = import.meta.env.VITE_BACKEND_URI!;
 
 const Login =() => {
   const [loginData, setLoginData] = useState<{
@@ -21,10 +20,10 @@ const Login =() => {
   const [error, setError] = useState<string | null>(null);
 
   const navigate = useNavigate();
-  // use context here
-  const user = false;
+  const { user, login } = useAuth();
+
   if (user) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to={`/dashboard/${user?.role}`} replace />;
   }
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -39,33 +38,26 @@ const Login =() => {
     }
 
     try {
-      const res = await fetch(`${BACKEND_URI}/api/v1/auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(loginData),
-        credentials: "include",
-      });
+     const {error} = await login(loginData.email, loginData.password,loginData.role);
 
-      if (!res.ok) {
-        const errorData = await res.json();
+      if (error) {
+        setError(
+            error || "Failed to submit the form. Please try again."
+        );
         toast.error(
-          errorData.message || "Failed to submit the form. Please try again."
+          error || "Failed to submit the form. Please try again."
         );
         return;
       }
 
-      const data = await res.json();
       toast.success("Login Successful!");
-      console.log(data);
       navigate("/dashboard", { replace: true });
     } catch (error:Error | any) {
       console.error("Login error:", error);
       setError(
-        error instanceof Error ? error.message : "An unexpected error occurred."
+        error || "An unexpected error occurred."
       );
-      toast.error(`error: ${error.message}`);
+      toast.error(`error: ${error}`);
     } finally {
       setLoading(false);
     }

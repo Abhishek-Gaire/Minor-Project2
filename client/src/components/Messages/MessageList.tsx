@@ -1,4 +1,4 @@
-import { useSupabaseQuery } from "../../hooks/useSupabaseQuery";
+
 import { supabase } from "../../lib/supabase-config";
 
 import { formatDistanceToNow } from "date-fns";
