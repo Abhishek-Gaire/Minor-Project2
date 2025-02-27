@@ -1,27 +1,24 @@
-// import { Request, Response } from 'express';
-// import { registerInstitution } from '../services/institutionServices';
+import { RequestHandler,Request, Response } from 'express';
+import { registerInstitution } from '../services/institutionServices';
 
-// export const registerInstitutionHandler = async (req: Request, res: Response) => {
-//   try {
-//     const { name, contactPerson, role, email, phone, address, city, state } = req.body;
-//     const files = req.files as Express.Multer.File[];
+export const registerInstitutionHandler:RequestHandler = async (req: Request, res: Response) => {
+  try {
+    const { name, contactPerson, role, email, phone, address, city, state,imageUrl } = req.body;
 
-//     if (!files || files.length === 0) return res.status(400).json({ error: 'At least one image is required' });
+    const result = await registerInstitution({
+      name,
+      contactPerson,
+      role,
+      email,
+      phone,
+      address,
+      city,
+      state,
+      images:imageUrl,
+    });
 
-//     const result = await registerInstitution({
-//       name,
-//       contactPerson,
-//       role,
-//       email,
-//       phone,
-//       address,
-//       city,
-//       state,
-//       images: files,
-//     });
-
-//     res.status(201).json(result);
-//   } catch (err: any) {
-//     res.status(500).json({ error: err.message });
-//   }
-// };
+    res.status(201).json(result);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+};
