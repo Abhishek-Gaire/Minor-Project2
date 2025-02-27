@@ -74,3 +74,17 @@ model SuperAdmin {
 
   @@map("super_admins")
 }
+model Assignment {
+  id           String   @id @default(uuid())
+  title        String
+  fileUrl      String
+  uploadedById String
+  role         String
+  uploadedAt   DateTime @default(now())
+
+  // Relations
+  student Student? @relation(fields: [uploadedById], references: [id])
+  teacher Teacher? @relation(fields: [uploadedById], references: [id])
+}
+
+
