@@ -8,7 +8,7 @@ export const AuthContext = createContext<AuthContextType>({
   user: null,
   loading: true,
   login: async (): Promise<LoginResponse> => {
-    return { user: null, error: "Login function not implemented" };
+    return { userData: null, error: "Login function not implemented" };
   },
   logout: () => {},
 });
@@ -43,11 +43,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       const data = await response.json();
       setUser(data.user); // Update the user state
-      return { user: data.user, error: null }; // Return success data
+      return { userData: data.user, error: null }; // Return success data
     } catch (error: Error | any) {
       console.error("Login error:", error);
       setUser(null); // Clear the user state on error
-      return { user: null, error: error.message }; // Return error
+      return { userData: null, error: error.message }; // Return error
     } finally {
       setLoading(false);
     }

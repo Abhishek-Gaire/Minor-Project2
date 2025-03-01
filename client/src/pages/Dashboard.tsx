@@ -1,7 +1,7 @@
-import { StatsCard } from "../components/Dashboard/StatsCard";
-import { RecentActivity } from "../components/Dashboard/RecentActivity";
+import { StatsCard } from "../components/DashboardS/DashboardHome/StatsCard";
+import { RecentActivity } from "../components/DashboardS/DashboardHome/RecentActivity";
 
-const Dashboard =()=> {
+const Dashboard = () => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -20,5 +20,5 @@ const Dashboard =()=> {
       </div>
     </div>
   );
-}
+};
 export default Dashboard;

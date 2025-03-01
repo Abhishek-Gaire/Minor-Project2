@@ -4,7 +4,7 @@ export interface Participant {
   isHost: boolean;
 }
 
-export interface ChatRoomProps{
+export interface ChatRoomProps {
   gradeLevel: number;
 }
 
@@ -15,13 +15,17 @@ export interface User {
 }
 
 export interface LoginResponse {
-  user: User | null;
+  userData: User | null;
   error: string | null;
 }
 
 export interface AuthContextType {
   user: User | null;
   loading: boolean;
-  login: (email: string, password: string, role?: string) => Promise<LoginResponse>;
+  login: (
+    email: string,
+    password: string,
+    role?: string
+  ) => Promise<LoginResponse>;
   logout: () => void;
 }

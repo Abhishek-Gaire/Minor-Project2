@@ -1,21 +1,14 @@
-import  { useState } from "react";
+import { useState } from "react";
 import { Navigate } from "react-router-dom";
-// import { useAuth } from "../contexts/AuthContext";
+
 import { School } from "lucide-react";
 import { RegistrationForm } from "../components/Registration/RegistrationForm";
 import { RegistrationBenefits } from "../components/Registration/RegistrationBenefits";
 import Layout from "../components/Layout.tsx";
-import {useAuth} from "../contexts/UseAuth.tsx";
 
-const InstitutionSignup =()=> {
-  // use context here
-  const {user} = useAuth()
+const InstitutionSignup = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  if (user) {
-    return <Navigate to={`/dashboard/${user?.role}`} replace />;
-  }
 
   return (
     <Layout>
@@ -47,6 +40,6 @@ const InstitutionSignup =()=> {
       </div>
     </Layout>
   );
-}
+};
 
 export default InstitutionSignup;

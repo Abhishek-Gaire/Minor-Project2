@@ -1,6 +1,8 @@
 import express from "express";
 
 import authRoutes from "./routes/authRoutes";
+import schoolRoutes from "./routes/institutionalRoutes";
+
 import cookieParser from "cookie-parser";
 
 const app = express();
@@ -13,6 +15,7 @@ app.use(cookieParser());
 
 // Routes
 app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/schools", schoolRoutes);
 
 // Start the server
 const PORT = process.env.PORT || 5000;

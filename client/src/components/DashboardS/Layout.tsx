@@ -1,6 +1,6 @@
 import { Outlet, Navigate } from "react-router-dom";
 
-import { Sidebar } from "../../pages/admin/Sidebar.tsx";
+import { Sidebar } from "../../pages/Dashboard/Sidebar.tsx";
 import { Header } from "./Header.tsx";
 import { useAuth } from "../../contexts/UseAuth.tsx";
 

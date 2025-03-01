@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { SlideOverlay } from "./SlideOverlay";
 import { SlideNavigation } from "./SlideNavigation";
 
-import {slides} from "../../../constants/constants.ts";
+import { slides } from "../../../constants/constants.ts";
 
 export function ImageSlider() {
   const [currentSlide, setCurrentSlide] = useState(0);
