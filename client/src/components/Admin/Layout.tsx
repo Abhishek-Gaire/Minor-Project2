@@ -1,10 +1,10 @@
 import { Outlet, Navigate } from "react-router-dom";
 
-import { Sidebar } from "./Sidebar.tsx";
+import { Sidebar } from "../../pages/admin/Sidebar.tsx";
 import { Header } from "./Header.tsx";
-import {useAuth} from "../../contexts/UseAuth.tsx";
+import { useAuth } from "../../contexts/UseAuth.tsx";
 
-const Layout = ()=> {
+const Layout = () => {
   const { user } = useAuth();
 
   if (!user) {
@@ -22,6 +22,6 @@ const Layout = ()=> {
       </div>
     </div>
   );
-}
+};
 
 export default Layout;

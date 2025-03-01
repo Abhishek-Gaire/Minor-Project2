@@ -1,12 +1,16 @@
 // import { useAuth } from "../contexts/AuthContext";
 
 import { LogOut, Bell } from "lucide-react";
+import { Navigate } from "react-router-dom";
+import { useAuth } from "../../contexts/UseAuth";
 
 export function Header() {
-  //   const { user } = useAuth();
+  const { user, logout } = useAuth();
 
   const handleLogout = async () => {
-    // call API here
+    logout();
+
+    return <Navigate to="/" replace />;
   };
 
   return (

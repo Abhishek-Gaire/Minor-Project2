@@ -1,5 +1,5 @@
-import React, {createContext, useEffect, useState} from "react";
-import {AuthContextType, LoginResponse, User} from "../utils/types.ts";
+import React, { createContext, useEffect, useState } from "react";
+import { AuthContextType, LoginResponse, User } from "../utils/types.ts";
 
 const BACKEND_URI = import.meta.env.VITE_BACKEND_URI!;
 
@@ -19,7 +19,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   // Function to handle user login
-  const login = async (email: string, password: string, role?: string):Promise<LoginResponse> => {
+  const login = async (
+    email: string,
+    password: string,
+    role?: string
+  ): Promise<LoginResponse> => {
     setLoading(true);
     setLoading(true);
     try {
@@ -28,7 +32,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({email,password,role}),
+        body: JSON.stringify({ email, password, role }),
         credentials: "include", // Include cookies if needed
       });
 
@@ -40,7 +44,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const data = await response.json();
       setUser(data.user); // Update the user state
       return { user: data.user, error: null }; // Return success data
-    } catch (error:Error | any) {
+    } catch (error: Error | any) {
       console.error("Login error:", error);
       setUser(null); // Clear the user state on error
       return { user: null, error: error.message }; // Return error
@@ -86,8 +90,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (!response.ok) throw new Error("Verification failed");
         const data = await response.json();
         setUser(data.user);
-      } catch (error:Error | any) {
-        if (error.name !== "AbortError") { // Ignore abort errors
+      } catch (error: Error | any) {
+        if (error.name !== "AbortError") {
+          // Ignore abort errors
           console.error("Error:", error);
           setUser(null);
         }
@@ -107,14 +112,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // Cleanup: Abort the request on unmount
     return () => abortController.abort();
-  }, [setUser, setLoading]);
+  }, [user]);
 
   return (
-    <AuthContext.Provider
-      value={{ user, loading, login, logout }}
-    >
+    <AuthContext.Provider value={{ user, loading, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
 }
-

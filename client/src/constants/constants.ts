@@ -8,7 +8,10 @@ import {
   Shield,
   Users,
   Video,
+  LayoutDashboard,
+  MessageSquare,
 } from "lucide-react";
+import { NavItem } from "./types";
 
 export const slides = [
   {
@@ -131,4 +134,15 @@ export const navigation = [
   { name: "Features", href: "/features" },
   { name: "About", href: "/about" },
   { name: "Contact", href: "/contact" },
+];
+
+export const adminNavigation: NavItem[] = [
+  { name: "Dashboard", to: "/dashboard", icon: LayoutDashboard },
+  { name: "Students", to: "/dashboard/students", icon: Users },
+  { name: "Courses", to: "/dashboard/courses", icon: BookOpen },
+  { name: "Grades", to: "/dashboard/grades", icon: GraduationCap },
+  { name: "Assignments", to: "/dashboard/assignments", icon: ClipboardList },
+  { name: "Class Chat", to: "/dashboard/chat", icon: MessageCircle },
+  { name: "Messages", to: "/dashboard/messages", icon: MessageSquare },
+  { name: "Online Class", to: "/dashboard/online-class", icon: Video },
 ];
