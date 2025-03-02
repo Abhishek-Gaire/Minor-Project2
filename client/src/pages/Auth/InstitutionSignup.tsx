@@ -1,10 +1,9 @@
 import { useState } from "react";
-import { Navigate } from "react-router-dom";
-
 import { School } from "lucide-react";
-import { RegistrationForm } from "../components/Registration/RegistrationForm";
-import { RegistrationBenefits } from "../components/Registration/RegistrationBenefits";
-import Layout from "../components/Layout.tsx";
+
+import { RegistrationForm } from "../../components/Registration/RegistrationForm";
+import { RegistrationBenefits } from "../../components/Registration/RegistrationBenefits";
+import Layout from "../../components/Layout.tsx";
 
 const InstitutionSignup = () => {
   const [loading, setLoading] = useState(false);

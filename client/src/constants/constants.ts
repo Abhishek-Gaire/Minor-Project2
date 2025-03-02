@@ -146,3 +146,25 @@ export const adminNavigation: NavItem[] = [
   { name: "Messages", to: "/dashboard/messages", icon: MessageSquare },
   { name: "Online Class", to: "/dashboard/online-class", icon: Video },
 ];
+
+// Mock notifications
+export const mockNotifications = [
+  {
+    id: 1,
+    title: "New Student Registration",
+    message: "John Doe has registered",
+    time: "5 minutes ago",
+  },
+  {
+    id: 2,
+    title: "Exam Schedule Updated",
+    message: "Mathematics exam rescheduled",
+    time: "1 hour ago",
+  },
+  {
+    id: 3,
+    title: "Fee Payment",
+    message: "New payment received",
+    time: "2 hours ago",
+  },
+];

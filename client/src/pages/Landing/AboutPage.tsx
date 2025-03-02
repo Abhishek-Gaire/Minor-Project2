@@ -1,7 +1,7 @@
-import Layout from "../components/Layout";
+import Layout from "../../components/Layout";
 import { Target, Heart, Users } from "lucide-react";
 
-const AboutPage =() =>{
+const AboutPage = () => {
   return (
     <Layout>
       <div className="bg-gradient-to-b from-indigo-50 to-white">
@@ -66,6 +66,6 @@ const AboutPage =() =>{
       </div>
     </Layout>
   );
-}
+};
 
 export default AboutPage;

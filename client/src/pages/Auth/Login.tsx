@@ -5,9 +5,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 
-import { useAuth } from "../contexts/UseAuth.tsx";
-import Layout from "../components/Layout.tsx";
-import { loginSchema } from "../constants/types.ts";
+import { useAuth } from "../../contexts/UseAuth.tsx";
+import Layout from "../../components/Layout.tsx";
+import { loginSchema } from "../../constants/types.ts";
 
 type LoginFormInputs = z.infer<typeof loginSchema>;
 

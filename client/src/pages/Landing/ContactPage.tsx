@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import Layout from  "../components/Layout.tsx"
-import ContactInformation from "../components/HomePage/ContactInformation.tsx";
+import Layout from "../../components/Layout.tsx";
+import ContactInformation from "../../components/HomePage/ContactInformation.tsx";
 
-const ContactPage =() =>{
+const ContactPage = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -114,12 +114,12 @@ const ContactPage =() =>{
               </form>
             </div>
 
-            <ContactInformation/>
+            <ContactInformation />
           </div>
         </div>
       </div>
     </Layout>
   );
-}
+};
 
 export default ContactPage;

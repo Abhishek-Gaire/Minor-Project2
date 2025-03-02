@@ -1,5 +1,5 @@
-import { StatsCard } from "../components/DashboardS/DashboardHome/StatsCard";
-import { RecentActivity } from "../components/DashboardS/DashboardHome/RecentActivity";
+import { StatsCard } from "../../components/Dashboard/DashboardHome/StatsCard";
+import { RecentActivity } from "../../components/Dashboard/DashboardHome/RecentActivity";
 
 const Dashboard = () => {
   return (

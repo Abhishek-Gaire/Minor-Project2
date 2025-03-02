@@ -1,7 +1,6 @@
-import Layout from "../components/Layout.tsx";
-import {allFeatures} from "../constants/constants.ts";
-import {FeatureList} from "../components/HomePage/Features/FeatureList.tsx";
-
+import Layout from "../../components/Layout.tsx";
+import { allFeatures } from "../../constants/constants.ts";
+import { FeatureList } from "../../components/HomePage/Features/FeatureList.tsx";
 
 const FeaturesPage = () => {
   return (
@@ -19,13 +18,13 @@ const FeaturesPage = () => {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {allFeatures.map((feature) => (
-                <FeatureList feature={feature} key={feature.title} />
+              <FeatureList feature={feature} key={feature.title} />
             ))}
           </div>
         </div>
       </div>
     </Layout>
   );
-}
+};
 
 export default FeaturesPage;
