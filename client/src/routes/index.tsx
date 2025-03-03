@@ -22,16 +22,18 @@ import {
   AdminManagementPage, GlobalSettingsPage, ReportsPage,
   SchoolManagementPage, SystemSettingsPage,
 } from "@/pages/SuperAdminPages.tsx";
-import AdminDashboard, {
-  AttendanceManagementPage,
-  ClassManagementPage,
-  TeachersManagementPage,
-} from "@/pages/SchoolAdminPages.tsx";
 import SuperAdminAdmins from "@/pages/SuperAdmin/SuperAdminAdmins.tsx";
 import SchoolAdminStudents from "@/pages/Admin/SchoolAdminStudents.tsx";
 import SchoolAdminMessage from "@/pages/Admin/SchoolAdminMessage.tsx";
 import SchoolAdminSettings from "@/pages/Admin/SchoolAdminSettings.tsx";
 import SchoolAdminPayments from "@/pages/Admin/SchoolAdminPayments.tsx";
+import AdminDashboard from "@/pages/Admin/SchoolAdminDashboard.tsx";
+import {TeachersManagementPage} from "@/pages/Admin/SchoolAdminTeachers.tsx";
+import {ClassManagementPage} from "@/pages/Admin/SchoolAdminClasses.tsx";
+import {AttendanceManagementPage} from "@/pages/Admin/SchoolAdminAttendance.tsx";
+import SchoolAdminCourses from "@/pages/Admin/SchoolAdminCourses.tsx";
+import SchoolAdminSchedule from "@/pages/Admin/SchoolAdminSchedule.tsx";
+import SchoolAdminNotifications from "@/pages/Admin/SchoolAdminNotifications.tsx";
 // import SuperAdminAdmins from "@/pages/SuperAdmin/SuperAdminAdmins.tsx";
 // import SchoolLayout from "../components/SchoolLayout.tsx";
 // import SchoolPage from "../pages/school/SchoolPage.tsx";
@@ -79,18 +81,64 @@ export const router = createBrowserRouter([
       { path: "online-class", element: <OnlineClassPage /> },
     ],
   },
-  // {
-  //   path: "/admin1",
-  //   element: <AdminLayout />,
-  //   children: [
-  //     { index: true, element: <Dashboard /> },
-  //     // Add more admin routes here as needed
-  //   ],
-  // },
+  {
+    path: "/:role",
+    element: <AdminLayout />,
+    children: [
+      { index: true,  element: <AdminDashboard /> },
+      {
+        path: "dashboard",
+        element: <AdminDashboard />,
+      },
+      {
+        path: "teachers",
+        element: <TeachersManagementPage />,
+      },
+
+      {
+        path: "classes",
+        element: <ClassManagementPage />,
+      },
+      {
+        path:"attendance",
+        element:<AttendanceManagementPage/>
+      },
+      {
+        path:"students",
+        element:<SchoolAdminStudents/>
+      },
+      {
+        path:"messages",
+        element:<SchoolAdminMessage/>
+      },
+      {
+        path:"courses",
+        element:<SchoolAdminCourses/>
+      },
+      {
+        path:"schedule",
+        element:<SchoolAdminSchedule/>
+      },
+      {
+        path:"notifications",
+        element:<SchoolAdminNotifications/>
+      },
+      {
+        path:"settings",
+        element:<SchoolAdminSettings/>
+      },
+      {
+        path:"payments",
+        element:<SchoolAdminPayments/>
+      },
+
+    ],
+  },
   {
     path: "*",
     element: <RouteNotFound />,
   },
+
   {
     path: "/admin",
     element: <SchoolManagementPage />,
@@ -98,38 +146,6 @@ export const router = createBrowserRouter([
   {
     path: "/admins",
     element: <AdminManagementPage />,
-  },
-  {
-    path: "/teachers",
-    element: <TeachersManagementPage />,
-  },
-  {
-    path: "/classes",
-    element: <ClassManagementPage />,
-  },
-  {
-    path:"/attendance",
-    element:<AttendanceManagementPage/>
-  },
-  {
-    path:"/students",
-    element:<SchoolAdminStudents/>
-  },
-  {
-    path:"/messages",
-    element:<SchoolAdminMessage/>
-  },
-  {
-    path:"/settings",
-    element:<SchoolAdminSettings/>
-  },
-  {
-    path:"/payments",
-    element:<SchoolAdminPayments/>
-  },
-  {
-    path: "/dashboardAdmin",
-    element: <AdminDashboard />,
   },
   {
     path: "/dashboardAdmin1",

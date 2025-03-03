@@ -5,10 +5,7 @@ import {
     PlusCircle,
     Download,
     MoreHorizontal,
-    Check,
-    X, Activity, GraduationCap, UserCircle, BookOpen, Clock, DollarSign, MessageSquare, Settings
 } from "lucide-react";
-import  Layout  from "@/components/Admin/AdminLayout.tsx";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -30,56 +27,6 @@ import {
 
 
 const StudentsPage = () => {
-    const adminSidebarItems = [
-        {
-            name: "Dashboard",
-            href: "/admin",
-            icon: <Activity size={20} />,
-            active: false,
-        },
-        {
-            name: "Students",
-            href: "/admin/students",
-            icon: <GraduationCap size={20} />,
-            active: false,
-        },
-        {
-            name: "Teachers",
-            href: "/admin/teachers",
-            icon: <UserCircle size={20} />,
-            active: true,
-        },
-        {
-            name: "Classes",
-            href: "/admin/classes",
-            icon: <BookOpen size={20} />,
-            active: false,
-        },
-        {
-            name: "Attendance",
-            href: "/admin/attendance",
-            icon: <Clock size={20} />,
-            active: false,
-        },
-        {
-            name: "Payments",
-            href: "/admin/payments",
-            icon: <DollarSign size={20} />,
-            active: false,
-        },
-        {
-            name: "Messages",
-            href: "/admin/messages",
-            icon: <MessageSquare size={20} />,
-            active: false,
-        },
-        {
-            name: "Settings",
-            href: "/admin/settings",
-            icon: <Settings size={20} />,
-            active: false,
-        },
-    ];
     const [students, setStudents] = useState([
         { id: 1, name: "Alex Johnson", grade: "10th", status: "active", attendance: "95%", fees: "Paid", enrolledCourses: 4 },
         { id: 2, name: "Samantha Lee", grade: "11th", status: "active", attendance: "92%", fees: "Paid", enrolledCourses: 5 },
@@ -116,7 +63,6 @@ const StudentsPage = () => {
     };
 
     return (
-        <Layout role="admin" sidebarItems={adminSidebarItems}>
             <div className="p-6">
                 <div className="flex justify-between items-center mb-6">
                     <h1 className="text-2xl font-bold">Students</h1>
@@ -229,7 +175,7 @@ const StudentsPage = () => {
                     </Table>
                 </div>
             </div>
-        </Layout>
+
     );
 };
 

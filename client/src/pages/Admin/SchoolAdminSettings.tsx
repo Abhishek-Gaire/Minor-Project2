@@ -4,11 +4,10 @@ import {
     Lock,
     Bell,
     Globe,
-    Mail,
     CreditCard,
-    CheckSquare,
+
     Shield,
-    Save, Activity, GraduationCap, UserCircle, BookOpen, Clock, DollarSign, MessageSquare, Settings
+    Save
 } from "lucide-react";
 import  Layout  from "@/components/Admin/AdminLayout.tsx";
 import { Button } from "@/components/ui/button";
@@ -26,85 +25,35 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-// import { adminSidebarItems } from "@/components/sidebar/admin-sidebar-items";
 
 const SettingsPage = () => {
-    const adminSidebarItems = [
-        {
-            name: "Dashboard",
-            href: "/admin",
-            icon: <Activity size={20} />,
-            active: false,
-        },
-        {
-            name: "Students",
-            href: "/admin/students",
-            icon: <GraduationCap size={20} />,
-            active: false,
-        },
-        {
-            name: "Teachers",
-            href: "/admin/teachers",
-            icon: <UserCircle size={20} />,
-            active: true,
-        },
-        {
-            name: "Classes",
-            href: "/admin/classes",
-            icon: <BookOpen size={20} />,
-            active: false,
-        },
-        {
-            name: "Attendance",
-            href: "/admin/attendance",
-            icon: <Clock size={20} />,
-            active: false,
-        },
-        {
-            name: "Payments",
-            href: "/admin/payments",
-            icon: <DollarSign size={20} />,
-            active: false,
-        },
-        {
-            name: "Messages",
-            href: "/admin/messages",
-            icon: <MessageSquare size={20} />,
-            active: false,
-        },
-        {
-            name: "Settings",
-            href: "/admin/settings",
-            icon: <Settings size={20} />,
-            active: false,
-        },
-    ];
+
     return (
-        <Layout role="admin" sidebarItems={adminSidebarItems}>
+
             <div className="p-6">
                 <div className="flex justify-between items-center mb-6">
                     <h1 className="text-2xl font-bold">Settings</h1>
                 </div>
 
-                <Tabs defaultValue="profile" className="space-y-4">
+                <Tabs defaultValue="profile" className="space-y-8">
                     <TabsList className="grid grid-cols-5 w-full max-w-3xl">
-                        <TabsTrigger value="profile" className="flex items-center gap-2">
+                        <TabsTrigger value="profile" className="flex items-center gap-4">
                             <User className="h-4 w-4" />
                             <span>Profile</span>
                         </TabsTrigger>
-                        <TabsTrigger value="security" className="flex items-center gap-2">
+                        <TabsTrigger value="security" className="flex items-center gap-4">
                             <Shield className="h-4 w-4" />
                             <span>Security</span>
                         </TabsTrigger>
-                        <TabsTrigger value="notifications" className="flex items-center gap-2">
+                        <TabsTrigger value="notifications" className="flex items-center gap-4">
                             <Bell className="h-4 w-4" />
                             <span>Notifications</span>
                         </TabsTrigger>
-                        <TabsTrigger value="display" className="flex items-center gap-2">
+                        <TabsTrigger value="display" className="flex items-center gap-4">
                             <Globe className="h-4 w-4" />
                             <span>Display</span>
                         </TabsTrigger>
-                        <TabsTrigger value="billing" className="flex items-center gap-2">
+                        <TabsTrigger value="billing" className="flex items-center gap-4">
                             <CreditCard className="h-4 w-4" />
                             <span>Billing</span>
                         </TabsTrigger>
@@ -379,7 +328,7 @@ const SettingsPage = () => {
                     </TabsContent>
                 </Tabs>
             </div>
-        </Layout>
+
     );
 };
 

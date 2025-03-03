@@ -6,7 +6,7 @@ import {
   TableHead,
   TableBody,
   TableCell,
-} from "shadcn-ui";
+} from "@/components/ui/table";
 import { Button, Input } from "shadcn-ui";
 import {
   fetchTeachers,

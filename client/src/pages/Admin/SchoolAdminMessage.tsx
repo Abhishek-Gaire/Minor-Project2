@@ -4,9 +4,8 @@ import {
     Send,
     PaperclipIcon,
     MoreHorizontal,
-    Clock, Activity, GraduationCap, UserCircle, BookOpen, DollarSign, MessageSquare, Settings,
+    Clock,
 } from "lucide-react";
-import  Layout  from "@/components/Admin/AdminLayout.tsx";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -72,59 +71,9 @@ const MessagesPage = () => {
             setMessageInput("");
         }
     };
-    const adminSidebarItems = [
-        {
-            name: "Dashboard",
-            href: "/admin",
-            icon: <Activity size={20} />,
-            active: false,
-        },
-        {
-            name: "Students",
-            href: "/admin/students",
-            icon: <GraduationCap size={20} />,
-            active: false,
-        },
-        {
-            name: "Teachers",
-            href: "/admin/teachers",
-            icon: <UserCircle size={20} />,
-            active: true,
-        },
-        {
-            name: "Classes",
-            href: "/admin/classes",
-            icon: <BookOpen size={20} />,
-            active: false,
-        },
-        {
-            name: "Attendance",
-            href: "/admin/attendance",
-            icon: <Clock size={20} />,
-            active: false,
-        },
-        {
-            name: "Payments",
-            href: "/admin/payments",
-            icon: <DollarSign size={20} />,
-            active: false,
-        },
-        {
-            name: "Messages",
-            href: "/admin/messages",
-            icon: <MessageSquare size={20} />,
-            active: false,
-        },
-        {
-            name: "Settings",
-            href: "/admin/settings",
-            icon: <Settings size={20} />,
-            active: false,
-        },
-    ];
 
     return (
-        <Layout role="admin" sidebarItems={adminSidebarItems}>
+
             <div className="flex h-screen overflow-hidden">
                 {/* Conversations sidebar */}
                 <div className="w-80 border-r bg-white flex flex-col">
@@ -259,7 +208,6 @@ const MessagesPage = () => {
                     </div>
                 </div>
             </div>
-        </Layout>
     );
 };
 

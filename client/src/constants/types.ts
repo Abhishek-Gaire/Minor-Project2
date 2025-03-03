@@ -1,5 +1,6 @@
 import { LucideIcon } from "lucide-react";
 import { z } from "zod";
+import React from "react";
 
 export interface Feature {
   icon: LucideIcon;

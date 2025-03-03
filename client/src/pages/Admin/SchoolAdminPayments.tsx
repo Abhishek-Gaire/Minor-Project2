@@ -1,15 +1,12 @@
-import React, { useState } from "react";
+import React from "react";
 import {
     Search,
     Filter,
     Download,
     CreditCard,
-    DollarSign,
-    Calendar,
     MoreHorizontal,
-    TrendingUp, GraduationCap, UserCircle, BookOpen, Clock, Settings, MessageSquare, Activity
+    TrendingUp
 } from "lucide-react";
-import  Layout  from "@/components/Admin/AdminLayout.tsx";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -34,7 +31,6 @@ import {
     TabsList,
     TabsTrigger,
 } from "@/components/ui/tabs";
-// import { adminSidebarItems } from "@/components/sidebar/admin-sidebar-items";
 
 const PaymentsPage = () => {
     const payments = [
@@ -60,58 +56,8 @@ const PaymentsPage = () => {
                 return "bg-gray-100 text-gray-800";
         }
     };
-    const adminSidebarItems = [
-        {
-            name: "Dashboard",
-            href: "/admin",
-            icon: <Activity size={20} />,
-            active: false,
-        },
-        {
-            name: "Students",
-            href: "/admin/students",
-            icon: <GraduationCap size={20} />,
-            active: false,
-        },
-        {
-            name: "Teachers",
-            href: "/admin/teachers",
-            icon: <UserCircle size={20} />,
-            active: true,
-        },
-        {
-            name: "Classes",
-            href: "/admin/classes",
-            icon: <BookOpen size={20} />,
-            active: false,
-        },
-        {
-            name: "Attendance",
-            href: "/admin/attendance",
-            icon: <Clock size={20} />,
-            active: false,
-        },
-        {
-            name: "Payments",
-            href: "/admin/payments",
-            icon: <DollarSign size={20} />,
-            active: false,
-        },
-        {
-            name: "Messages",
-            href: "/admin/messages",
-            icon: <MessageSquare size={20} />,
-            active: false,
-        },
-        {
-            name: "Settings",
-            href: "/admin/settings",
-            icon: <Settings size={20} />,
-            active: false,
-        },
-    ];
     return (
-        <Layout role="admin" sidebarItems={adminSidebarItems}>
+
             <div className="p-6">
                 <div className="flex justify-between items-center mb-6">
                     <h1 className="text-2xl font-bold">Payments</h1>
@@ -283,7 +229,7 @@ const PaymentsPage = () => {
                     </Tabs>
                 </div>
             </div>
-        </Layout>
+
     );
 };
 

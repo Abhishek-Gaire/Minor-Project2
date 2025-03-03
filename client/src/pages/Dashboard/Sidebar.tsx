@@ -2,8 +2,8 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { X as CloseIcon } from "lucide-react";
 
-import { adminNavigation } from "../../constants/constants";
-import { cn } from "../../lib/utils.ts";
+import { adminNavigation } from "@/constants/constants.ts";
+import { cn } from "@/lib/utils.ts";
 
 interface SidebarProps {
   setIsSidebarOpen: (isOpen: boolean) => void;

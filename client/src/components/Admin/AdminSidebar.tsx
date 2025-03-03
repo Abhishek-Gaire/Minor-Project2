@@ -1,46 +1,174 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import { Home, Users, GraduationCap, Settings } from "lucide-react";
+import React, {useEffect, useState} from "react";
+import { Link,useLocation } from "react-router-dom";
+import {
+  Activity,
+  BarChart,
+  Bell,
+  Book, BookOpen,
+  Calendar, Clock, DollarSign,
+  FileText,
+  Globe, GraduationCap,
+  Home, MessageSquare,
+  School,
+  Settings, UserCircle,
+} from "lucide-react";
+import {cn} from "@/lib/utils.ts";
+import {NavItem} from "@/constants/types.ts";
 
 interface AdminSidebarProps {
-  isExpanded: boolean;
+  role:string,
+  sidebarOpen:boolean,
 }
 
-const AdminSidebar: React.FC<AdminSidebarProps> = ({ isExpanded }) => {
-  const menuItems = [
-    { icon: <Home size={24} />, text: "Dashboard", link: "/admin/dashboard" },
-    { icon: <Users size={24} />, text: "Students", link: "/admin/students" },
+const AdminSidebar: React.FC<AdminSidebarProps> = ({ role,sidebarOpen }) => {
+  const location = useLocation();
+  const superadminSidebarItems = [
     {
-      icon: <GraduationCap size={24} />,
-      text: "Teachers",
-      link: "/admin/teachers",
+      name: "Dashboard",
+      to: `/${role}/dashboard`,
+      icon: Home,
+      active: true,
     },
-    { icon: <Settings size={24} />, text: "Settings", link: "/admin/settings" },
+    {
+      name: "Schools",
+      to: `/${role}/schools`,
+      icon: School ,
+      active: false,
+    },
+    {
+      name: "Reports",
+      to: `/${role}/reports`,
+      icon: FileText,
+      active: false,
+    },
+    {
+      name: "Global Settings",
+      to: `/${role}/globalSettings`,
+      icon: Globe,
+      active: false,
+    },
+    {
+      name: "Analytics",
+      to: `/${role}/analytics`,
+      icon: BarChart,
+      active: false,
+    },
   ];
 
+  const adminSidebarItems = [
+    {
+      name: "Dashboard",
+      to: `/${role}/dashboard`,
+      icon: Activity,
+      active: true,
+    },
+    {
+      name: "Students",
+      to: `/${role}/students`,
+      icon: GraduationCap,
+      active: false,
+    },
+    {
+      name: "Teachers",
+      to: `/${role}/teachers`,
+      icon: UserCircle,
+      active: false,
+    },
+    {
+      name: "Classes",
+      to: `/${role}/classes`,
+      icon: BookOpen,
+      active: false,
+    },
+    {
+      name: "Attendance",
+      to: `/${role}/attendance`,
+      icon: Clock,
+      active: false,
+    },
+    {
+      name: "Payments",
+      to: `/${role}/payments`,
+      icon: DollarSign,
+      active: false,
+    },
+    {
+      name: "Messages",
+      to: `/${role}/messages`,
+      icon: MessageSquare,
+      active: false,
+    },
+    {
+      name: "Courses",
+      to: `/${role}/courses`,
+      icon: Book,
+      active: false,
+    },
+    {
+      name: "Schedule",
+      to: `/${role}/schedule`,
+      icon: Calendar,
+      active: false,
+    },
+    {
+      name: "Notifications",
+      to: `/${role}/notifications`,
+      icon: Bell,
+      active: false
+    },
+    {
+      name: "Settings",
+      to: `/${role}/settings`,
+      icon: Settings,
+      active: false,
+    },
+  ]
+
+  const [sidebarItems, setSidebarItems] = useState<NavItem[]>([]);
+  useEffect(() => {
+    if (!role) return;
+
+    if (role === "admin") {
+      setSidebarItems(adminSidebarItems);
+    } else {
+      setSidebarItems(superadminSidebarItems);
+    }
+  }, [role]);
+
   return (
-    <aside
-      className={`bg-gray-800 text-white h-full fixed top-0 left-0 overflow-y-auto transition-all duration-300 ${
-        isExpanded ? "w-64" : "w-16"
-      }`}
-    >
-      <nav className="mt-5">
-        <ul>
-          {menuItems.map((item, index) => (
-            <li key={index} className="mb-4">
-              <Link
-                to={item.link}
-                className="flex items-center p-2 hover:bg-gray-700"
-                title={item.text}
-              >
-                <span className="flex-shrink-0">{item.icon}</span>
-                {isExpanded && <span className="ml-4">{item.text}</span>}
-              </Link>
-            </li>
-          ))}
+      <nav className="flex-1 py-4 px-2">
+        <ul className="space-y-2">
+          {sidebarItems.map((item) => {
+            const Icon = item.icon;
+            return (
+                <li key={item.name}>
+                  <Link
+                    to={item.to}
+                    className={cn(
+                      "flex items-center p-2 rounded-md hover:bg-gray-100 transition-colors",
+                      location.pathname === item.to &&
+                      (role === "superadmin"
+                          ? "bg-blue-50 text-blue-600"
+                          : "bg-emerald-50 text-emerald-600")
+                  )}>
+                    <div className="flex justify-center items-center">
+                      <Icon className="mr-3 h-8 w-7"/>
+                    </div>
+                    <span
+                        className={cn(
+                            "ml-3 whitespace-nowrap",
+                            !sidebarOpen && "hidden"
+                        )}
+                    >
+                      {item.name}
+                    </span>
+                  </Link>
+                </li>
+              )
+            })
+          }
         </ul>
       </nav>
-    </aside>
   );
 };
 
