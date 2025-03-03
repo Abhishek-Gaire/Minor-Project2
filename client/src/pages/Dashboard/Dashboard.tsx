@@ -1,56 +1,16 @@
-// pages/Dashboard.tsx
 import React from "react";
-import {
-  LayoutDashboard,
-  Users,
-  BookOpen,
-  Clock,
-  Calendar,
-} from "lucide-react";
+import { Users, BookOpen, Clock, Calendar } from "lucide-react";
 
-interface StatsCardProps {
-  title: string;
-  value: string;
-  icon: React.ReactNode;
-  change?: string;
-  changeType?: "positive" | "negative";
-}
-
-const StatsCard: React.FC<StatsCardProps> = ({
-  title,
-  value,
-  icon,
-  change,
-  changeType,
-}) => {
-  return (
-    <div className="bg-white rounded-lg shadow p-6">
-      <div className="flex justify-between items-start">
-        <div>
-          <p className="text-gray-500 text-sm">{title}</p>
-          <h3 className="text-2xl font-bold mt-1">{value}</h3>
-          {change && (
-            <p
-              className={`text-sm mt-2 ${
-                changeType === "positive" ? "text-green-500" : "text-red-500"
-              }`}
-            >
-              {change}
-            </p>
-          )}
-        </div>
-        <div className="bg-blue-100 p-3 rounded-full">{icon}</div>
-      </div>
-    </div>
-  );
-};
+import StatsCard from "@/components/Dashboard/DashboardHome/StatsCard";
+import { useParams } from "react-router-dom";
 
 const Dashboard: React.FC = () => {
+  const { role } = useParams();
   return (
     <div className="ml-10 mt-5">
       <header className="mb-8">
         <h1 className="text-2xl font-bold">Dashboard</h1>
-        <p className="text-gray-600">Welcome back, Professor!</p>
+        <p className="text-gray-600">Welcome back! {role}</p>
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">

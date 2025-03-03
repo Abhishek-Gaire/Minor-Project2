@@ -18,8 +18,8 @@ export const slides = [
     id: 1,
     image: "https://images.unsplash.com/photo-1607237138185-eedd9c632b0b",
     name: "GCES",
-    // description:
-    // "A world-renowned institution with centuries of academic excellence and groundbreaking research.",
+    description:
+      "A world-renowned institution with centuries of academic excellence and groundbreaking research.",
     location: "Cambridge, United Kingdom",
   },
   {

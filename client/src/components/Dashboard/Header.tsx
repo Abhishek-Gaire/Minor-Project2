@@ -8,7 +8,7 @@ import { LogOut, Bell, Menu, User, Settings } from "lucide-react";
 
 import { mockNotifications } from "@/constants/constants";
 
-export function Header({ onLogout, setIsSidebarOpen, isMobile }) {
+const Header = ({ onLogout, setIsSidebarOpen, isMobile }) => {
   return (
     <header className="bg-white shadow-sm sticky top-0 z-30">
       <div className="flex h-16 items-center justify-between px-4">
@@ -83,4 +83,6 @@ export function Header({ onLogout, setIsSidebarOpen, isMobile }) {
       </div>
     </header>
   );
-}
+};
+
+export default Header;

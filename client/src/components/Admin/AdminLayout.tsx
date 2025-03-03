@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import {useParams} from "react-router-dom";
+import { useParams } from "react-router-dom";
 import AdminHeader from "./AdminHeader";
 import AdminSidebar from "./AdminSidebar";
 
 import { cn } from "@/lib/utils";
-import {Outlet} from "react-router-dom";
+import { Outlet } from "react-router-dom";
 
 const AdminLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -15,7 +15,11 @@ const AdminLayout = () => {
 
   return (
     <div className="h-screen flex flex-col bg-gray-100">
-      <AdminHeader toggleSidebar={toggleSidebar} role={role} sidebarOpen={sidebarOpen} />
+      <AdminHeader
+        toggleSidebar={toggleSidebar}
+        role={role}
+        sidebarOpen={sidebarOpen}
+      />
 
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
@@ -34,10 +38,10 @@ const AdminLayout = () => {
         <main
           className={cn(
             "flex-1 p-6 overflow-y-auto transition-all duration-300 mr-16",
-            sidebarOpen ? " ml-16" : "ml-16"
+            sidebarOpen ? " ml-24" : "ml-16"
           )}
         >
-          <Outlet/>
+          <Outlet />
         </main>
       </div>
     </div>
@@ -45,4 +49,3 @@ const AdminLayout = () => {
 };
 
 export default AdminLayout;
-

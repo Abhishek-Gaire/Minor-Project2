@@ -3,7 +3,7 @@ import { Outlet, Navigate, useLocation } from "react-router-dom";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 
 import { Sidebar } from "@/pages/Dashboard/Sidebar.tsx";
-import { Header } from "./Header.tsx";
+import Header from "./Header.tsx";
 import { useAuth } from "@/contexts/UseAuth.tsx";
 import { cn } from "@/lib/utils.ts";
 import { useIsMobile } from "@/hooks/use-mobile.ts";

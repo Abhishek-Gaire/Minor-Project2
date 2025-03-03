@@ -1,33 +1,38 @@
-import * as Icons from "lucide-react";
-
 interface StatsCardProps {
   title: string;
   value: string;
-  icon: keyof typeof Icons;
+  icon: React.ReactNode;
+  change?: string;
+  changeType?: "positive" | "negative";
 }
 
-export function StatsCard({ title, value, icon }: StatsCardProps) {
-  const Icon = Icons[icon];
-
+const StatsCard: React.FC<StatsCardProps> = ({
+  title,
+  value,
+  icon,
+  change,
+  changeType,
+}) => {
   return (
-    <div className="bg-white overflow-hidden shadow rounded-lg">
-      <div className="p-5">
-        <div className="flex items-center">
-          <Icon className="h-6 w-6 text-gray-400" aria-hidden="true" />
+    <div className="bg-white rounded-lg shadow p-6">
+      <div className="flex justify-between items-start">
+        <div>
+          <p className="text-gray-500 text-sm">{title}</p>
+          <h3 className="text-2xl font-bold mt-1">{value}</h3>
+          {change && (
+            <p
+              className={`text-sm mt-2 ${
+                changeType === "positive" ? "text-green-500" : "text-red-500"
+              }`}
+            >
+              {change}
+            </p>
+          )}
         </div>
-        <div className="ml-5 w-0 flex-1">
-          <dl>
-            <dt className="text-sm font-medium text-gray-500 truncate">
-              {title}
-            </dt>
-            <dd className="flex items-baseline">
-              <div className="text-2xl font-semibold text-gray-900">
-                {value}
-              </div>
-            </dd>
-          </dl>
-        </div>
+        <div className="bg-blue-100 p-3 rounded-full">{icon}</div>
       </div>
     </div>
   );
-}
+};
+
+export default StatsCard;
