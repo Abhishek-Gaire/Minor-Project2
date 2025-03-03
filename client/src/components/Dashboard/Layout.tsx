@@ -13,9 +13,9 @@ const Layout = () => {
   const isMobile = useIsMobile();
   const { user, logout } = useAuth();
 
-  if (!user) {
-    return <Navigate to="/login" replace />;
-  }
+  // if (!user) {
+  //   return <Navigate to="/login" replace />;
+  // }
 
   const location = useLocation();
 
@@ -64,7 +64,7 @@ const Layout = () => {
         />
 
         {/* Main Content */}
-        <main className="p-4 sm:p-6 ">
+        <main className="p-4 sm:p-6  mr-10">
           <div className="animate-fadeIn max-w-[100vw] overflow-x-auto">
             <Outlet />
           </div>

@@ -44,7 +44,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const data = await response.json();
       setUser(data.user); // Update the user state
       return { userData: data.user, error: null }; // Return success data
-    } catch (error: Error | any) {
+    } catch (error) {
       console.error("Login error:", error);
       setUser(null); // Clear the user state on error
       return { userData: null, error: error.message }; // Return error

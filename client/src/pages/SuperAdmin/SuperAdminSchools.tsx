@@ -6,14 +6,15 @@ import {
   TableHead,
   TableBody,
   TableCell,
-} from "shadcn-ui";
-import { Button, Input } from "shadcn-ui";
-import {
-  fetchSchools,
-  createSchool,
-  updateSchool,
-  deleteSchool,
-} from "../../api/schoolApi";
+} from "@/components/ui/table.tsx";
+import { Button } from "@/components/ui/button.tsx";
+import {Input} from "@/components/ui/input.tsx";
+// import {
+//   fetchSchools,
+//   createSchool,
+//   updateSchool,
+//   deleteSchool,
+// } from "../../api/schoolApi";
 
 interface School {
   id: number;
@@ -29,34 +30,34 @@ const SuperAdminSchools: React.FC = () => {
   });
   const [editingSchool, setEditingSchool] = useState<School | null>(null);
 
-  useEffect(() => {
-    const loadSchools = async () => {
-      const data = await fetchSchools();
-      setSchools(data);
-    };
-    loadSchools();
-  }, []);
-
-  const handleCreate = async () => {
-    const createdSchool = await createSchool(newSchool);
-    setSchools([...schools, createdSchool]);
-    setNewSchool({ name: "", address: "" });
-  };
-
-  const handleUpdate = async () => {
-    if (editingSchool) {
-      const updatedSchool = await updateSchool(editingSchool.id, editingSchool);
-      setSchools(
-        schools.map((s) => (s.id === updatedSchool.id ? updatedSchool : s))
-      );
-      setEditingSchool(null);
-    }
-  };
-
-  const handleDelete = async (id: number) => {
-    await deleteSchool(id);
-    setSchools(schools.filter((s) => s.id !== id));
-  };
+  // useEffect(() => {
+  //   const loadSchools = async () => {
+  //     const data = await fetchSchools();
+  //     setSchools(data);
+  //   };
+  //   loadSchools();
+  // }, []);
+  //
+  // const handleCreate = async () => {
+  //   const createdSchool = await createSchool(newSchool);
+  //   setSchools([...schools, createdSchool]);
+  //   setNewSchool({ name: "", address: "" });
+  // };
+  //
+  // const handleUpdate = async () => {
+  //   if (editingSchool) {
+  //     const updatedSchool = await updateSchool(editingSchool.id, editingSchool);
+  //     setSchools(
+  //       schools.map((s) => (s.id === updatedSchool.id ? updatedSchool : s))
+  //     );
+  //     setEditingSchool(null);
+  //   }
+  // };
+  //
+  // const handleDelete = async (id: number) => {
+  //   await deleteSchool(id);
+  //   setSchools(schools.filter((s) => s.id !== id));
+  // };
 
   return (
     <div>

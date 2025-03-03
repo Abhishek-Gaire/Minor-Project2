@@ -1,46 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import AdminHeader from "./AdminHeader";
 import AdminSidebar from "./AdminSidebar";
-import { Outlet } from "react-router-dom";
-
-export const AdminLayout: React.FC = () => {
-  const [isSidebarExpanded, setIsSidebarExpanded] = useState<boolean>(
-    window.innerWidth >= 768
-  );
-
-  useEffect(() => {
-    const handleResize = () => setIsSidebarExpanded(window.innerWidth >= 768);
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  const toggleSidebar = () => {
-    if (window.innerWidth >= 768) {
-      setIsSidebarExpanded((prev) => !prev);
-    }
-  };
-
-  return (
-    <div className="flex h-screen">
-      <AdminSidebar isExpanded={isSidebarExpanded} />
-      <div
-        className={`flex-1 flex flex-col ${
-          isSidebarExpanded ? "ml-64" : "ml-16"
-        } transition-all duration-300`}
-      >
-        <AdminHeader toggleSidebar={toggleSidebar} />
-        <main className="flex-1 p-4 overflow-auto">
-          <Outlet />
-        </main>
-      </div>
-    </div>
-  );
-};
-
 import { Menu, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const Layout = ({ children, role, sidebarItems }) => {
+const AdminLayout = ({ children, role, sidebarItems }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const toggleSidebar = () => {
@@ -153,5 +117,5 @@ const Layout = ({ children, role, sidebarItems }) => {
   );
 };
 
-export default Layout;
-// export default AdminLayout;
+export default AdminLayout;
+

@@ -89,7 +89,7 @@ const Students: React.FC = () => {
   };
 
   return (
-    <div>
+    <div className="ml-10 mt-5">
       <header className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-2xl font-bold">Students</h1>

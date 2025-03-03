@@ -40,7 +40,7 @@ const OnlineClassPage: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gray-900 text-white">
+    <div className="flex flex-col h-screen bg-gray-900 text-white ml-10 mt-5">
       <header className="bg-gray-800 p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
@@ -147,7 +147,7 @@ const OnlineClassPage: React.FC = () => {
       <footer className="bg-gray-800 p-4">
         <div className="flex justify-between items-center">
           <div className="text-sm text-gray-400">
-            <span>1:15:27</span>
+            <span>{new Date().toLocaleTimeString()}</span>
           </div>
           
           <div className="flex space-x-4">

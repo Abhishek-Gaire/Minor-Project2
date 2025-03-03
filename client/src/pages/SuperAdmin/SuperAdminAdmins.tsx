@@ -6,21 +6,21 @@ import {
   TableHead,
   TableBody,
   TableCell,
-} from "shadcn-ui";
+} from "@/components/ui/table.tsx";
+import { Button} from "@/components/ui/button.tsx"
 import {
-  Button,
   Select,
   SelectTrigger,
   SelectValue,
   SelectContent,
   SelectItem,
-} from "shadcn-ui";
-import {
-  fetchAdmins,
-  assignAdminToSchool,
-  resetAdminPassword,
-} from "../../api/adminApi";
-import { fetchSchools } from "../../api/schoolApi";
+} from "@/components/ui/select.tsx";
+// import {
+//   fetchAdmins,
+//   assignAdminToSchool,
+//   resetAdminPassword,
+// } from "../../api/adminApi";
+// import { fetchSchools } from "../../api/schoolApi";
 
 interface Admin {
   id: number;
@@ -42,26 +42,26 @@ const SuperAdminAdmins: React.FC = () => {
     null
   );
 
-  useEffect(() => {
-    const loadData = async () => {
-      const adminsData = await fetchAdmins();
-      const schoolsData = await fetchSchools();
-      setAdmins(adminsData);
-      setSchools(schoolsData);
-    };
-    loadData();
-  }, []);
-
-  const handleAssignSchool = async (adminId: number, schoolId: number) => {
-    const updatedAdmin = await assignAdminToSchool(adminId, schoolId);
-    setAdmins(admins.map((a) => (a.id === adminId ? { ...a, schoolId } : a)));
-    setEditingAdmin(null);
-  };
-
-  const handleResetPassword = async (adminId: number) => {
-    const newPassword = await resetAdminPassword(adminId);
-    setGeneratedPassword(newPassword);
-  };
+  // useEffect(() => {
+  //   const loadData = async () => {
+  //     const adminsData = await fetchAdmins();
+  //     const schoolsData = await fetchSchools();
+  //     setAdmins(adminsData);
+  //     setSchools(schoolsData);
+  //   };
+  //   loadData();
+  // }, []);
+  //
+  // const handleAssignSchool = async (adminId: number, schoolId: number) => {
+  //   const updatedAdmin = await assignAdminToSchool(adminId, schoolId);
+  //   setAdmins(admins.map((a) => (a.id === adminId ? { ...a, schoolId } : a)));
+  //   setEditingAdmin(null);
+  // };
+  //
+  // const handleResetPassword = async (adminId: number) => {
+  //   const newPassword = await resetAdminPassword(adminId);
+  //   setGeneratedPassword(newPassword);
+  // };
 
   return (
     <div>
@@ -117,9 +117,9 @@ const SuperAdminAdmins: React.FC = () => {
               <TableCell>
                 {editingAdmin?.id === admin.id ? (
                   <Button
-                    onClick={() =>
-                      handleAssignSchool(admin.id, editingAdmin.schoolId!)
-                    }
+                    // onClick={() =>
+                    //   handleAssignSchool(admin.id, editingAdmin.schoolId!)
+                    // }
                   >
                     Save
                   </Button>
@@ -131,7 +131,8 @@ const SuperAdminAdmins: React.FC = () => {
                     >
                       Edit School
                     </Button>
-                    <Button onClick={() => handleResetPassword(admin.id)}>
+                    <Button>
+                        {/*// onClick={() => handleResetPassword(admin.id)}>*/}
                       Reset Password
                     </Button>
                   </>

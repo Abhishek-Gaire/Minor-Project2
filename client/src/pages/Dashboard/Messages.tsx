@@ -64,7 +64,7 @@ const MessagesPage: React.FC = () => {
   );
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50">
+    <div className="flex flex-col h-screen bg-gray-50 ml-10 mt-5">
       <header className="bg-white shadow p-4">
         <div className="flex items-center">
           <MessageSquare className="text-blue-500 mr-2" />
