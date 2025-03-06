@@ -9,7 +9,7 @@ import AnalyticsPage from "@/pages/SuperAdmin/AnalyticsPage";
 const superAdminRoutes = [
   { path: "schools", element: <SchoolManagementPage /> },
   { path: "dashboard", element: <DashboardPage /> },
-  { path: "schoolAdmins", element: <SchoolManagementPage /> },
+  { path: "schoolAdmins", element: <AdminManagementPage /> },
   { path: "analytics", element: <AnalyticsPage /> },
   { path: "system", element: <SystemSettingsPage /> },
   { path: "reports", element: <ReportsPage /> },
