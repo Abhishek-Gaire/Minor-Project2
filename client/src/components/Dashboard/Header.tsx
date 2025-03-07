@@ -7,8 +7,9 @@ import {
 import { LogOut, Bell, Menu, User, Settings } from "lucide-react";
 
 import { mockNotifications } from "@/constants/constants";
+import { cn } from "@/lib/utils";
 
-const Header = ({ onLogout, setIsSidebarOpen, isMobile }) => {
+const Header = ({ onLogout, setIsSidebarOpen, isMobile, isSidebarOpen }) => {
   return (
     <header className="bg-white shadow-sm sticky top-0 z-30">
       <div className="flex h-16 items-center justify-between px-4">
@@ -18,7 +19,7 @@ const Header = ({ onLogout, setIsSidebarOpen, isMobile }) => {
             onClick={() => setIsSidebarOpen(true)}
             className="rounded-lg p-2 text-gray-600 hover:bg-gray-100 lg:hidden"
           >
-            <Menu className="h-5 w-5" />
+            <Menu className={cn("h-5 w-5", isSidebarOpen ? "md:hidden" : "")} />
           </button>
           {!isMobile && (
             <button
@@ -64,7 +65,7 @@ const Header = ({ onLogout, setIsSidebarOpen, isMobile }) => {
                 <span className="text-sm font-medium text-school-700">JD</span>
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuContent align="end" className="w-56 cursor-pointer">
               <DropdownMenuItem className="p-2">
                 <User className="h-4 w-4 mr-2" />
                 <span>Profile</span>
