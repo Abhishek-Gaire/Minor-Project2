@@ -2,6 +2,7 @@ import express from "express";
 
 import authRoutes from "./routes/authRoutes";
 import schoolRoutes from "./routes/institutionalRoutes";
+import messageRoutes from "./routes/messageRoutes";
 
 import cookieParser from "cookie-parser";
 
@@ -16,6 +17,7 @@ app.use(cookieParser());
 // Routes
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/schools", schoolRoutes);
+app.use("/api/v1/messages", messageRoutes);
 
 // Start the server
 const PORT = process.env.PORT || 5000;

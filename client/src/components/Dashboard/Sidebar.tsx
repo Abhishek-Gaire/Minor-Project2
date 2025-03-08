@@ -1,56 +1,55 @@
-import { Link, NavLink } from "react-router-dom";
-import {
-  LayoutDashboard,
-  Users,
-  BookOpen,
-  GraduationCap,
-  ClipboardList,
-  MessageCircle,
-  MessageSquare,
-  Video,
-} from "lucide-react";
+import React from "react";
+import { Link } from "react-router-dom";
+import { X as CloseIcon } from "lucide-react";
 
-const navigation = [
-  { name: "Dashboard", to: "/dashboard", icon: LayoutDashboard },
-  { name: "Students", to: "/students", icon: Users },
-  { name: "Courses", to: "/courses", icon: BookOpen },
-  { name: "Grades", to: "/grades", icon: GraduationCap },
-  { name: "Assignments", to: "/assignments", icon: ClipboardList },
-  { name: "Class Chat", to: "/chat", icon: MessageCircle },
-  { name: "Messages", to: "/messages", icon: MessageSquare },
-  { name: "Online Class", to: "/online-class", icon: Video },
-];
+import { adminNavigation } from "@/constants/constants.ts";
+import { cn } from "@/lib/utils.ts";
 
-export function Sidebar() {
+interface SidebarProps {
+  setIsSidebarOpen: (isOpen: boolean) => void;
+  isMobile: boolean;
+}
+
+export const Sidebar: React.FC<SidebarProps> = ({
+  setIsSidebarOpen,
+  isMobile,
+}) => {
   return (
-    <nav className="w-64 bg-white shadow-sm">
-      <div className="h-full px-3 py-4">
-        <ul className="space-y-1">
-          {navigation.map((item) => {
+    <div className="flex h-full flex-col overflow-y-auto bg-white">
+      <div className="flex h-16 items-center justify-between px-4 bg-blue-100">
+        <h1 className="text-xl font-semibold">Smart Class</h1>
+        {!isMobile && (
+          <button
+            onClick={() => setIsSidebarOpen(false)}
+            className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 lg:hidden"
+          >
+            <CloseIcon className="h-5 w-5" />
+          </button>
+        )}
+      </div>
+      <nav className="p-4 h-full">
+        <ul className="space-y-2">
+          {adminNavigation.map((item) => {
             const Icon = item.icon;
             return (
               <li key={item.name}>
-                <NavLink
+                <Link
                   to={item.to}
-                  className={({
-                    isActive,
-                  }) => `flex items-center px-4 py-2 text-sm font-medium rounded-md
-                ${
-                  isActive
-                    ? "bg-indigo-100 text-indigo-700"
-                    : "text-gray-600 hover:bg-gray-50"
-                }`}
+                  className={cn(
+                    "flex items-center p-3 rounded-lg transition-colors",
+                    location.pathname === item.to
+                      ? "bg-blue-100 text-blue-700"
+                      : "text-gray-700 hover:bg-gray-100"
+                  )}
                 >
-                  <Icon className="mr-3 h-5 w-5" />
-                  {item.name}
-                </NavLink>
+                  <Icon size={20} className="mr-3" />
+                  <span>{item.name}</span>
+                </Link>
               </li>
             );
           })}
         </ul>
-      </div>
-    </nav>
+      </nav>
+    </div>
   );
-}
-
-
+};

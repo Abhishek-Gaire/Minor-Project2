@@ -78,4 +78,11 @@ model SuperAdmin {
   @@map("super_admins")
 }
 
-
+model Messages {
+  id        Int      @id @default(autoincrement())
+  sender    String
+  receiver  String
+  content   String
+  timeStamp DateTime @default(now())
+  delivered Boolean  @default(false) // Tracks message delivery status
+}

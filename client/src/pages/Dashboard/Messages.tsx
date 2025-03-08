@@ -20,79 +20,161 @@ import {
 } from "@/components/ui/dropdown-menu.tsx";
 import { Textarea } from "@/components/ui/textarea.tsx";
 
+import { supabase } from "@/lib/supabase-config";
+
 interface Message {
   id: number;
   sender: string;
+  receiver: string;
   content: string;
-  time: string;
+  timestamp: string;
+  delivered: boolean;
   isSelf: boolean;
 }
+const BACKEND_URI = import.meta.env.VITE_BACKEND_URI!;
 
 const MessagesPage: React.FC = () => {
+  // use context here
+  const user = "rajesh";
+  const selectedUser = "Abhishek";
   const messageEndRef = useRef<HTMLDivElement>(null);
   const [activeConversation, setActiveConversation] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
 
   const [messageInput, setMessageInput] = useState("");
+
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
       sender: "Alex Johnson",
-      time: "10:30 AM",
+      receiver: "You",
       content: "Hello! I wanted to ask about the upcoming math test.",
+      timestamp: "10:30 AM",
+      delivered: true,
       isSelf: false,
     },
     {
       id: 2,
       sender: "You",
-      time: "10:32 AM",
+      receiver: "Alex Johnson",
       content: "Hi Alex, of course. What would you like to know?",
+      timestamp: "10:32 AM",
+      delivered: true,
       isSelf: true,
     },
     {
       id: 3,
       sender: "Alex Johnson",
-      time: "10:35 AM",
+      receiver: "You",
       content: "Is it going to cover the recent chapters on calculus?",
+      timestamp: "10:35 AM",
+      delivered: true,
       isSelf: false,
     },
     {
       id: 4,
       sender: "You",
-      time: "10:40 AM",
+      receiver: "Alex Johnson",
       content:
         "Yes, it will cover chapters 5-7 on differential calculus. Make sure to review the practice problems we did last week.",
+      timestamp: "10:40 AM",
+      delivered: true,
       isSelf: true,
     },
     {
       id: 5,
       sender: "Alex Johnson",
-      time: "10:45 AM",
+      receiver: "You",
       content:
         "When is the next math test? I want to make sure I have enough time to prepare.",
+      timestamp: "10:45 AM",
+      delivered: true,
       isSelf: false,
     },
     {
       id: 6,
       sender: "Alex Johnson",
-      time: "10:46 AM",
+      receiver: "You",
       content: "Also, will there be any extra credit opportunities?",
+      timestamp: "10:46 AM",
+      delivered: true,
       isSelf: false,
     },
   ]);
+
   const scrollToBottom = () => {
     messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    fetchAllConversations();
+  }, [user]);
+
+  useEffect(() => {
+    fetchMessages();
+    subscribeToMessages();
+  }, [selectedUser]);
+
+  const subscribeToMessages = () => {
+    const channel = supabase
+      .channel(`private_chat_${user}_${selectedUser}`)
+      .onBroadcast("new_message", (payload: { message: Message }) => {
+        if (
+          payload.message.sender === selectedUser ||
+          payload.message.receiver === selectedUser
+        ) {
+          setMessages((prevMessages) => [...prevMessages, payload.message]);
+        }
+
+        // Mark message as delivered
+        fetch("http://localhost:5000/messages/deliver", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            receiver: user,
+            sender: selectedUser,
+          }),
+        });
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   };
 
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (messageInput.trim() !== "") {
-      // In a real application, you would add the message to the state
-      console.log("Sending message:", messageInput);
-      setMessageInput("");
+      const messageData = {
+        sender: user,
+        receiver: selectedUser,
+        content: messageInput,
+      };
+
+      try {
+        const response = await fetch(`${BACKEND_URI}/api/v1/messages`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(messageData),
+        });
+        const savedMessage = await response.json();
+
+        // Broadcast message using Supabase
+        await supabase.channel(`private_chat_${selectedUser}_${user}`).send({
+          type: "broadcast",
+          event: "new_message",
+          payload: { message: savedMessage },
+        });
+        console.log("Sending message:", messageInput);
+        setMessages((prev) => [...prev, savedMessage]);
+        setMessageInput("");
+      } catch (error) {
+        console.error("Error sending message:", error);
+      }
     }
   };
 
@@ -340,7 +422,7 @@ const MessagesPage: React.FC = () => {
                         message.isSelf ? "text-blue-100" : "text-gray-500"
                       }`}
                     >
-                      {message.time}
+                      {message.timestamp}
                     </div>
                   </div>
                 </div>
