@@ -1,7 +1,6 @@
 import { Request, Response, RequestHandler } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import supabase from "../config/supabase";
 import dotenv from "dotenv";
 import { Prisma, PrismaClient } from "@prisma/client";
 dotenv.config();
@@ -41,6 +40,14 @@ export const login: RequestHandler = async (req: Request, res: Response) => {
       });
       return;
     }
+
+    token = jwt.sign({ id: userExists.id }, JWT_SECRET, { expiresIn: "1h" });
+
+    res.cookie("studentAccessToken", token, {
+      httpOnly: true,
+      secure: true, // Use HTTPS
+      sameSite: "none", // Required for cross-origin requests
+    });
   } else {
     userExists = await prisma.teacher.findFirst({ where: { email } });
     if (!userExists) {
@@ -59,20 +66,22 @@ export const login: RequestHandler = async (req: Request, res: Response) => {
       });
       return;
     }
-  }
-  token = jwt.sign({ id: userExists.id }, JWT_SECRET, { expiresIn: "1h" });
 
-  res.cookie("accessToken", token, {
-    httpOnly: true,
-    secure: true, // Use HTTPS
-    sameSite: "none", // Required for cross-origin requests
-  });
+    token = jwt.sign({ id: userExists.id }, JWT_SECRET, { expiresIn: "1h" });
+
+    res.cookie("teacherAccessToken", token, {
+      httpOnly: true,
+      secure: true, // Use HTTPS
+      sameSite: "none", // Required for cross-origin requests
+    });
+  }
 
   res.status(200).json({
     message: "Login successful",
     accessToken: token,
     data: {
       userExists,
+      role: role.toLowerCase(),
     },
   });
   return;
@@ -168,7 +177,7 @@ export const changePassword: RequestHandler = async (
 
   let user;
 
-  if (role === "Student") {
+  if (role === "student") {
     user = await prisma.student.findFirst({ where: { id: userId } });
   } else {
     user = await prisma.teacher.findFirst({ where: { id: userId } });
@@ -206,15 +215,38 @@ export const verifyUser: RequestHandler = async (
     if (!user) {
       res.status(404).json({
         success: false,
-        message: "User Not Found",
+        message: "Authorization Failed",
       });
       return;
     }
 
+    let userDetails;
+    if ((req as any).role === "student") {
+      userDetails = await prisma.student.findUnique({
+        where: { id: user.id },
+      });
+    } else if ((req as any).role === "teacher") {
+      userDetails = await prisma.teacher.findUnique({
+        where: { id: user.id },
+      });
+    } else {
+      userDetails = null;
+    }
+
+    if (!userDetails) {
+      res.status(404).json({
+        success: false,
+        message: "User Not Found",
+      });
+      return;
+    }
     res.status(200).json({
       success: true,
       message: "User Verified Successfully",
-      user,
+      data: {
+        ...userDetails,
+        role: (req as any).role,
+      },
     });
     return;
   } catch (error: any) {

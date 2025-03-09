@@ -8,7 +8,12 @@ export const getPrivateMessages: RequestHandler = async (
   res: Response
 ) => {
   try {
-    const { sender, receiver } = req.query;
+    const sender = Array.isArray(req.query.sender)
+      ? req.query.sender[0]
+      : req.query.sender;
+    const receiver = Array.isArray(req.query.receiver)
+      ? req.query.receiver[0]
+      : req.query.receiver;
     if (!sender || !receiver) {
       throw new CustomError("Messengers are required", 400);
     }

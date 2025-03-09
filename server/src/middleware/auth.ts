@@ -6,6 +6,7 @@ dotenv.config();
 
 interface AuthRequest extends Request {
   user?: any;
+  role?: string;
 }
 
 export const authenticate = (
@@ -13,7 +14,8 @@ export const authenticate = (
   res: Response,
   next: NextFunction
 ) => {
-  const token = req.cookies.accessToken;
+  const token =
+    req.cookies.studentAccessToken || req.cookies.teacherAccessToken;
 
   if (!token) {
     res
@@ -25,6 +27,7 @@ export const authenticate = (
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET!);
     req.user = decoded;
+    req.role = req.cookies.studentAccessToken ? "student" : "teacher";
     next();
   } catch (err) {
     res.status(400).json({ success: false, message: "Invalid token" });

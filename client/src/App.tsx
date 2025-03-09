@@ -1,6 +1,6 @@
 import { RouterProvider } from "react-router-dom";
 import { router } from "./routes"; // Import the routes
-import { AuthProvider } from "./contexts/AuthContext.tsx";
+import { AuthProvider } from "./contexts/AuthProvider.tsx";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"; // Import Toastify styles
 

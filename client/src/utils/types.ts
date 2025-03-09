@@ -10,6 +10,7 @@ export interface ChatRoomProps {
 
 export interface User {
   id: string;
+  name?: string;
   email: string;
   role?: string; // Optional, depending on your application
 }
@@ -28,4 +29,5 @@ export interface AuthContextType {
     role?: string
   ) => Promise<LoginResponse>;
   logout: () => void;
+  refreshAuth: () => void;
 }

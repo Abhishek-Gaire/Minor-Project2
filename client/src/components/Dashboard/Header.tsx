@@ -8,8 +8,24 @@ import { LogOut, Bell, Menu, User, Settings } from "lucide-react";
 
 import { mockNotifications } from "@/constants/constants";
 import { cn } from "@/lib/utils";
+import { useNavigate } from "react-router-dom";
 
-const Header = ({ onLogout, setIsSidebarOpen, isMobile, isSidebarOpen }) => {
+const Header = ({
+  user,
+  onLogout,
+  setIsSidebarOpen,
+  isMobile,
+  isSidebarOpen,
+}) => {
+  const navigate = useNavigate();
+
+  const getInitials = (name) => {
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("");
+  };
+
   return (
     <header className="bg-white shadow-sm sticky top-0 z-30">
       <div className="flex h-16 items-center justify-between px-4">
@@ -62,15 +78,23 @@ const Header = ({ onLogout, setIsSidebarOpen, isMobile, isSidebarOpen }) => {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button className="h-8 w-8 rounded-full bg-school-100 flex items-center justify-center hover:bg-school-200 transition-colors">
-                <span className="text-sm font-medium text-school-700">JD</span>
+                <span className="text-sm font-medium text-school-700">
+                  {/* {getInitials(user.name)} */}
+                </span>
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56 cursor-pointer">
-              <DropdownMenuItem className="p-2">
+              <DropdownMenuItem
+                className="p-2"
+                onClick={() => navigate("/dashboard/profile")}
+              >
                 <User className="h-4 w-4 mr-2" />
                 <span>Profile</span>
               </DropdownMenuItem>
-              <DropdownMenuItem className="p-2">
+              <DropdownMenuItem
+                className="p-2"
+                onClick={() => navigate("/dashboard/settings")}
+              >
                 <Settings className="h-4 w-4 mr-2" />
                 <span>Settings</span>
               </DropdownMenuItem>

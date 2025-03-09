@@ -5,15 +5,16 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 
-import { useAuth } from "../../contexts/UseAuth.tsx";
+import { useAuth } from "../../contexts/useAuth.ts";
 import Layout from "../../components/Layout.tsx";
 import { loginSchema } from "../../constants/types.ts";
+import { useEffect } from "react";
 
 type LoginFormInputs = z.infer<typeof loginSchema>;
 
 const Login = () => {
   const navigate = useNavigate();
-  const { user, login } = useAuth();
+  const { user, login, refreshAuth } = useAuth();
 
   const {
     register,
@@ -27,6 +28,10 @@ const Login = () => {
       role: "Student",
     },
   });
+
+  useEffect(() => {
+    refreshAuth();
+  }, []);
 
   if (user) {
     return <Navigate to={`/dashboard/${user?.role}`} replace />;

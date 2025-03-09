@@ -1,28 +1,16 @@
 import React, { useEffect, useRef, useState } from "react";
-import {
-  MessageSquare,
-  Search,
-  Clock,
-  MoreHorizontal,
-  PaperclipIcon,
-  Send,
-} from "lucide-react";
-import { Input } from "@/components/ui/input.tsx";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs.tsx";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar.tsx";
-import { Badge } from "@/components/ui/badge.tsx";
-import { Button } from "@/components/ui/button.tsx";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu.tsx";
-import { Textarea } from "@/components/ui/textarea.tsx";
 
 import { supabase } from "@/lib/supabase-config";
+import { RealtimeChannel } from "@supabase/supabase-js";
+import MessageInput from "@/components/Messages/MessageInput";
+import MessagesList from "@/components/Messages/MessageList";
+import ChatHeader from "@/components/Messages/ChatHeader";
+import FilteredConversations from "@/components/Messages/FilteredConversation";
+import MessagePageHeader from "@/components/Messages/MessagePageHeader";
+import { cn } from "@/lib/utils";
+import { useAuth } from "@/contexts/useAuth";
 
-interface Message {
+export interface Message {
   id: number;
   sender: string;
   receiver: string;
@@ -35,13 +23,12 @@ const BACKEND_URI = import.meta.env.VITE_BACKEND_URI!;
 
 const MessagesPage: React.FC = () => {
   // use context here
-  const user = "rajesh";
-  const selectedUser = "Abhishek";
+  const { user } = useAuth();
   const messageEndRef = useRef<HTMLDivElement>(null);
+  const channelRef = useRef<RealtimeChannel | null>(null);
   const [activeConversation, setActiveConversation] = useState(null);
+  const [selectedUser, setSelectedUser] = useState("Abhishek");
   const [searchQuery, setSearchQuery] = useState("");
-
-  const [messageInput, setMessageInput] = useState("");
 
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -101,82 +88,98 @@ const MessagesPage: React.FC = () => {
       isSelf: false,
     },
   ]);
+  const [loadingMessages, setLoadingMessages] = useState(false);
 
   const scrollToBottom = () => {
     messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+
+  const channelName = `private_chat_${user.name}_${selectedUser}`;
+  const channel = supabase.channel(channelName);
 
   useEffect(() => {
     fetchAllConversations();
   }, [user]);
 
   useEffect(() => {
-    fetchMessages();
-    subscribeToMessages();
+    fetchPrivateMessages();
   }, [selectedUser]);
 
-  const subscribeToMessages = () => {
-    const channel = supabase
-      .channel(`private_chat_${user}_${selectedUser}`)
-      .onBroadcast("new_message", (payload: { message: Message }) => {
-        if (
-          payload.message.sender === selectedUser ||
-          payload.message.receiver === selectedUser
-        ) {
-          setMessages((prevMessages) => [...prevMessages, payload.message]);
-        }
+  const fetchAllConversations = async () => {
+    try {
+      const response = await fetch(
+        `${BACKEND_URI}/api/v1/messages/${user.name}`
+      );
+      const responseData = await response.json();
+      console.log(responseData);
+      // setActiveConversation(responseData.data);
+    } catch (error) {
+      console.error("Error While Fetching all conversations");
+    }
+  };
 
-        // Mark message as delivered
-        fetch("http://localhost:5000/messages/deliver", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            receiver: user,
-            sender: selectedUser,
-          }),
-        });
-      })
+  const fetchPrivateMessages = async () => {
+    setLoadingMessages(true);
+    try {
+      const response = await fetch(
+        `${BACKEND_URI}/api/v1/messages?sender=${user.name}&receiver=${selectedUser}`
+      );
+      const data = await response.json();
+      // setMessages(data);
+
+      // Mark messages as delivered when user comes online
+      await fetch(`${BACKEND_URI}/api/v1/messages/deliver`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ receiver: user, sender: selectedUser }),
+      });
+    } catch (error) {
+      console.error("Error fetching messages:", error);
+    } finally {
+      setLoadingMessages(false);
+    }
+  };
+
+  useEffect(() => {
+    if (channelRef.current) {
+      supabase.removeChannel(channelRef.current);
+    }
+
+    const channel = supabase
+      .channel(`private_chat_${user.name}_${selectedUser}`)
+      .on(
+        "broadcast",
+        { event: "new-message" },
+        (payload: { message: Message }) => {
+          if (
+            payload.message.sender === selectedUser ||
+            payload.message.receiver === selectedUser
+          ) {
+            setMessages((prevMessages) => [...prevMessages, payload.message]);
+          }
+
+          // Mark message as delivered
+          fetch("http://localhost:5000/messages/deliver", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ receiver: user, sender: selectedUser }),
+          });
+        }
+      )
       .subscribe();
 
+    channelRef.current = channel;
+
     return () => {
-      supabase.removeChannel(channel);
+      if (channelRef.current) {
+        supabase.removeChannel(channelRef.current);
+      }
     };
-  };
+  }, [selectedUser]);
 
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
-
-  const handleSendMessage = async () => {
-    if (messageInput.trim() !== "") {
-      const messageData = {
-        sender: user,
-        receiver: selectedUser,
-        content: messageInput,
-      };
-
-      try {
-        const response = await fetch(`${BACKEND_URI}/api/v1/messages`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(messageData),
-        });
-        const savedMessage = await response.json();
-
-        // Broadcast message using Supabase
-        await supabase.channel(`private_chat_${selectedUser}_${user}`).send({
-          type: "broadcast",
-          event: "new_message",
-          payload: { message: savedMessage },
-        });
-        console.log("Sending message:", messageInput);
-        setMessages((prev) => [...prev, savedMessage]);
-        setMessageInput("");
-      } catch (error) {
-        console.error("Error sending message:", error);
-      }
-    }
-  };
 
   const conversations = [
     {
@@ -276,187 +279,48 @@ const MessagesPage: React.FC = () => {
     conversation.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const getAvatarColor = (type) => {
-    switch (type) {
-      case "student":
-        return "bg-blue-500";
-      case "teacher":
-        return "bg-purple-500";
-      case "group":
-        return "bg-green-500";
-      default:
-        return "bg-gray-500";
-    }
-  };
-
   return (
-    <>
-      <div className="flex flex-col h-screen bg-gray-50 ml-10 mt-5">
-        <header className="bg-white shadow p-4">
-          <div className="flex items-center">
-            <MessageSquare className="text-blue-500 mr-2" />
-            <h1 className="text-xl font-semibold">Messages</h1>
-          </div>
-        </header>
-
-        <div className="p-4">
-          <div className="relative">
-            <Search
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-              size={18}
-            />
-            <Input
-              type="text"
-              placeholder="Search conversations"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-        </div>
-
-        <Tabs defaultValue="all" className="p-4">
-          <TabsList className="grid grid-cols-3 mb-4">
-            <TabsTrigger value="all">All</TabsTrigger>
-            <TabsTrigger value="unread">Unread</TabsTrigger>
-            <TabsTrigger value="flagged">Flagged</TabsTrigger>
-          </TabsList>
-        </Tabs>
-
+    <div className="flex h-screen overflow-hidden">
+      <div
+        className={cn(
+          "border-r bg-white flex flex-col",
+          activeConversation == null ? "w-full" : "w-80"
+        )}
+      >
+        <MessagePageHeader
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+        />
         <div className="flex-1 overflow-y-auto">
           {filteredConversations.map((conversation) => (
-            <div
+            <FilteredConversations
               key={conversation.id}
-              className={`p-3 cursor-pointer hover:bg-gray-100 flex items-start gap-3 border-b ${
-                activeConversation === conversation.id ? "bg-gray-100" : ""
-              }`}
-              onClick={() => setActiveConversation(conversation.id)}
-            >
-              <Avatar className={getAvatarColor(conversation.type)}>
-                <AvatarFallback>{conversation.avatar}</AvatarFallback>
-              </Avatar>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between">
-                  <div className="font-medium truncate">
-                    {conversation.name}
-                  </div>
-                  <div className="text-xs text-gray-500">
-                    {conversation.time}
-                  </div>
-                </div>
-                <div className="text-sm truncate text-gray-500">
-                  {conversation.lastMessage}
-                </div>
-              </div>
-              {conversation.unread > 0 && (
-                <Badge className="rounded-full bg-blue-500">
-                  {conversation.unread}
-                </Badge>
-              )}
-            </div>
+              conversation={conversation}
+              setActiveConversation={setActiveConversation}
+              setSelectedUser={setSelectedUser}
+              activeConversation={activeConversation}
+            />
           ))}
         </div>
       </div>
 
-      {activeConversation && (
+      {activeConversation !== null && (
         <div className="flex-1 flex flex-col bg-gray-50">
           {/* Chat header */}
-          <div className="bg-white p-4 border-b flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Avatar className={getAvatarColor("student")}>
-                <AvatarFallback>AJ</AvatarFallback>
-              </Avatar>
-              <div>
-                <div className="font-medium">Alex Johnson</div>
-                <div className="text-xs text-gray-500 flex items-center">
-                  <div className="bg-green-500 h-2 w-2 rounded-full mr-1"></div>
-                  Online
-                </div>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button variant="outline" size="icon">
-                <Clock className="h-4 w-4" />
-              </Button>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="icon">
-                    <MoreHorizontal className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem>View Profile</DropdownMenuItem>
-                  <DropdownMenuItem>Mark as Unread</DropdownMenuItem>
-                  <DropdownMenuItem>Mute Notifications</DropdownMenuItem>
-                  <DropdownMenuItem>Archive Conversation</DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          </div>
+          <ChatHeader />
 
-          {/* Messages */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
-            {messages.map((message) => (
-              <div
-                key={message.id}
-                className={`flex ${
-                  message.isSelf ? "justify-end" : "justify-start"
-                }`}
-              >
-                <div
-                  className={`max-w-3/4 ${
-                    message.isSelf
-                      ? "bg-blue-500 text-white rounded-l-lg rounded-tr-lg"
-                      : "bg-white rounded-r-lg rounded-tl-lg border"
-                  } p-3 shadow-sm`}
-                >
-                  {!message.isSelf && (
-                    <div className="font-medium text-xs mb-1">
-                      {message.sender}
-                    </div>
-                  )}
-                  <div className="space-y-1">
-                    <div>{message.content}</div>
-                    <div
-                      className={`text-xs text-right ${
-                        message.isSelf ? "text-blue-100" : "text-gray-500"
-                      }`}
-                    >
-                      {message.timestamp}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+          <MessagesList loading={loadingMessages} messages={messages} />
 
           {/* Message input */}
-          <div className="bg-white p-4 border-t">
-            <div className="flex space-x-2">
-              <Button variant="outline" size="icon">
-                <PaperclipIcon className="h-4 w-4" />
-              </Button>
-              <Textarea
-                value={messageInput}
-                onChange={(e) => setMessageInput(e.target.value)}
-                placeholder="Type a message..."
-                className="min-h-10 flex-1"
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                    handleSendMessage();
-                  }
-                }}
-              />
-              <Button onClick={handleSendMessage}>
-                <Send className="h-4 w-4 mr-2" />
-                Send
-              </Button>
-            </div>
-          </div>
+          <MessageInput
+            recipientId={selectedUser}
+            senderId={user.name}
+            channel={channel}
+            setMessages={setMessages}
+          />
         </div>
       )}
-    </>
+    </div>
   );
 };
 

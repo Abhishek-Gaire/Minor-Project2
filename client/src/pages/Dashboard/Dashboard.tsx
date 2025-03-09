@@ -3,14 +3,18 @@ import { Users, BookOpen, Clock, Calendar } from "lucide-react";
 
 import StatsCard from "@/components/Dashboard/DashboardHome/StatsCard";
 import { useParams } from "react-router-dom";
+import { useAuth } from "@/contexts/useAuth";
 
 const Dashboard: React.FC = () => {
   const { role } = useParams();
+  const { user } = useAuth();
   return (
     <div className="ml-10 mt-5">
       <header className="mb-8">
         <h1 className="text-2xl font-bold">Dashboard</h1>
-        <p className="text-gray-600">Welcome back! {role}</p>
+        <p className="text-gray-600">
+          Welcome back! {role}: {user.name}
+        </p>
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">

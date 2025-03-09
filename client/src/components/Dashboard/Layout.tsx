@@ -4,18 +4,15 @@ import { Sheet, SheetContent } from "@/components/ui/sheet";
 
 import { Sidebar } from "@/components/Dashboard/Sidebar.tsx";
 import Header from "./Header.tsx";
-import { useAuth } from "@/contexts/UseAuth.tsx";
+import { useAuth } from "@/contexts/useAuth.ts";
 import { cn } from "@/lib/utils.ts";
 import { useIsMobile } from "@/hooks/use-mobile.ts";
+import { Loader2 } from "lucide-react";
 
 const Layout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const isMobile = useIsMobile();
-  const { user, logout } = useAuth();
-
-  // if (!user) {
-  //   return <Navigate to="/login" replace />;
-  // }
+  const { user, loading, logout, refreshAuth } = useAuth();
 
   const location = useLocation();
 
@@ -32,6 +29,23 @@ const Layout = () => {
       setIsSidebarOpen(false);
     }
   }, [location, isMobile]);
+
+  useEffect(() => {
+    refreshAuth();
+  }, []);
+  // // Only redirect if we're not loading AND there's no user
+  // if (!loading && !user) {
+  //   return <Navigate to="/login" replace />;
+  // }
+
+  // // Optional: Show loading state while verifying
+  // if (loading) {
+  //   return (
+  //     <div>
+  //       <Loader2 className="h-8 w-8 mr-2 animate-spin" />
+  //     </div>
+  //   ); // Or your loading component
+  // }
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -58,6 +72,7 @@ const Layout = () => {
         )}
       >
         <Header
+          user={user}
           onLogout={logout}
           setIsSidebarOpen={setIsSidebarOpen}
           isMobile={isMobile}
