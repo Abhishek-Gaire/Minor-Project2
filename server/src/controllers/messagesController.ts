@@ -33,7 +33,7 @@ export const getPrivateMessages: RequestHandler = async (
 
     res.status(200).json({
       success: true,
-      message: "Messages Fetched",
+      message: "Private Messages Fetched",
       data: messages,
     });
     return;
@@ -69,6 +69,7 @@ export const addPrivateMessage: RequestHandler = async (
     res.status(201).json({
       success: true,
       message: "Message Added Successfully",
+      data: newMessage,
     });
     return;
   } catch (error) {
@@ -89,13 +90,14 @@ export const addPrivateMessagesDeliver: RequestHandler = async (
 ) => {
   try {
     const { receiver, sender } = req.body;
+
     if (!sender || !receiver) {
       throw new CustomError("Messengers are required", 400);
     }
 
     const updatedMessages = await prisma.messages.updateMany({
       where: {
-        receiver,
+        receiver: receiver.name,
         sender,
         delivered: false, // Only update undelivered messages
       },
@@ -133,7 +135,10 @@ export const getAllPrivateMessages: RequestHandler = async (
 
     const allMessages = await prisma.messages.findMany({
       where: {
-        sender: user,
+        OR: [
+          { sender: user }, // sent messages
+          { receiver: user }, // received messages
+        ],
       },
       orderBy: {
         timeStamp: "desc",
@@ -156,11 +161,14 @@ export const getAllPrivateMessages: RequestHandler = async (
     if (!recentMessages) {
       throw new CustomError("Recent Messages Not Found", 404);
     }
-
+    let students;
+    if (recentMessages.length === 0) {
+      students = await prisma.student.findMany();
+    }
     res.status(200).json({
       success: true,
-      messages: "Recent Messages Found",
-      data: recentMessages,
+      messages: "All Recent Messages Found",
+      data: { recentMessages, students },
     });
     return;
   } catch (error) {

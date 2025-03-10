@@ -79,7 +79,7 @@ const Header = ({
             <DropdownMenuTrigger asChild>
               <button className="h-8 w-8 rounded-full bg-school-100 flex items-center justify-center hover:bg-school-200 transition-colors">
                 <span className="text-sm font-medium text-school-700">
-                  {/* {getInitials(user.name)} */}
+                  {getInitials(user.name)}
                 </span>
               </button>
             </DropdownMenuTrigger>

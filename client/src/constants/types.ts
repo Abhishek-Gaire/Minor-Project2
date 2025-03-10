@@ -48,3 +48,13 @@ export const loginSchema = z.object({
   password: z.string().min(6, "Password must be at least 6 characters."),
   role: z.enum(["Student", "Teacher"], { message: "Role is required." }),
 });
+
+export interface Message {
+  id: number;
+  sender: string;
+  receiver: string;
+  content: string;
+  timestamp: string;
+  delivered: boolean;
+  isSelf: boolean;
+}

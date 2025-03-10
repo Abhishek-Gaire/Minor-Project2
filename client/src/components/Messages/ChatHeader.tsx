@@ -9,7 +9,7 @@ import {
 
 import { Clock, MoreHorizontal } from "lucide-react";
 
-const ChatHeader = () => {
+const ChatHeader = ({ selectedUser }) => {
   const getAvatarColor = (type) => {
     switch (type) {
       case "student":
@@ -20,15 +20,20 @@ const ChatHeader = () => {
         return "bg-gray-500";
     }
   };
-
+  const getInitials = (name) => {
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("");
+  };
   return (
     <div className="bg-white p-4 border-b flex items-center justify-between">
       <div className="flex items-center gap-3">
         <Avatar className={getAvatarColor("student")}>
-          <AvatarFallback>AJ</AvatarFallback>
+          <AvatarFallback>{getInitials(selectedUser)}</AvatarFallback>
         </Avatar>
         <div>
-          <div className="font-medium">Alex Johnson</div>
+          <div className="font-medium">{selectedUser}</div>
           <div className="text-xs text-gray-500 flex items-center">
             <div className="bg-green-500 h-2 w-2 rounded-full mr-1"></div>
             Online

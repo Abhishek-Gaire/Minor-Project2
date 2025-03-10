@@ -4,7 +4,7 @@ import { Loader2, PaperclipIcon, Send } from "lucide-react";
 import { Button } from "../ui/button";
 import { Textarea } from "../ui/textarea";
 import { RealtimeChannel } from "@supabase/supabase-js";
-import { Message } from "@/pages/Dashboard/Messages";
+import { Message } from "@/constants/types";
 
 interface MessageInputProps {
   recipientId: string;
@@ -39,8 +39,9 @@ const MessageInput = ({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(messageData),
       });
-      const savedMessage = await response.json();
-
+      const responseData = await response.json();
+      console.log(responseData);
+      const savedMessage = responseData.data;
       // Broadcast message using Supabase
       channel.send({
         type: "broadcast",
