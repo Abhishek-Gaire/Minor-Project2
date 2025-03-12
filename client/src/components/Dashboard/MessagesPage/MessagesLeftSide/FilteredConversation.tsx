@@ -1,5 +1,7 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar.tsx";
 import { Badge } from "@/components/ui/badge.tsx";
+import { useAuth } from "@/contexts/useAuth";
+import { getInitials, getTimeDifference } from "@/lib/utils";
 
 const FilteredConversations = ({
   conversation,
@@ -7,6 +9,11 @@ const FilteredConversations = ({
   activeConversation,
   setSelectedUser,
 }) => {
+  const { user } = useAuth();
+  const name =
+    user.name === conversation.receiver
+      ? conversation.sender
+      : conversation.receiver;
   const getAvatarColor = (type) => {
     switch (type) {
       case "student":
@@ -20,7 +27,7 @@ const FilteredConversations = ({
 
   const handleConversationClick = (conversation) => {
     setActiveConversation(conversation.id);
-    setSelectedUser(conversation.name);
+    setSelectedUser(name);
   };
 
   return (
@@ -32,15 +39,17 @@ const FilteredConversations = ({
       onClick={() => handleConversationClick(conversation)}
     >
       <Avatar className={getAvatarColor(conversation.type)}>
-        <AvatarFallback>{conversation.avatar}</AvatarFallback>
+        <AvatarFallback>{getInitials(name)}</AvatarFallback>
       </Avatar>
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between">
-          <div className="font-medium truncate">{conversation.name}</div>
-          <div className="text-xs text-gray-500">{conversation.time}</div>
+          <div className="font-medium truncate">{name}</div>
+          <div className="text-xs text-gray-500">
+            {getTimeDifference(conversation.timeStamp)}
+          </div>
         </div>
         <div className="text-sm truncate text-gray-500">
-          {conversation.lastMessage}
+          {conversation.content}
         </div>
       </div>
       {conversation.unread > 0 && (

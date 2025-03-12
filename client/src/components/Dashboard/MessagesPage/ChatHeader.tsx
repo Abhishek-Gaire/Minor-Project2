@@ -6,26 +6,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu.tsx";
+import { getAvatarColor, getInitials } from "@/lib/utils";
 
 import { Clock, MoreHorizontal } from "lucide-react";
 
 const ChatHeader = ({ selectedUser }) => {
-  const getAvatarColor = (type) => {
-    switch (type) {
-      case "student":
-        return "bg-blue-500";
-      case "teacher":
-        return "bg-purple-500";
-      default:
-        return "bg-gray-500";
-    }
-  };
-  const getInitials = (name) => {
-    return name
-      .split(" ")
-      .map((n) => n[0])
-      .join("");
-  };
   return (
     <div className="bg-white p-4 border-b flex items-center justify-between">
       <div className="flex items-center gap-3">

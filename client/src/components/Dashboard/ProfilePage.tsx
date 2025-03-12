@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   User,
   Settings,
@@ -11,15 +11,17 @@ import {
   Save,
   ChevronRight,
 } from "lucide-react";
+import { useAuth } from "@/contexts/useAuth";
 
 const ProfilePage = ({ initialActiveTab = "profile" }) => {
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState(initialActiveTab);
 
   // Demo user data
   const [userData, setUserData] = useState({
-    name: "Alex Johnson",
-    email: "alex.johnson@example.com",
-    role: "Teacher",
+    name: user.name,
+    email: user.email,
+    role: user.role,
     subject: "Mathematics",
     bio: "Passionate math educator with 5 years of experience teaching high school algebra and calculus.",
     avatar: "/api/placeholder/150/150",

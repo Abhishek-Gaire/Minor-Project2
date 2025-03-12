@@ -1,18 +1,9 @@
 import { useAuth } from "@/contexts/useAuth";
-import { cn } from "@/lib/utils";
+import { cn, getTimeDifference } from "@/lib/utils";
 
 const Message = ({ message }) => {
   const { user } = useAuth();
 
-  const formatTime = (timestamp: string): string => {
-    const date = new Date(timestamp);
-    return date.toLocaleTimeString("en-US", {
-      hour: "2-digit",
-      minute: "2-digit",
-
-      hour12: true,
-    });
-  };
   return (
     <div
       key={message.id}
@@ -40,7 +31,7 @@ const Message = ({ message }) => {
               user.name === message.sender ? "text-blue-100" : "text-gray-500"
             )}
           >
-            {formatTime(message.timeStamp)}
+            {getTimeDifference(message.timeStamp)}
           </div>
         </div>
       </div>

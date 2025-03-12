@@ -122,7 +122,14 @@ export const addPrivateMessagesDeliver: RequestHandler = async (
     return;
   }
 };
-
+type Message = {
+  id: number;
+  sender: string;
+  receiver: string;
+  content: string;
+  timeStamp: Date;
+  delivered: boolean;
+};
 export const getAllPrivateMessages: RequestHandler = async (
   req: Request,
   res: Response
@@ -148,27 +155,46 @@ export const getAllPrivateMessages: RequestHandler = async (
       throw new CustomError("No Messages Found for the current user", 404);
     }
 
-    // Group messages by receiver and select the most recent one for each receiver
-    const recentMessagesByReceiver = allMessages.reduce((acc, message) => {
-      if (!acc.has(message.receiver)) {
-        acc.set(message.receiver, message);
-      }
-      return acc;
-    }, new Map<string, (typeof allMessages)[0]>()); // Use Map for better type inference);
-
-    // Convert the object back to an array
-    const recentMessages = Object.values(recentMessagesByReceiver);
+    // Group messages by sender-receiver pair and keep only the latest message
+    const recentMessages: Message[] = Object.values(
+      allMessages.reduce<Record<string, Message>>((acc, message) => {
+        const key = `${message.sender}-${message.receiver}`;
+        if (
+          !acc[key] ||
+          new Date(message.timeStamp).getTime() >
+            new Date(acc[key].timeStamp).getTime()
+        ) {
+          acc[key] = message; // Store the latest message for this pair
+        }
+        return acc;
+      }, {})
+    );
     if (!recentMessages) {
       throw new CustomError("Recent Messages Not Found", 404);
     }
-    let students;
-    if (recentMessages.length === 0) {
-      students = await prisma.student.findMany();
+    console.log(allMessages);
+    console.log(recentMessages);
+
+    // Remove duplicates where sender-receiver pair is already reversed in the list
+    const filteredMessages: Message[] = [];
+    const seenPairs = new Set<string>();
+
+    for (const message of recentMessages) {
+      const key = `${message.sender}-${message.receiver}`;
+      const reverseKey = `${message.receiver}-${message.sender}`;
+
+      if (!seenPairs.has(reverseKey)) {
+        filteredMessages.push(message);
+        seenPairs.add(key);
+      }
     }
+    console.log(filteredMessages);
+    const students = await prisma.student.findMany();
+
     res.status(200).json({
       success: true,
       messages: "All Recent Messages Found",
-      data: { recentMessages, students },
+      data: { filteredMessages, students },
     });
     return;
   } catch (error) {

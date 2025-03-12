@@ -67,7 +67,7 @@ export const login: RequestHandler = async (req: Request, res: Response) => {
       return;
     }
 
-    token = jwt.sign({ id: userExists.id }, JWT_SECRET, { expiresIn: "1h" });
+    token = jwt.sign({ id: userExists.id }, JWT_SECRET, { expiresIn: "24h" });
 
     res.cookie("teacherAccessToken", token, {
       httpOnly: true,
@@ -80,7 +80,7 @@ export const login: RequestHandler = async (req: Request, res: Response) => {
     message: "Login successful",
     accessToken: token,
     data: {
-      userExists,
+      ...userExists,
       role: role.toLowerCase(),
     },
   });

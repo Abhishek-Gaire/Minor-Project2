@@ -4,13 +4,11 @@ import { Loader2, PaperclipIcon, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { RealtimeChannel } from "@supabase/supabase-js";
-import { Message } from "@/constants/types";
 
 interface MessageInputProps {
   recipientId: string;
   senderId: string;
   channel: RealtimeChannel;
-  setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
 }
 
 const BACKEND_URI = import.meta.env.VITE_BACKEND_URI!;
@@ -19,7 +17,6 @@ const MessageInput = ({
   recipientId,
   senderId,
   channel,
-  setMessages,
 }: MessageInputProps) => {
   const [messageInput, setMessageInput] = useState("");
   const [sending, setSending] = useState(false);
@@ -49,7 +46,7 @@ const MessageInput = ({
         payload: { message: savedMessage },
       });
       console.log("Sending message:", messageInput);
-      setMessages((prev) => [...prev, savedMessage]);
+
       setMessageInput("");
     } catch (error) {
       console.error("Error sending message:", error);

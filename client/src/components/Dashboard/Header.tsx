@@ -7,7 +7,7 @@ import {
 import { LogOut, Bell, Menu, User, Settings } from "lucide-react";
 
 import { mockNotifications } from "@/constants/constants";
-import { cn } from "@/lib/utils";
+import { cn, getInitials } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 
 const Header = ({
@@ -18,13 +18,6 @@ const Header = ({
   isSidebarOpen,
 }) => {
   const navigate = useNavigate();
-
-  const getInitials = (name) => {
-    return name
-      .split(" ")
-      .map((n) => n[0])
-      .join("");
-  };
 
   return (
     <header className="bg-white shadow-sm sticky top-0 z-30">

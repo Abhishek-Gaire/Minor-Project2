@@ -1,5 +1,5 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar.tsx";
-import { cn } from "@/lib/utils";
+import { cn, getInitials } from "@/lib/utils";
 
 const StudentsList = ({
   student,
@@ -9,12 +9,6 @@ const StudentsList = ({
   setSelectedUser,
 }) => {
   const name = student.name;
-  const getInitials = (name) => {
-    return name
-      .split(" ")
-      .map((n) => n[0])
-      .join("");
-  };
 
   const handleStudentClick = (student) => {
     setActiveConversation(student.id);
