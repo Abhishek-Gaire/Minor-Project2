@@ -16,11 +16,7 @@ const MessagesList = ({ messages, loading, selectedUser }) => {
   return (
     <div className="flex-1 overflow-y-auto p-4 space-y-4">
       {messages.map((message) => (
-        <Message
-          message={message}
-          key={message.id}
-          selectedUser={selectedUser}
-        />
+        <Message message={message} key={message.id} />
       ))}
     </div>
   );

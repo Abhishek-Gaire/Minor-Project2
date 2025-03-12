@@ -1,7 +1,7 @@
 import { useAuth } from "@/contexts/useAuth";
 import { cn } from "@/lib/utils";
 
-const Message = ({ message, selectedUser }) => {
+const Message = ({ message }) => {
   const { user } = useAuth();
 
   const formatTime = (timestamp: string): string => {

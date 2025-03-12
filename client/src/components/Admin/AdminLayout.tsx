@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useState } from "react";
+import { useParams, Navigate } from "react-router-dom";
 import AdminHeader from "./AdminHeader";
 import AdminSidebar from "./AdminSidebar";
 
@@ -9,6 +9,12 @@ import { Outlet } from "react-router-dom";
 const AdminLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const { role } = useParams();
+
+  // Add role validation
+  if (role !== "admin" && role !== "superadmin") {
+    return <Navigate to="/" replace />;
+  }
+
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };

@@ -1,16 +1,17 @@
-import React, { act, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import { supabase } from "@/lib/supabase-config";
 import { RealtimeChannel } from "@supabase/supabase-js";
-import MessageInput from "@/components/Messages/MessageInput";
-import MessagesList from "@/components/Messages/MessageList";
-import ChatHeader from "@/components/Messages/ChatHeader";
-import FilteredConversations from "@/components/Messages/FilteredConversation";
-import MessagePageHeader from "@/components/Messages/MessagePageHeader";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/useAuth";
-import StudentsList from "@/components/Messages/StudentsList";
 import { Message } from "@/constants/types";
+
+import StudentsList from "@/components/Dashboard/MessagesPage/MessagesLeftSide/StudentsList";
+import MessageInput from "@/components/Dashboard/MessagesPage/MessageInput";
+import MessagesList from "@/components/Dashboard/MessagesPage/MessageList";
+import ChatHeader from "@/components/Dashboard/MessagesPage/ChatHeader";
+import FilteredConversations from "@/components/Dashboard/MessagesPage/MessagesLeftSide/FilteredConversation";
+import MessagePageHeader from "@/components/Dashboard/MessagesPage/MessagePageHeader";
 
 const BACKEND_URI = import.meta.env.VITE_BACKEND_URI!;
 

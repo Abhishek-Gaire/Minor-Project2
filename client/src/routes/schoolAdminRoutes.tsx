@@ -9,6 +9,7 @@ import { AttendanceManagementPage } from "@/pages/Admin/SchoolAdminAttendance.ts
 import SchoolAdminCourses from "@/pages/Admin/SchoolAdminCourses.tsx";
 import SchoolAdminSchedule from "@/pages/Admin/SchoolAdminSchedule.tsx";
 import SchoolAdminNotifications from "@/pages/Admin/SchoolAdminNotifications.tsx";
+import AdminAddForm from "@/pages/Admin/AdminAddStudents";
 
 const adminRoutes = [
   { index: true, element: <AdminDashboard /> },
@@ -16,7 +17,13 @@ const adminRoutes = [
   { path: "teachers", element: <TeachersManagementPage /> },
   { path: "classes", element: <ClassManagementPage /> },
   { path: "attendance", element: <AttendanceManagementPage /> },
-  { path: "students", element: <SchoolAdminStudents /> },
+  {
+    path: "students",
+    children: [
+      { index: true, element: <SchoolAdminStudents /> },
+      { path: "addStudent", element: <AdminAddForm /> },
+    ],
+  },
   { path: "messages", element: <SchoolAdminMessage /> },
   { path: "courses", element: <SchoolAdminCourses /> },
   { path: "schedule", element: <SchoolAdminSchedule /> },
