@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 
-import { supabase } from "@/lib/supabase-config";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/useAuth";
 
@@ -12,8 +11,6 @@ import FilteredConversations from "@/components/Dashboard/MessagesPage/MessagesL
 import MessagePageHeader from "@/components/Dashboard/MessagesPage/MessagePageHeader";
 import { useMessages } from "@/hooks/useMessage";
 
-const BACKEND_URI = import.meta.env.VITE_BACKEND_URI!;
-
 const MessagesPage: React.FC = () => {
   // use context here
   const { user } = useAuth();
@@ -21,6 +18,7 @@ const MessagesPage: React.FC = () => {
 
   const [selectedUser, setSelectedUser] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
 
   const { privateMessages, students, conversations, loading } = useMessages(
     selectedUser,
@@ -38,10 +36,29 @@ const MessagesPage: React.FC = () => {
   //     type: "student",
   //   }
   // ];
+  // filter students based on search query
+  const filteredStudents = students.filter((student) =>
+    student.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
-  // const filteredConversations = conversations.filter((conversation) =>
-  //   conversation.name.toLowerCase().includes(searchQuery.toLowerCase())
-  // );
+  // filter conversations based on search query
+  const filteredConversations = conversations.filter((conversation) =>
+    conversation.receiver.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  // Handle search field focus
+  const handleSearchFocus = () => {
+    setIsSearchFocused(true);
+  };
+
+  // Handle search field blur
+  const handleSearchBlur = () => {
+    // Add a small delay to ensure click events on students are registered first
+    setTimeout(() => {
+      setSearchQuery("");
+      setIsSearchFocused(false);
+    }, 200);
+  };
 
   return (
     <div className="flex h-[90vh] overflow-hidden">
@@ -54,10 +71,25 @@ const MessagesPage: React.FC = () => {
         <MessagePageHeader
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
+          onSearchFocus={handleSearchFocus}
+          onSearchBlur={handleSearchBlur}
         />
         <div className="flex-1 overflow-y-auto">
-          {conversations.length !== 0
-            ? conversations.map((conversation) => (
+          {isSearchFocused
+            ? filteredStudents.map((student) => (
+                <StudentsList
+                  key={student.id}
+                  student={student}
+                  userName={user.name}
+                  activeConversation={activeConversation}
+                  setActiveConversation={() =>
+                    setActiveConversation(student.id)
+                  }
+                  setSelectedUser={() => setSelectedUser(student.name)}
+                />
+              ))
+            : filteredConversations.length !== 0
+            ? filteredConversations.map((conversation) => (
                 <FilteredConversations
                   key={conversation.id}
                   conversation={conversation}
@@ -72,8 +104,10 @@ const MessagesPage: React.FC = () => {
                   student={student}
                   userName={user.name}
                   activeConversation={activeConversation}
-                  setActiveConversation={setActiveConversation}
-                  setSelectedUser={setSelectedUser}
+                  setActiveConversation={() =>
+                    setActiveConversation(student.id)
+                  }
+                  setSelectedUser={() => setSelectedUser(student.name)}
                 />
               ))}
         </div>

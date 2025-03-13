@@ -3,7 +3,12 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs.tsx";
 
 import { MessageSquare, Search } from "lucide-react";
 
-const MessagePageHeader = ({ searchQuery, setSearchQuery }) => {
+const MessagePageHeader = ({
+  searchQuery,
+  setSearchQuery,
+  onSearchFocus,
+  onSearchBlur,
+}) => {
   return (
     <>
       <header className="bg-white shadow p-4">
@@ -21,10 +26,12 @@ const MessagePageHeader = ({ searchQuery, setSearchQuery }) => {
           />
           <Input
             type="text"
-            placeholder="Search conversations"
+            placeholder="Search students..."
+            className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            onFocus={onSearchFocus}
+            onBlur={onSearchBlur}
           />
         </div>
       </div>
