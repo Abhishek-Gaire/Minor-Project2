@@ -54,7 +54,7 @@ export interface Message {
   sender: string;
   receiver: string;
   content: string;
-  timestamp: string;
-  delivered: boolean;
-  isSelf: boolean;
+  timestamp?: string;
+  delivered?: boolean;
+  isSelf?: boolean;
 }

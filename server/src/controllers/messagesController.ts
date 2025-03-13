@@ -172,8 +172,6 @@ export const getAllPrivateMessages: RequestHandler = async (
     if (!recentMessages) {
       throw new CustomError("Recent Messages Not Found", 404);
     }
-    console.log(allMessages);
-    console.log(recentMessages);
 
     // Remove duplicates where sender-receiver pair is already reversed in the list
     const filteredMessages: Message[] = [];
@@ -188,7 +186,7 @@ export const getAllPrivateMessages: RequestHandler = async (
         seenPairs.add(key);
       }
     }
-    console.log(filteredMessages);
+
     const students = await prisma.student.findMany();
 
     res.status(200).json({

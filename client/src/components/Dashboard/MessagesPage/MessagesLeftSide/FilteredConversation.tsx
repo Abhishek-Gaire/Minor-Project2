@@ -52,10 +52,8 @@ const FilteredConversations = ({
           {conversation.content}
         </div>
       </div>
-      {conversation.unread > 0 && (
-        <Badge className="rounded-full bg-blue-500">
-          {conversation.unread}
-        </Badge>
+      {!conversation.delivered && user.name === conversation.receiver && (
+        <Badge className="rounded-full bg-blue-500">1</Badge>
       )}
     </div>
   );

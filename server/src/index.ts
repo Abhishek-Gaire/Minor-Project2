@@ -13,6 +13,7 @@ const app = express();
 app.use(morgan("dev")); // Logs in format: :method :url :status :response-time ms
 
 import corsConfig from "./config/corsConfig";
+import getLocalIP from "./exceptions/getLocalIP";
 app.use(corsConfig);
 
 app.use(express.json()); // To parse JSON bodies
@@ -24,7 +25,10 @@ app.use("/api/v1/schools", schoolRoutes);
 app.use("/api/v1/messages", messageRoutes);
 
 // Start the server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () =>
-  console.log(`Server running on http://localhost:${PORT}`)
-);
+const PORT = Number(process.env.PORT) || 5000;
+const IP = getLocalIP();
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Server running on:`);
+  console.log(`- Local: http://localhost:${PORT}`);
+  console.log(`- Network: http://${IP}:${PORT}`);
+});

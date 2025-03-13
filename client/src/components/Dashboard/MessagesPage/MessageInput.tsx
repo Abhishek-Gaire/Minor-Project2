@@ -3,21 +3,16 @@ import React, { useState } from "react";
 import { Loader2, PaperclipIcon, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { RealtimeChannel } from "@supabase/supabase-js";
+import { supabase } from "@/lib/supabase-config";
 
 interface MessageInputProps {
   recipientId: string;
   senderId: string;
-  channel: RealtimeChannel;
 }
 
 const BACKEND_URI = import.meta.env.VITE_BACKEND_URI!;
 
-const MessageInput = ({
-  recipientId,
-  senderId,
-  channel,
-}: MessageInputProps) => {
+const MessageInput = ({ recipientId, senderId }: MessageInputProps) => {
   const [messageInput, setMessageInput] = useState("");
   const [sending, setSending] = useState(false);
 
@@ -37,16 +32,10 @@ const MessageInput = ({
         body: JSON.stringify(messageData),
       });
       const responseData = await response.json();
-      console.log(responseData);
       const savedMessage = responseData.data;
-      // Broadcast message using Supabase
-      channel.send({
-        type: "broadcast",
-        event: "new-message",
-        payload: { message: savedMessage },
-      });
-      console.log("Sending message:", messageInput);
 
+      const { error } = await supabase.from("Messages").insert(savedMessage);
+      if (error) throw error;
       setMessageInput("");
     } catch (error) {
       console.error("Error sending message:", error);

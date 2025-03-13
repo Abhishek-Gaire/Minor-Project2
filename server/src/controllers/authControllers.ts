@@ -41,12 +41,13 @@ export const login: RequestHandler = async (req: Request, res: Response) => {
       return;
     }
 
-    token = jwt.sign({ id: userExists.id }, JWT_SECRET, { expiresIn: "1h" });
+    token = jwt.sign({ id: userExists.id }, JWT_SECRET, { expiresIn: "24h" });
 
     res.cookie("studentAccessToken", token, {
       httpOnly: true,
-      secure: true, // Use HTTPS
-      sameSite: "none", // Required for cross-origin requests
+      secure: false,
+      sameSite: "lax",
+      path: "/",
     });
   } else {
     userExists = await prisma.teacher.findFirst({ where: { email } });
@@ -71,8 +72,9 @@ export const login: RequestHandler = async (req: Request, res: Response) => {
 
     res.cookie("teacherAccessToken", token, {
       httpOnly: true,
-      secure: true, // Use HTTPS
-      sameSite: "none", // Required for cross-origin requests
+      secure: false,
+      sameSite: "lax",
+      path: "/",
     });
   }
 
