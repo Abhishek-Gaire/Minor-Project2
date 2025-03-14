@@ -21,8 +21,8 @@ const StudentsList = ({
   }
 
   const handleStudentClick = () => {
-    setActiveConversation();
-    setSelectedUser();
+    setActiveConversation(student.id);
+    setSelectedUser(student.name);
   };
 
   return (
@@ -32,7 +32,7 @@ const StudentsList = ({
         "p-3 cursor-pointer hover:bg-gray-100 flex items-start gap-3 border-b",
         activeConversation === student.id ? "bg-gray-100" : ""
       )}
-      onClick={() => handleStudentClick()}
+      onClick={handleStudentClick}
     >
       <Avatar className="bg-blue-500">
         <AvatarFallback>{getInitials(name)}</AvatarFallback>

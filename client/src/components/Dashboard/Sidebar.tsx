@@ -2,18 +2,21 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { X as CloseIcon } from "lucide-react";
 
-import { adminNavigation } from "@/constants/constants.ts";
+import { teacherNavigation, studentNavigation } from "@/constants/constants.ts";
 import { cn } from "@/lib/utils.ts";
 
 interface SidebarProps {
   setIsSidebarOpen: (isOpen: boolean) => void;
   isMobile: boolean;
+  role: string;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
   setIsSidebarOpen,
   isMobile,
+  role,
 }) => {
+  let navItems = role === "student" ? studentNavigation : teacherNavigation;
   return (
     <div className="flex h-full flex-col overflow-y-auto bg-white">
       <div className="flex h-16 items-center justify-between px-4 bg-blue-100">
@@ -29,7 +32,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
       <nav className="p-4 h-full">
         <ul className="space-y-2">
-          {adminNavigation.map((item) => {
+          {navItems.map((item) => {
             const Icon = item.icon;
             return (
               <li key={item.name}>

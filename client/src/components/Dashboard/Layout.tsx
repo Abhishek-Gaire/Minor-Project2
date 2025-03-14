@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Outlet, Navigate, useLocation } from "react-router-dom";
+import { Outlet, Navigate, useLocation, useParams } from "react-router-dom";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 
 import { Sidebar } from "@/components/Dashboard/Sidebar.tsx";
@@ -13,7 +13,7 @@ const Layout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const isMobile = useIsMobile();
   const { user, loading, logout, refreshAuth } = useAuth();
-
+  const { role } = useParams();
   const location = useLocation();
 
   // Close sidebar on mobile by default
@@ -55,13 +55,21 @@ const Layout = () => {
           isSidebarOpen ? "translate-x-0 w-64" : "-translate-x-64"
         )}
       >
-        <Sidebar setIsSidebarOpen={setIsSidebarOpen} isMobile={isMobile} />
+        <Sidebar
+          setIsSidebarOpen={setIsSidebarOpen}
+          isMobile={isMobile}
+          role={role}
+        />
       </aside>
 
       {/* Sidebar for mobile */}
       <Sheet open={isSidebarOpen && isMobile} onOpenChange={setIsSidebarOpen}>
         <SheetContent side="left" className="p-0 w-64">
-          <Sidebar setIsSidebarOpen={setIsSidebarOpen} isMobile={isMobile} />
+          <Sidebar
+            setIsSidebarOpen={setIsSidebarOpen}
+            isMobile={isMobile}
+            role={role}
+          />
         </SheetContent>
       </Sheet>
 

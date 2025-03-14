@@ -4,12 +4,15 @@ import {
   addPrivateMessage,
   getPrivateMessages,
   getAllPrivateMessages,
+  getConversationId,
 } from "../controllers/messagesController";
 
 const messageRouter: Router = Router();
 
 messageRouter.post("/deliver", addPrivateMessagesDeliver);
-messageRouter.route("/").post(addPrivateMessage).get(getPrivateMessages);
-messageRouter.get("/:user", getAllPrivateMessages);
+messageRouter.post("/", addPrivateMessage);
+messageRouter.get("/conversation/:conversationId", getPrivateMessages);
+messageRouter.get("/conversations", getConversationId);
+messageRouter.get("/user/:user", getAllPrivateMessages);
 
 export default messageRouter;

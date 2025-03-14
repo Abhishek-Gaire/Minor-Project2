@@ -1,18 +1,24 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 import { Loader2, PaperclipIcon, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/lib/supabase-config";
+import { toast } from "react-toastify";
 
 interface MessageInputProps {
   recipientId: string;
   senderId: string;
+  setConversationId: (id: string | null) => void;
 }
 
 const BACKEND_URI = import.meta.env.VITE_BACKEND_URI!;
 
-const MessageInput = ({ recipientId, senderId }: MessageInputProps) => {
+const MessageInput = ({
+  recipientId,
+  senderId,
+  setConversationId,
+}: MessageInputProps) => {
   const [messageInput, setMessageInput] = useState("");
   const [sending, setSending] = useState(false);
 
@@ -33,12 +39,14 @@ const MessageInput = ({ recipientId, senderId }: MessageInputProps) => {
       });
       const responseData = await response.json();
       const savedMessage = responseData.data;
+      setConversationId(responseData.conversationId);
 
       const { error } = await supabase.from("Messages").insert(savedMessage);
       if (error) throw error;
       setMessageInput("");
     } catch (error) {
       console.error("Error sending message:", error);
+      toast.error(error.message || "An error occurred.");
     } finally {
       setSending(false);
     }

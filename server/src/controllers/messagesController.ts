@@ -8,33 +8,29 @@ export const getPrivateMessages: RequestHandler = async (
   res: Response
 ) => {
   try {
-    const sender = Array.isArray(req.query.sender)
-      ? req.query.sender[0]
-      : req.query.sender;
-    const receiver = Array.isArray(req.query.receiver)
-      ? req.query.receiver[0]
-      : req.query.receiver;
-    if (!sender || !receiver) {
-      throw new CustomError("Messengers are required", 400);
+    const conversationId = req.params.conversationId;
+    if (!conversationId) {
+      res.status(200).json({
+        success: true,
+        message: "No conversation selected",
+        data: [],
+      });
+      return;
     }
 
     const messages = await prisma.messages.findMany({
       where: {
-        OR: [
-          { sender, receiver }, // sent messages
-          { sender: receiver, receiver: sender },
-        ],
+        conversationId: conversationId,
       },
-      orderBy: { timeStamp: "asc" },
+      orderBy: {
+        timeStamp: "asc",
+      },
     });
-    if (!messages) {
-      throw new CustomError("Message Not Found", 404);
-    }
 
     res.status(200).json({
       success: true,
       message: "Private Messages Fetched",
-      data: messages,
+      data: messages || [],
     });
     return;
   } catch (error) {
@@ -59,9 +55,40 @@ export const addPrivateMessage: RequestHandler = async (
       throw new CustomError("All fields are required", 400);
     }
 
-    const newMessage = await prisma.messages.create({
-      data: { sender, receiver, content, delivered: false },
+    // Find or create conversation
+    let conversationId: string;
+    const conversation = await prisma.conversations.findFirst({
+      where: {
+        AND: [
+          { participants: { has: sender } },
+          { participants: { has: receiver } },
+        ],
+      },
     });
+
+    // If conversation doesn't exist, create it
+    if (!conversation) {
+      const newConversation = await prisma.conversations.create({
+        data: {
+          participants: [sender, receiver],
+        },
+      });
+      conversationId = newConversation.id;
+    } else {
+      conversationId = conversation.id;
+    }
+
+    // Create message with conversation reference
+    const newMessage = await prisma.messages.create({
+      data: {
+        sender,
+        receiver,
+        content,
+        delivered: false,
+        conversationId: conversationId,
+      },
+    });
+
     if (!newMessage) {
       throw new CustomError("Can Not Add Messages", 400);
     }
@@ -70,6 +97,7 @@ export const addPrivateMessage: RequestHandler = async (
       success: true,
       message: "Message Added Successfully",
       data: newMessage,
+      conversationId,
     });
     return;
   } catch (error) {
@@ -130,6 +158,7 @@ type Message = {
   timeStamp: Date;
   delivered: boolean;
 };
+
 export const getAllPrivateMessages: RequestHandler = async (
   req: Request,
   res: Response
@@ -193,6 +222,64 @@ export const getAllPrivateMessages: RequestHandler = async (
       success: true,
       messages: "All Recent Messages Found",
       data: { filteredMessages, students },
+    });
+    return;
+  } catch (error) {
+    const statusCode = error instanceof CustomError ? error.statusCode : 500;
+    const errMessage =
+      error instanceof CustomError ? error.message : "Internal server error";
+    res.status(statusCode).json({
+      status: false,
+      message: errMessage,
+    });
+    return;
+  }
+};
+
+export const getConversationId: RequestHandler = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const participant1 = Array.isArray(req.query.participant1)
+      ? String(req.query.participant1[0])
+      : String(req.query.participant1);
+    const participant2 = Array.isArray(req.query.participant2)
+      ? String(req.query.participant2[0])
+      : String(req.query.participant2);
+
+    if (!participant1 || !participant2) {
+      throw new CustomError("Two participants are required", 400);
+    }
+
+    const participants = [participant1, participant2];
+    const conversation = await prisma.conversations.findFirst({
+      where: {
+        AND: [
+          { participants: { has: participant1 } },
+          { participants: { has: participant2 } },
+        ],
+      },
+    });
+
+    if (!conversation) {
+      const newConversation = await prisma.conversations.create({
+        data: {
+          participants,
+        },
+      });
+      res.status(201).json({
+        success: true,
+        message: "New conversation created",
+        conversationId: newConversation.id,
+      });
+      return;
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Conversation found",
+      conversationId: conversation.id,
     });
     return;
   } catch (error) {

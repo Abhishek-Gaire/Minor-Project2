@@ -13,7 +13,7 @@ import RouteNotFound from "../pages/RouteNotFound";
 export const router = createBrowserRouter([
   ...publicRoutes,
   {
-    path: "/dashboard",
+    path: "/dashboard/:role",
     element: <Layout />,
     children: dashboardRoutes,
   },

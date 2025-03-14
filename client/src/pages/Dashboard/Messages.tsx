@@ -9,20 +9,53 @@ import MessagesList from "@/components/Dashboard/MessagesPage/MessageList";
 import ChatHeader from "@/components/Dashboard/MessagesPage/ChatHeader";
 import FilteredConversations from "@/components/Dashboard/MessagesPage/MessagesLeftSide/FilteredConversation";
 import MessagePageHeader from "@/components/Dashboard/MessagesPage/MessagePageHeader";
+
 import { useMessages } from "@/hooks/useMessage";
 
-const MessagesPage: React.FC = () => {
-  // use context here
-  const { user } = useAuth();
-  const [activeConversation, setActiveConversation] = useState(null);
+const BACKEND_URI = import.meta.env.VITE_BACKEND_URI!;
 
+const MessagesPage: React.FC = () => {
+  const { user } = useAuth();
+  const [activeConversation, setActiveConversation] = useState<string | null>(
+    null
+  );
+  const [conversationId, setConversationId] = useState<string | null>(null);
   const [selectedUser, setSelectedUser] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchFocused, setIsSearchFocused] = useState(false);
 
+  // Fetch conversationId when user is selected
+  useEffect(() => {
+    const fetchConversationId = async () => {
+      if (!selectedUser || !user?.name) {
+        setConversationId(null);
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          `${BACKEND_URI}/api/v1/messages/conversations?participant1=${user.name}&participant2=${selectedUser}`
+        );
+        const data = await response.json();
+
+        if (data.success) {
+          setConversationId(data.conversationId);
+          setActiveConversation(data.conversationId);
+        }
+      } catch (error) {
+        console.error("Error fetching conversation ID:", error);
+        setConversationId(null);
+      }
+    };
+
+    fetchConversationId();
+  }, [selectedUser, user?.name]);
+
+  // Only use useMessages when we have a conversationId
   const { privateMessages, students, conversations, loading } = useMessages(
     selectedUser,
-    activeConversation
+    activeConversation,
+    conversationId
   );
 
   // const conversations = [
@@ -53,10 +86,16 @@ const MessagesPage: React.FC = () => {
 
   // Handle search field blur
   const handleSearchBlur = () => {
-    // Add a small delay to ensure click events on students are registered first
-    setTimeout(() => {
+    // Only clear search and unfocus if no student was clicked
+    const handleClick = () => {
       setSearchQuery("");
       setIsSearchFocused(false);
+      document.removeEventListener("click", handleClick);
+    };
+
+    // Add a small delay to allow click events to register
+    setTimeout(() => {
+      document.addEventListener("click", handleClick);
     }, 200);
   };
 
@@ -121,7 +160,11 @@ const MessagesPage: React.FC = () => {
           <MessagesList loading={loading} messages={privateMessages} />
 
           {/* Message input */}
-          <MessageInput recipientId={selectedUser} senderId={user.name} />
+          <MessageInput
+            recipientId={selectedUser}
+            senderId={user.name}
+            setConversationId={setConversationId}
+          />
         </div>
       )}
     </div>

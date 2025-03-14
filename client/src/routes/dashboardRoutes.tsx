@@ -7,22 +7,26 @@ import MessagesPage from "@/pages/Dashboard/Messages.tsx";
 import OnlineClassPage from "@/pages/Dashboard/OnlineClass.tsx";
 import Grades from "@/pages/Dashboard/Grades.tsx";
 import ProfilePage from "@/components/Dashboard/ProfilePage";
+import StudyMaterialsPage from "@/pages/Dashboard/StudyMaterials";
+import CalendarPage from "@/pages/Dashboard/CalendarPage";
+import TeacherAttendancePage from "@/pages/Dashboard/AttendancePage";
 
 const dashboardRoutes = [
   { index: true, element: <Dashboard /> },
-  { path: ":role", element: <Dashboard /> },
   { path: "students", element: <Students /> },
   { path: "courses", element: <Courses /> },
   { path: "assignments", element: <Assignments /> },
   { path: "chat", element: <ClassChatPage /> },
   { path: "grades", element: <Grades /> },
+  { path: "gradebook", element: <Grades /> },
   { path: "messages", element: <MessagesPage /> },
-  { path: "online-class", element: <OnlineClassPage /> },
-  { path: "profile", element: <ProfilePage initialActiveTab="profile" /> },
-  {
-    path: "settings",
-    element: <ProfilePage initialActiveTab="notifications" />,
-  },
+  { path: "materials", element: <StudyMaterialsPage /> },
+  { path: "calendar", element: <CalendarPage /> },
+  { path: "resources", element: <MessagesPage /> },
+  { path: "attendance", element: <TeacherAttendancePage /> },
+  { path: "live-classes", element: <OnlineClassPage /> },
+  { path: "profile", element: <ProfilePage /> },
+  { path: "settings", element: <ProfilePage /> },
 ];
 
 export default dashboardRoutes;

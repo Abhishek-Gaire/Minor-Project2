@@ -7,7 +7,8 @@ const BACKEND_URI = import.meta.env.VITE_BACKEND_URI!;
 
 export const useMessages = (
   selectedUser?: string,
-  activeConversation?: string
+  activeConversation?: string,
+  conversationId?: string
 ) => {
   const { user } = useAuth();
   const [privateMessages, setPrivateMessages] = useState<Message[]>([]);
@@ -21,11 +22,12 @@ export const useMessages = (
     const fetchPrivateMessages = async () => {
       try {
         const response = await fetch(
-          `${BACKEND_URI}/api/v1/messages?sender=${user.name}&receiver=${selectedUser}`
+          `${BACKEND_URI}/api/v1/messages/conversation/${conversationId}`
         );
         const responseData = await response.json();
 
         setPrivateMessages(responseData.data);
+        // setConversationId(responseData.conversationId);
       } catch (error) {
         console.error("Error fetching messages:", error);
       } finally {
@@ -78,7 +80,7 @@ export const useMessages = (
     const fetchAllConversations = async () => {
       try {
         const response = await fetch(
-          `${BACKEND_URI}/api/v1/messages/${user.name}`
+          `${BACKEND_URI}/api/v1/messages/user/${user.name}`
         );
         const responseData = await response.json();
 
@@ -91,5 +93,5 @@ export const useMessages = (
     fetchAllConversations();
   }, [user]);
 
-  return { privateMessages, loading, conversations, students };
+  return { privateMessages, loading, conversations, students, conversationId };
 };

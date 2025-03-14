@@ -10,6 +10,10 @@ import {
   Video,
   LayoutDashboard,
   MessageSquare,
+  CalendarCheck,
+  Calendar,
+  Folder,
+  User,
 } from "lucide-react";
 import { NavItem } from "./types";
 
@@ -147,6 +151,55 @@ export const adminNavigation: NavItem[] = [
   { name: "Online Class", to: "/dashboard/online-class", icon: Video },
 ];
 
+export const teacherNavigation: NavItem[] = [
+  {
+    name: "Dashboard",
+    to: "/dashboard/teacher",
+    icon: LayoutDashboard,
+  },
+  { name: "My Courses", to: "/dashboard/teacher/courses", icon: BookOpen },
+  {
+    name: "Gradebook",
+    to: "/dashboard/teacher/gradebook",
+    icon: GraduationCap,
+  },
+  {
+    name: "Assignments",
+    to: "/dashboard/teacher/assignments",
+    icon: ClipboardList,
+  },
+  {
+    name: "Attendance",
+    to: "/dashboard/teacher/attendance",
+    icon: CalendarCheck,
+  },
+  { name: "Class Chat", to: "/dashboard/teacher/chat", icon: MessageCircle },
+  { name: "Live Classes", to: "/dashboard/teacher/live-classes", icon: Video },
+  { name: "Calendar", to: "/dashboard/teacher/calendar", icon: Calendar },
+  { name: "Resources", to: "/dashboard/teacher/resources", icon: Folder },
+  { name: "Profile", to: "/dashboard/teacher/profile", icon: User },
+];
+
+export const studentNavigation: NavItem[] = [
+  {
+    name: "Dashboard",
+    to: "/dashboard/student",
+    icon: LayoutDashboard,
+  },
+  { name: "My Courses", to: "/dashboard/student/courses", icon: BookOpen },
+  { name: "Grades", to: "/dashboard/student/grades", icon: GraduationCap },
+  {
+    name: "Assignments",
+    to: "/dashboard/student/assignments",
+    icon: ClipboardList,
+  },
+  { name: "Inbox", to: "/dashboard/student/messages", icon: MessageSquare },
+  { name: "Class Chat", to: "/dashboard/student/chat", icon: MessageCircle },
+  { name: "Live Classes", to: "/dashboard/student/live-classes", icon: Video },
+  { name: "Study Materials", to: "/dashboard/student/materials", icon: Folder },
+  { name: "Calendar", to: "/dashboard/student/calendar", icon: Calendar },
+  { name: "Profile", to: "/dashboard/student/profile", icon: User },
+];
 // Mock notifications
 export const mockNotifications = [
   {
