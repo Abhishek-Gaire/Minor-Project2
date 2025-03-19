@@ -4,6 +4,7 @@ import morgan from "morgan";
 import authRoutes from "./routes/authRoutes";
 import schoolRoutes from "./routes/institutionalRoutes";
 import messageRoutes from "./routes/messageRoutes";
+import classChatRouter from "./routes/classChatRoutes";
 
 import cookieParser from "cookie-parser";
 
@@ -23,7 +24,7 @@ app.use(cookieParser());
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/schools", schoolRoutes);
 app.use("/api/v1/messages", messageRoutes);
-
+app.use("/api/v1/classMessages", classChatRouter);
 // Start the server
 const PORT = Number(process.env.PORT) || 5000;
 const IP = getLocalIP();

@@ -26,11 +26,13 @@ export const getPrivateMessages: RequestHandler = async (
         timeStamp: "asc",
       },
     });
-
+    if (!messages) {
+      throw new CustomError("No Messages Found", 404);
+    }
     res.status(200).json({
       success: true,
       message: "Private Messages Fetched",
-      data: messages || [],
+      data: messages,
     });
     return;
   } catch (error) {
@@ -168,7 +170,9 @@ export const getAllPrivateMessages: RequestHandler = async (
     if (!user) {
       throw new CustomError("User Required", 400);
     }
-
+    const userObject = await prisma.student.findFirst({
+      where: { name: user },
+    });
     const allMessages = await prisma.messages.findMany({
       where: {
         OR: [
@@ -216,7 +220,11 @@ export const getAllPrivateMessages: RequestHandler = async (
       }
     }
 
-    const students = await prisma.student.findMany();
+    const students = await prisma.student.findMany({
+      where: {
+        grade: userObject!.grade,
+      },
+    });
 
     res.status(200).json({
       success: true,
