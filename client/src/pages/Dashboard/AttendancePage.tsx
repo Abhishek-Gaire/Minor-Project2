@@ -394,15 +394,179 @@ const TeacherAttendancePage = () => {
               </div>
             </div>
 
-            {/* <div className="overflow-x-auto">
+            <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
                       Student
                     </th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Status */}
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      Status
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      Email
+                    </th>
+                    {isEditMode && (
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
+                        Actions
+                      </th>
+                    )}
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {filteredStudents.length > 0 ? (
+                    filteredStudents.map((student) => (
+                      <tr key={student.id}>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center">
+                            <div className="flex-shrink-0 h-8 w-8">
+                              <img
+                                className="h-8 w-8 rounded-full"
+                                src={student.avatar}
+                                alt={student.name}
+                              />
+                            </div>
+                            <div className="ml-4">
+                              <div className="text-sm font-medium text-gray-900">
+                                {student.name}
+                              </div>
+                              <div className="text-sm text-gray-500">
+                                ID: {student.id}
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center">
+                            {getStatusIcon(attendanceData.records[student.id])}
+                            <span className="ml-2 text-sm text-gray-700 capitalize">
+                              {attendanceData.records[student.id]}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {student.email}
+                        </td>
+                        {isEditMode && (
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <div className="flex space-x-2">
+                              <button
+                                className={`px-2 py-1 rounded-md ${
+                                  attendanceData.records[student.id] ===
+                                  "present"
+                                    ? "bg-green-100 text-green-800"
+                                    : "bg-gray-100 text-gray-800"
+                                }`}
+                                onClick={() =>
+                                  updateAttendance(student.id, "present")
+                                }
+                              >
+                                Present
+                              </button>
+                              <button
+                                className={`px-2 py-1 rounded-md ${
+                                  attendanceData.records[student.id] ===
+                                  "absent"
+                                    ? "bg-red-100 text-red-800"
+                                    : "bg-gray-100 text-gray-800"
+                                }`}
+                                onClick={() =>
+                                  updateAttendance(student.id, "absent")
+                                }
+                              >
+                                Absent
+                              </button>
+                              <button
+                                className={`px-2 py-1 rounded-md ${
+                                  attendanceData.records[student.id] === "late"
+                                    ? "bg-yellow-100 text-yellow-800"
+                                    : "bg-gray-100 text-gray-800"
+                                }`}
+                                onClick={() =>
+                                  updateAttendance(student.id, "late")
+                                }
+                              >
+                                Late
+                              </button>
+                              <button
+                                className={`px-2 py-1 rounded-md ${
+                                  attendanceData.records[student.id] ===
+                                  "excused"
+                                    ? "bg-blue-100 text-blue-800"
+                                    : "bg-gray-100 text-gray-800"
+                                }`}
+                                onClick={() =>
+                                  updateAttendance(student.id, "excused")
+                                }
+                              >
+                                Excused
+                              </button>
+                            </div>
+                          </td>
+                        )}
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td
+                        colSpan={isEditMode ? 4 : 3}
+                        className="px-6 py-4 text-center text-gray-500"
+                      >
+                        No students found matching your criteria.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Pagination */}
+            <div className="px-6 py-3 border-t flex items-center justify-between">
+              <div className="text-sm text-gray-500">
+                Showing{" "}
+                <span className="font-medium">{filteredStudents.length}</span>{" "}
+                of <span className="font-medium">{students.length}</span>{" "}
+                students
+              </div>
+              <div className="flex space-x-2">
+                <button className="px-3 py-1 rounded-md bg-gray-100 text-gray-700 disabled:opacity-50">
+                  Previous
+                </button>
+                <button className="px-3 py-1 rounded-md bg-gray-100 text-gray-700 disabled:opacity-50">
+                  Next
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Notes Section */}
+          <div className="bg-white rounded-lg shadow p-4">
+            <h2 className="text-lg font-semibold mb-4">
+              Notes for {formatDate(currentDate)}
+            </h2>
+            <textarea
+              className="w-full p-3 border rounded-md"
+              rows={3}
+              placeholder="Add any notes about today's attendance..."
+            />
+            <div className="mt-2 flex justify-end">
+              <button className="px-4 py-2 bg-blue-600 text-white rounded-md">
+                Save Notes
+              </button>
+            </div>
           </div>
         </div>
       </div>

@@ -7,7 +7,7 @@ import { useAuth } from "@/contexts/useAuth";
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
   return (
-    <div className="ml-10 mt-5">
+    <div>
       <header className="mb-8">
         <h1 className="text-2xl font-bold">Dashboard</h1>
         <p className="text-gray-600">

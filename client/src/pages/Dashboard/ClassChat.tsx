@@ -1,58 +1,14 @@
-import React, { useEffect, useRef, useState } from "react";
-import { MessageCircle, Send, User } from "lucide-react";
-
-interface Message {
-  id: string;
-  sender: string;
-  content: string;
-  timestamp: Date;
-}
+import React, { useEffect, useRef } from "react";
+import { MessageCircle } from "lucide-react";
+import useClassMessage from "@/hooks/useClassMessage";
+import MessageInput from "@/components/Dashboard/ClassChat/MessageInput";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import ClassMessageList from "@/components/Dashboard/ClassChat/ClassMessageList";
 
 const ClassChatPage: React.FC = () => {
   const messageEndRef = useRef<HTMLDivElement>(null);
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "1",
-      sender: "Teacher",
-      content:
-        "Welcome to today's class discussion! Please share your thoughts on the reading assignment.",
-      timestamp: new Date(Date.now() - 3600000),
-    },
-    {
-      id: "2",
-      sender: "Alex",
-      content:
-        "I found the chapter on quantum mechanics particularly interesting, especially the part about wave-particle duality.",
-      timestamp: new Date(Date.now() - 1800000),
-    },
-    {
-      id: "3",
-      sender: "Jamie",
-      content:
-        "I had a question about the Schrödinger equation explanation. Could we go over that again?",
-      timestamp: new Date(Date.now() - 900000),
-    },
-  ]);
 
-  const [newMessage, setNewMessage] = useState("");
-
-  const handleSendMessage = () => {
-    if (newMessage.trim() === "") return;
-
-    const message: Message = {
-      id: Date.now().toString(),
-      sender: "You",
-      content: newMessage,
-      timestamp: new Date(),
-    };
-
-    setMessages([...messages, message]);
-    setNewMessage("");
-  };
-
-  const formatTime = (date: Date) => {
-    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-  };
+  const { loading, classMessages, user } = useClassMessage();
 
   const scrollToBottom = () => {
     messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -60,65 +16,43 @@ const ClassChatPage: React.FC = () => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [classMessages]);
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50 ml-10 mt-5">
+    <div className="flex flex-col h-[87vh] bg-gray-50 ">
       <header className="bg-white shadow p-4">
         <div className="flex items-center">
           <MessageCircle className="text-blue-500 mr-2" />
           <h1 className="text-xl font-semibold">Class Chat</h1>
         </div>
         <p className="text-gray-500 text-sm mt-1">
-          Physics 101 - Quantum Mechanics
+          Grade {user.grade.split("")[1]}
         </p>
       </header>
 
-      <div className="flex-1 overflow-y-auto p-4">
-        {messages.map((message) => (
-          <div
-            key={message.id}
-            className={`mb-4 flex ${
-              message.sender === "You" ? "justify-end" : "justify-start"
-            }`}
-          >
-            <div
-              className={`max-w-xs md:max-w-md rounded-lg p-3 ${
-                message.sender === "You"
-                  ? "bg-blue-500 text-white"
-                  : "bg-white border"
-              }`}
-            >
-              <div className="flex items-center mb-1">
-                <span className="font-medium text-sm">{message.sender}</span>
-                <span className="text-xs ml-2 opacity-75">
-                  {formatTime(message.timestamp)}
-                </span>
+      {loading ? (
+        <div className="flex justify-center p-4 ">Loading messages....</div>
+      ) : (
+        <ScrollArea className="flex-1 ">
+          <div className="overflow-y-auto p-4">
+            {classMessages?.length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-full text-gray-500">
+                <p>No Messages Yet</p>
+                <p className="text-sm">
+                  Start the conversation by sending a message!
+                </p>
               </div>
-              <p>{message.content}</p>
-            </div>
+            ) : (
+              classMessages.map((message) => (
+                <ClassMessageList user={user} message={message} />
+              ))
+            )}
           </div>
-        ))}
-      </div>
+          <div ref={messageEndRef} />
+        </ScrollArea>
+      )}
 
-      <div className="border-t bg-white p-4">
-        <div className="flex items-center">
-          <input
-            type="text"
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            onKeyUp={(e) => e.key === "Enter" && handleSendMessage()}
-            placeholder="Type your message here..."
-            className="flex-1 border rounded-l-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <button
-            onClick={handleSendMessage}
-            className="bg-blue-500 text-white p-2 rounded-r-lg hover:bg-blue-600"
-          >
-            <Send size={20} />
-          </button>
-        </div>
-      </div>
+      <MessageInput sender={user} />
     </div>
   );
 };

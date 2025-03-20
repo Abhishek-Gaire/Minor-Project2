@@ -100,7 +100,7 @@ const MessagesPage: React.FC = () => {
   };
 
   return (
-    <div className="flex h-[90vh] overflow-hidden">
+    <div className="flex h-[87vh] overflow-hidden">
       <div
         className={cn(
           "border-r bg-white flex flex-col",

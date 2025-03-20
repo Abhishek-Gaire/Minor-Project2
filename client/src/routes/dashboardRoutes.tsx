@@ -6,7 +6,7 @@ import ClassChatPage from "@/pages/Dashboard/ClassChat.tsx";
 import MessagesPage from "@/pages/Dashboard/Messages.tsx";
 import OnlineClassPage from "@/pages/Dashboard/OnlineClass.tsx";
 import Grades from "@/pages/Dashboard/Grades.tsx";
-import ProfilePage from "@/components/Dashboard/ProfilePage";
+import ProfilePage from "@/pages/Dashboard/ProfilePage";
 import StudyMaterialsPage from "@/pages/Dashboard/StudyMaterials";
 import CalendarPage from "@/pages/Dashboard/CalendarPage";
 import TeacherAttendancePage from "@/pages/Dashboard/AttendancePage";
