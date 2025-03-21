@@ -6,21 +6,10 @@ import TabNavigation from "@/components/Dashboard/OnlineClass/TabNavigation";
 import FilteredClasses from "@/components/Dashboard/OnlineClass/FilteredClasses";
 import { ClassSession } from "@/utils/types";
 import AddClassForm from "@/components/Dashboard/OnlineClass/AddClassForm";
-import { ClassFormData } from "@/constants/types";
+import { ClassFormData, Participant } from "@/constants/types";
 import Footer from "@/components/Dashboard/OnlineClass/Footer";
 import ShowOnlineClassChat from "@/components/Dashboard/OnlineClass/ShowOnlineClassChat";
 import ParticipantVideos from "@/components/Dashboard/OnlineClass/ParticipantVideos";
-
-// Types
-interface Participant {
-  id: string | number;
-  name: string;
-  isSpeaking: boolean;
-  videoEnabled: boolean;
-  audioEnabled: boolean;
-  isScreenSharing?: boolean;
-  isTeacher?: boolean;
-}
 
 // Main Component
 const OnlineClassPage: React.FC = () => {

@@ -13,6 +13,7 @@ export interface User {
   name?: string;
   email: string;
   role?: string; // Optional, depending on your application
+  grade?: string;
 }
 
 export interface LoginResponse {
@@ -30,4 +31,14 @@ export interface AuthContextType {
   ) => Promise<LoginResponse>;
   logout: () => void;
   refreshAuth: () => void;
+}
+
+export interface ClassSession {
+  id: string;
+  title: string;
+  description: string;
+  instructor: string;
+  startTime: Date;
+  endTime: Date;
+  status: "upcoming" | "ongoing" | "finished";
 }

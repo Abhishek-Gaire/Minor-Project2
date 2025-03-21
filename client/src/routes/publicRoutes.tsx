@@ -5,6 +5,7 @@ import FeaturesPage from "../pages/Landing/FeaturesPage.tsx";
 import InstitutionSignup from "../pages/Auth/InstitutionSignup.tsx";
 import Login from "../pages/Auth/Login.tsx";
 import { MeetingRoom } from "../components/Meetings/MeetingRoom.tsx";
+import OnlineClassPage from "@/pages/Dashboard/OnlineClass.tsx";
 
 const publicRoutes = [
   { path: "/", element: <HomePage /> },
@@ -14,6 +15,7 @@ const publicRoutes = [
   { path: "/institution-signup", element: <InstitutionSignup /> },
   { path: "/login", element: <Login /> },
   { path: "/meeting/:meetingId", element: <MeetingRoom /> },
+  { path: "/live-classes", element: <OnlineClassPage /> },
 ];
 
 export default publicRoutes;
