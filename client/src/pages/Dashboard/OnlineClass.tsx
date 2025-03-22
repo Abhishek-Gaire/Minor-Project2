@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Video, Calendar, Monitor } from "lucide-react";
 import { useAuth } from "@/contexts/useAuth";
 import Header from "@/components/Dashboard/OnlineClass/Header";
@@ -62,7 +62,7 @@ const OnlineClassPage: React.FC = () => {
   const [isScreenSharing, setIsScreenSharing] = useState(false);
   const [screenStream, setScreenStream] = useState<MediaStream | null>(null);
   const isTeacher = userRole === "teacher";
-
+  const videoRef = useRef<HTMLVideoElement>(null);
   // Participants state
   const [participants, setParticipants] = useState<Participant[]>([
     {
@@ -102,6 +102,26 @@ const OnlineClassPage: React.FC = () => {
       audioEnabled: true,
     },
   ]);
+
+  useEffect(() => {
+    // Initialize video stream
+    async function setupStream() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: true,
+        });
+        setMediaStream(stream);
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+        }
+      } catch (err) {
+        console.error("Error accessing media devices:", err);
+      }
+    }
+
+    setupStream().then();
+  }, [inClass]);
 
   // Functions for video call controls
   const toggleAudio = () => {
@@ -143,6 +163,7 @@ const OnlineClassPage: React.FC = () => {
       // Save stream to state
       setScreenStream(stream);
       setIsScreenSharing(true);
+      setMediaStream(null);
 
       // Handle when user stops sharing via browser controls
       stream.getVideoTracks()[0].onended = () => {
@@ -162,6 +183,7 @@ const OnlineClassPage: React.FC = () => {
       // Stop all tracks in the stream
       screenStream.getTracks().forEach((track) => track.stop());
       setScreenStream(null);
+      setMediaStream(null);
     }
     setIsScreenSharing(false);
   };
@@ -313,6 +335,14 @@ const OnlineClassPage: React.FC = () => {
                       className="w-full h-full object-contain"
                     />
                   </div>
+                ) : mediaStream ? (
+                  <video
+                    ref={videoRef}
+                    autoPlay
+                    muted
+                    playsInline
+                    className="w-full h-full object-cover"
+                  />
                 ) : (
                   <div className="text-center">
                     <Video size={48} className="mx-auto mb-2 opacity-50" />

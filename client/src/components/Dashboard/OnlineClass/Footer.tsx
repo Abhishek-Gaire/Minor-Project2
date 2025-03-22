@@ -8,6 +8,7 @@ import {
   Share,
   Users,
 } from "lucide-react";
+import { useState } from "react";
 
 const Footer = ({
   inClass,
@@ -18,7 +19,13 @@ const Footer = ({
   showChat,
   setShowChat,
   handleLeaveClass,
+  participants,
 }) => {
+  const [showParticipants, setShowParticipants] = useState(false);
+
+  const toggleParticipantsList = () => {
+    setShowParticipants(!showParticipants);
+  };
   return (
     <footer className="bg-gray-800 p-4">
       <div className="flex justify-between items-center">
@@ -64,8 +71,13 @@ const Footer = ({
                 <Share size={20} />
               </button>
 
-              <button className="p-2 rounded-full bg-gray-700 hover:bg-gray-600">
-                <Users size={20} />
+              <button
+                onClick={toggleParticipantsList}
+                className={`p-2 rounded-full bg-gray-700 hover:bg-gray-600 ${
+                  showParticipants ? "text-blue-400" : ""
+                }`}
+              >
+                <Users />
               </button>
             </div>
 
@@ -78,6 +90,26 @@ const Footer = ({
           </>
         )}
       </div>
+
+      {showParticipants && (
+        <div className="absolute bottom-16 right-16 bg-gray-800 border border-gray-700 rounded-md p-4 w-64 shadow-lg">
+          <h3 className="text-lg font-medium mb-2">
+            Participants ({participants.length})
+          </h3>
+          <ul className="space-y-2">
+            {participants.map((participant) => (
+              <li key={participant.id} className="flex justify-between">
+                <span>{participant.name}</span>
+                <span className="text-xs text-gray-400">
+                  {participant.isTeacher && "Teacher"}
+                  {!participant.audioEnabled && ".Muted"}
+                  {participant.isSpeaking && ".Speaking"}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </footer>
   );
 };

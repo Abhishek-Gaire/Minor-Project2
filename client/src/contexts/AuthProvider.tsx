@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useState } from "react";
 import { LoginResponse, User } from "../utils/types.ts";
 
 import { AuthContext } from "./AuthContext.tsx";

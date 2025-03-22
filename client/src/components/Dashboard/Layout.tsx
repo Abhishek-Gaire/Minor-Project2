@@ -88,7 +88,7 @@ const Layout = () => {
         />
 
         {/* Main Content */}
-        <main className="p-4 sm:p-6 mr-10">
+        <main className="p-4 sm:p-6">
           <div className="animate-fadeIn max-w-[100vw] overflow-x-auto">
             <Outlet />
           </div>

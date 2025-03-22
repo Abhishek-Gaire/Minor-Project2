@@ -27,7 +27,6 @@ export const useMessages = (
         const responseData = await response.json();
 
         setPrivateMessages(responseData.data);
-        // setConversationId(responseData.conversationId);
       } catch (error) {
         console.error("Error fetching messages:", error);
       } finally {
@@ -60,7 +59,7 @@ export const useMessages = (
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "Messages" },
-        async (payload) => {
+        (payload) => {
           if (payload.eventType === "INSERT") {
             setPrivateMessages((prevMessages) => [
               ...prevMessages,
