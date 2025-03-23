@@ -1,7 +1,6 @@
 import { Request, Response, RequestHandler } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import supabase from "../config/supabase";
 import dotenv from "dotenv";
 import { Prisma, PrismaClient } from "@prisma/client";
 dotenv.config();
@@ -41,6 +40,15 @@ export const login: RequestHandler = async (req: Request, res: Response) => {
       });
       return;
     }
+
+    token = jwt.sign({ id: userExists.id }, JWT_SECRET, { expiresIn: "24h" });
+
+    res.cookie("studentAccessToken", token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+      path: "/",
+    });
   } else {
     userExists = await prisma.teacher.findFirst({ where: { email } });
     if (!userExists) {
@@ -59,30 +67,37 @@ export const login: RequestHandler = async (req: Request, res: Response) => {
       });
       return;
     }
-  }
-  token = jwt.sign({ id: userExists.id }, JWT_SECRET, { expiresIn: "1h" });
 
-  res.cookie("accessToken", token, {
-    httpOnly: true,
-    secure: true, // Use HTTPS
-    sameSite: "none", // Required for cross-origin requests
-  });
+    token = jwt.sign({ id: userExists.id }, JWT_SECRET, { expiresIn: "24h" });
+
+    res.cookie("teacherAccessToken", token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+      path: "/",
+    });
+  }
 
   res.status(200).json({
     message: "Login successful",
     accessToken: token,
     data: {
-      userExists,
+      ...userExists,
+      role: role.toLowerCase(),
     },
   });
   return;
 };
 
-export const forgotPassword: RequestHandler = async (req: Request, res: Response) => {
+export const forgotPassword: RequestHandler = async (
+  req: Request,
+  res: Response
+) => {
   const { email, role } = req.body;
 
   if (!email || !role) {
-    return res.status(400).json({ success: false, message: "Provide email and role" });
+    res.status(400).json({ success: false, message: "Provide email and role" });
+    return;
   }
 
   let userExists;
@@ -94,21 +109,32 @@ export const forgotPassword: RequestHandler = async (req: Request, res: Response
   }
 
   if (!userExists) {
-    return res.status(404).json({ success: false, message: `${role} not found` });
+    res.status(404).json({ success: false, message: `${role} not found` });
+    return;
   }
 
-  const resetToken = jwt.sign({ id: userExists.id }, JWT_SECRET, { expiresIn: "15m" });
+  const resetToken = jwt.sign({ id: userExists.id }, JWT_SECRET, {
+    expiresIn: "15m",
+  });
 
   // Send email logic (replace with your email service)
   console.log(`Reset token for ${email}: ${resetToken}`);
 
-  return res.status(200).json({ success: true, message: "Reset link sent", resetToken });
+  res
+    .status(200)
+    .json({ success: true, message: "Reset link sent", resetToken });
+  return;
 };
-export const resetPassword: RequestHandler = async (req: Request, res: Response) => {
+
+export const resetPassword: RequestHandler = async (
+  req: Request,
+  res: Response
+) => {
   const { token, newPassword, role } = req.body;
 
   if (!token || !newPassword || !role) {
-    return res.status(400).json({ success: false, message: "Provide all fields" });
+    res.status(400).json({ success: false, message: "Provide all fields" });
+    return;
   }
 
   try {
@@ -127,39 +153,109 @@ export const resetPassword: RequestHandler = async (req: Request, res: Response)
       });
     }
 
-    return res.status(200).json({ success: true, message: "Password reset successful" });
+    res
+      .status(200)
+      .json({ success: true, message: "Password reset successful" });
+    return;
   } catch (error) {
-    return res.status(400).json({ success: false, message: "Invalid or expired token" });
+    res
+      .status(400)
+      .json({ success: false, message: "Invalid or expired token" });
+    return;
   }
 };
-export const changePassword: RequestHandler = async (req: Request, res: Response) => {
+
+export const changePassword: RequestHandler = async (
+  req: Request,
+  res: Response
+) => {
   const { oldPassword, newPassword, role } = req.body;
   const userId = (req as any).user.id; // Extracted from middleware after authentication
 
   if (!oldPassword || !newPassword || !role) {
-    return res.status(400).json({ success: false, message: "Provide all fields" });
+    res.status(400).json({ success: false, message: "Provide all fields" });
+    return;
   }
 
   let user;
 
-  if (role === "Student") {
+  if (role === "student") {
     user = await prisma.student.findFirst({ where: { id: userId } });
   } else {
     user = await prisma.teacher.findFirst({ where: { id: userId } });
   }
 
   if (!user) {
-    return res.status(404).json({ success: false, message: `${role} not found` });
+    res.status(404).json({ success: false, message: `${role} not found` });
+    return;
   }
 
   if (user.password !== oldPassword) {
-    return res.status(401).json({ success: false, message: "Incorrect old password" });
+    res.status(401).json({ success: false, message: "Incorrect old password" });
+    return;
   }
+  const tableName = role.toLowerCase();
+  const model = prisma[tableName] as any;
 
-  await prisma[role.toLowerCase()].update({
+  await model.update({
     where: { id: userId },
     data: { password: newPassword },
   });
 
-  return res.status(200).json({ success: true, message: "Password changed successfully" });
+  res
+    .status(200)
+    .json({ success: true, message: "Password changed successfully" });
+  return;
+};
+
+export const verifyUser: RequestHandler = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const { user } = req as any;
+    if (!user) {
+      res.status(404).json({
+        success: false,
+        message: "Authorization Failed",
+      });
+      return;
+    }
+
+    let userDetails;
+    if ((req as any).role === "student") {
+      userDetails = await prisma.student.findUnique({
+        where: { id: user.id },
+      });
+    } else if ((req as any).role === "teacher") {
+      userDetails = await prisma.teacher.findUnique({
+        where: { id: user.id },
+      });
+    } else {
+      userDetails = null;
+    }
+
+    if (!userDetails) {
+      res.status(404).json({
+        success: false,
+        message: "User Not Found",
+      });
+      return;
+    }
+    res.status(200).json({
+      success: true,
+      message: "User Verified Successfully",
+      data: {
+        ...userDetails,
+        role: (req as any).role,
+      },
+    });
+    return;
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message || "Internal Server Error",
+    });
+    return;
+  }
 };

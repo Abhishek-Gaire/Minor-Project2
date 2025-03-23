@@ -1,10 +1,9 @@
-// import express from 'express';
-// import multer from 'multer';
-// import { registerInstitutionHandler } from '../controllers/institutionController';
+import { Router } from "express";
 
-// const router = express.Router();
-// const upload = multer({ storage: multer.memoryStorage() });
+import { registerInstitutionHandler } from "../controllers/institutionalControllers";
 
-// router.post('/register', upload.array('images', 5), registerInstitutionHandler);
+const schoolRouter: Router = Router();
 
-// export default router;
+schoolRouter.post("/register", registerInstitutionHandler);
+
+export default schoolRouter;

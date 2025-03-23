@@ -8,7 +8,14 @@ import {
   Shield,
   Users,
   Video,
+  LayoutDashboard,
+  MessageSquare,
+  CalendarCheck,
+  Calendar,
+  Folder,
+  User,
 } from "lucide-react";
+import { NavItem } from "./types";
 
 export const slides = [
   {
@@ -131,4 +138,86 @@ export const navigation = [
   { name: "Features", href: "/features" },
   { name: "About", href: "/about" },
   { name: "Contact", href: "/contact" },
+];
+
+export const adminNavigation: NavItem[] = [
+  { name: "Dashboard", to: "/dashboard", icon: LayoutDashboard },
+  { name: "Students", to: "/dashboard/students", icon: Users },
+  { name: "Courses", to: "/dashboard/courses", icon: BookOpen },
+  { name: "Grades", to: "/dashboard/grades", icon: GraduationCap },
+  { name: "Assignments", to: "/dashboard/assignments", icon: ClipboardList },
+  { name: "Class Chat", to: "/dashboard/chat", icon: MessageCircle },
+  { name: "Messages", to: "/dashboard/messages", icon: MessageSquare },
+  { name: "Online Class", to: "/dashboard/online-class", icon: Video },
+];
+
+export const teacherNavigation: NavItem[] = [
+  {
+    name: "Dashboard",
+    to: "/dashboard/teacher",
+    icon: LayoutDashboard,
+  },
+  { name: "My Courses", to: "/dashboard/teacher/courses", icon: BookOpen },
+  {
+    name: "Gradebook",
+    to: "/dashboard/teacher/gradebook",
+    icon: GraduationCap,
+  },
+  {
+    name: "Assignments",
+    to: "/dashboard/teacher/assignments",
+    icon: ClipboardList,
+  },
+  {
+    name: "Attendance",
+    to: "/dashboard/teacher/attendance",
+    icon: CalendarCheck,
+  },
+  { name: "Class Chat", to: "/dashboard/teacher/chat", icon: MessageCircle },
+  { name: "Live Classes", to: "/dashboard/teacher/live-classes", icon: Video },
+  { name: "Calendar", to: "/dashboard/teacher/calendar", icon: Calendar },
+  { name: "Resources", to: "/dashboard/teacher/resources", icon: Folder },
+  { name: "Profile", to: "/dashboard/teacher/profile", icon: User },
+];
+
+export const studentNavigation: NavItem[] = [
+  {
+    name: "Dashboard",
+    to: "/dashboard/student",
+    icon: LayoutDashboard,
+  },
+  { name: "My Courses", to: "/dashboard/student/courses", icon: BookOpen },
+  { name: "Grades", to: "/dashboard/student/grades", icon: GraduationCap },
+  {
+    name: "Assignments",
+    to: "/dashboard/student/assignments",
+    icon: ClipboardList,
+  },
+  { name: "Inbox", to: "/dashboard/student/messages", icon: MessageSquare },
+  { name: "Class Chat", to: "/dashboard/student/chat", icon: MessageCircle },
+  { name: "Live Classes", to: "/dashboard/student/live-classes", icon: Video },
+  { name: "Study Materials", to: "/dashboard/student/materials", icon: Folder },
+  { name: "Calendar", to: "/dashboard/student/calendar", icon: Calendar },
+  { name: "Profile", to: "/dashboard/student/profile", icon: User },
+];
+// Mock notifications
+export const mockNotifications = [
+  {
+    id: 1,
+    title: "New Student Registration",
+    message: "John Doe has registered",
+    time: "5 minutes ago",
+  },
+  {
+    id: 2,
+    title: "Exam Schedule Updated",
+    message: "Mathematics exam rescheduled",
+    time: "1 hour ago",
+  },
+  {
+    id: 3,
+    title: "Fee Payment",
+    message: "New payment received",
+    time: "2 hours ago",
+  },
 ];

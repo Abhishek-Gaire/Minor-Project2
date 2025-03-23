@@ -15,30 +15,21 @@ datasource db {
 
 model School {
   id        String   @id @default(uuid())
-  name      String   @unique
-  address   String
+  schoolName      String   @unique
+  schoolAddress   String
   city      String
-  state     String
+  role      String
   contact   String
   email     String   @unique
+  imageUrl  String
+  phone     String
   students  Student[]
   teachers  Teacher[]
   admins    Admin[]
   createdAt DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   @@map("schools")
-}
-
-model Student {
-  id       String @id @default(uuid())
-  name     String
-  email    String @unique
-  password String
-  schoolId String
-  school   School @relation(fields: [schoolId], references: [id])
-  createdAt DateTime @default(now())
-
-  @@map("students")
 }
 
 model Teacher {
@@ -74,6 +65,7 @@ model SuperAdmin {
 
   @@map("super_admins")
 }
+<<<<<<< HEAD
 model Assignment {
   id           String   @id @default(uuid())
   title        String
@@ -88,3 +80,98 @@ model Assignment {
 }
 
 
+=======
+
+model Conversations {
+  id           String    @id @default(uuid())
+  participants String[] 
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  messages     Messages[]
+}
+
+model Messages {
+  id             Int   @id @default(autoincrement())
+  conversationId String
+  sender         String
+  receiver       String
+  content        String
+  timeStamp      DateTime @default(now())
+  delivered      Boolean  @default(false)
+  conversation   Conversations @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  
+  @@index([conversationId])
+}
+
+model Student {
+  id         String @id @default(uuid())
+  name       String
+  email      String @unique
+  password   String
+  schoolId   String
+  school     School @relation(fields: [schoolId], references: [id])
+  createdAt  DateTime @default(now())
+  grade      Grade
+  rollNumber String?
+  studentDetails StudentDetails?
+
+  @@map("students")
+}
+
+model StudentDetails {
+  id                 String  @id @default(uuid())
+  studentId          String  @unique
+  gender             Gender
+  dateOfBirth        DateTime
+  section            String @default("A")
+  previousSchool     String?
+  academicYear       String
+  phone              String
+  alternatePhone     String?
+  address            String
+  city               String
+  state              String
+  zipCode            String
+  parentName         String
+  relationship       Relationship
+  parentPhone        String
+  parentEmail        String  @unique
+  bloodGroup         String?
+  medicalInformation String?
+  hobbies            String?
+  extraCurricular    String?
+  additionalNotes    String?
+
+  student            Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+}
+
+enum Gender {
+  male
+  female
+  other
+}
+
+enum Grade {
+  G5
+  G6
+  G7
+  G8
+  G9
+  G10
+}
+
+enum Relationship {
+  mother
+  father
+  guardian
+  other
+}
+
+model ClassChatMessages{
+  id Int  @id @default(autoincrement())
+  sender String
+  content String
+  timestamp DateTime  @default(now())
+  class String
+}
+>>>>>>> f8269f4e6878fed89e1ce2754d738d7c48f61547

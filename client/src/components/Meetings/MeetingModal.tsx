@@ -15,7 +15,7 @@ export function MeetingModal({ onClose }: MeetingModalProps) {
   const [meetingName, setMeetingName] = useState("");
   const [showForm, setShowForm] = useState(true);
 
-  const fallbackCopy =  () => {
+  const fallbackCopy = () => {
     const textarea = document.createElement("textarea");
     textarea.value = meetingLink;
     document.body.appendChild(textarea);
@@ -61,7 +61,7 @@ export function MeetingModal({ onClose }: MeetingModalProps) {
     }
   };
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    <div className="fixed mt-[450px] inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-xl">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold text-gray-900">

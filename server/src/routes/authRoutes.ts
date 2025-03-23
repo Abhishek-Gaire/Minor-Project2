@@ -1,14 +1,18 @@
 import express from "express";
 import {
   login,
-  // forgotPassword,
-  // resetPassword,
+  forgotPassword,
+  resetPassword,
+  changePassword,
+  verifyUser,
 } from "../controllers/authControllers";
+import { authenticate } from "../middleware/auth";
+const authRouter = express.Router();
 
-const router = express.Router();
+authRouter.post("/login", login);
+authRouter.post("/forgot-password", forgotPassword);
+authRouter.post("/reset-password", resetPassword);
+authRouter.post("/changePassword", changePassword);
+authRouter.get("/verify", authenticate, verifyUser);
 
-router.post("/login", login);
-// router.post("/forgot-password", forgotPassword);
-// router.post("/reset-password", resetPassword);
-
-export default router;
+export default authRouter;
