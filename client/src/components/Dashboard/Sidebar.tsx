@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { X as CloseIcon } from "lucide-react";
 
 import { teacherNavigation, studentNavigation } from "@/constants/constants.ts";
@@ -16,15 +16,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
   isMobile,
   role,
 }) => {
+  const location = useLocation();
   let navItems = role === "student" ? studentNavigation : teacherNavigation;
+
   return (
-    <div className="flex h-full flex-col overflow-y-auto bg-white">
-      <div className="flex h-16 items-center justify-between px-4 bg-blue-100">
-        <h1 className="text-xl font-semibold">Smart Class</h1>
+    <div className="flex h-full flex-col overflow-y-auto bg-[hsl(var(--background))] border-r border-[hsl(var(--border))]">
+      <div className="flex h-16 items-center justify-between px-4 bg-[hsl(var(--muted))] border-b border-[hsl(var(--border))]">
+        <h1 className="text-xl font-semibold text-[hsl(var(--foreground))]">
+          Smart Class
+        </h1>
         {!isMobile && (
           <button
             onClick={() => setIsSidebarOpen(false)}
-            className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 lg:hidden"
+            className="rounded-lg p-1.5 text-[hsl(var(--muted-foreground))] hover:bg-[hsl(var(--accent))] lg:hidden"
           >
             <CloseIcon className="h-5 w-5" />
           </button>
@@ -41,8 +45,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   className={cn(
                     "flex items-center p-3 rounded-lg transition-colors",
                     location.pathname === item.to
-                      ? "bg-blue-100 text-blue-700"
-                      : "text-gray-700 hover:bg-gray-100"
+                      ? "bg-[hsl(var(--accent))] text-[hsl(var(--accent-foreground))]"
+                      : "text-[hsl(var(--muted-foreground))] hover:bg-[hsl(var(--muted))]"
                   )}
                 >
                   <Icon size={20} className="mr-3" />

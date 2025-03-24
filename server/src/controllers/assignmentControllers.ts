@@ -1,16 +1,39 @@
-// import { Request, Response } from 'express';
-// import { submitAssignment } from '../services/assignmentServices';
+import { Request, Response } from "express";
+import { PrismaClient } from "@prisma/client";
 
-// export const uploadAssignment = async (req: Request, res: Response) => {
-//   try {
-//     const { teacherId, title } = req.body;
-//     const file = req.file;
+const prisma = new PrismaClient();
 
-//     if (!file) return res.status(400).json({ error: 'File is required' });
+export const uploadAssignment = async (req: Request, res: Response) => {
+  try {
+    const { role, title, fileUrl } = req.body;
+    const { id } = req.params; // Extracting ID from request params
 
-//     const result = await submitAssignment(teacherId, title, file);
-//     res.status(201).json(result);
-//   } catch (err: any) {
-//     res.status(500).json({ error: err.message });
-//   }
-// };
+    // Verify if user exists in respective table
+    const user = await (role === "Student"
+      ? prisma.student.findUnique({ where: { id } })
+      : prisma.teacher.findUnique({ where: { id } }));
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: `${role} not found` });
+    }
+
+    // Store assignment in the database
+    const assignment = await prisma.assignment.create({
+      data: {
+        title,
+        fileUrl,
+        uploadedById: id,
+        role,
+        uploadedAt: new Date(),
+      },
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: "Assignment uploaded successfully",
+      data: assignment,
+    });
+  } catch (error: any) {
+    return res.status(500).json({ success: false, message: error.message || "Server Error" });
+  }
+};

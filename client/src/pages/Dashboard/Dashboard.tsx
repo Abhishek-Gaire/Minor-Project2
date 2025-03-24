@@ -10,7 +10,7 @@ const Dashboard: React.FC = () => {
     <div>
       <header className="mb-8">
         <h1 className="text-2xl font-bold">Dashboard</h1>
-        <p className="text-gray-600">
+        <p className="text-[hsl(var(--foreground))]">
           Welcome back! {user.role}: {user.name}
         </p>
       </header>
@@ -43,7 +43,7 @@ const Dashboard: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className=" bg-[hsl(var(--background))] rounded-lg shadow p-6">
           <h2 className="text-lg font-semibold mb-4">Recent Activity</h2>
           <div className="space-y-4">
             {[1, 2, 3, 4].map((i) => (
@@ -65,7 +65,7 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className=" bg-[hsl(var(--background))] rounded-lg shadow p-6">
           <h2 className="text-lg font-semibold mb-4">Upcoming Schedule</h2>
           <div className="space-y-4">
             {[1, 2, 3].map((i) => (

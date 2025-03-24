@@ -14,10 +14,10 @@ const StatsCard: React.FC<StatsCardProps> = ({
   changeType,
 }) => {
   return (
-    <div className="bg-white rounded-lg shadow p-6">
+    <div className="bg-[hsl(var(--background))] rounded-lg shadow p-6">
       <div className="flex justify-between items-start">
         <div>
-          <p className="text-gray-500 text-sm">{title}</p>
+          <p className="text-[hsl(var(--muted-foreground))] text-sm">{title}</p>
           <h3 className="text-2xl font-bold mt-1">{value}</h3>
           {change && (
             <p
