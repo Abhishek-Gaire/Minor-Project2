@@ -141,9 +141,11 @@ const StudyMaterialsPage = () => {
   };
 
   return (
-    <div className="flex flex-col w-full bg-gray-50 p-4">
+    <div className="flex flex-col w-full bg-[hsl(var(--card))] p-4">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">Study Materials</h1>
+        <h1 className="text-2xl font-bold text-[hsl(var(--card-foreground))]">
+          Study Materials
+        </h1>
         <div>
           <Button>
             <FileText className="h-4 w-4 mr-2" />
@@ -170,7 +172,7 @@ const StudyMaterialsPage = () => {
                       ></div>
                       <span className="font-medium">{course.name}</span>
                     </div>
-                    <span className="text-sm text-gray-500">
+                    <span className="text-sm text-[hsl(var(--card-foreground))]">
                       {course.progress}%
                     </span>
                   </div>

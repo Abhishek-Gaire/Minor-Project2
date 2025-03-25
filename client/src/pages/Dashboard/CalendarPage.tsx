@@ -445,9 +445,11 @@ const CalendarPage = () => {
   };
 
   return (
-    <div className="flex flex-col w-full bg-gray-50 p-4">
+    <div className="flex flex-col w-full bg-[hsl(var(--card))] p-4">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">Calendar</h1>
+        <h1 className="text-2xl font-bold text-[hsl(var(--card-foreground))]">
+          Calendar
+        </h1>
         <div>
           <Button>
             <Plus className="h-4 w-4 mr-2" />
@@ -494,7 +496,7 @@ const CalendarPage = () => {
                         ${
                           day < 1 || day > 31
                             ? "text-gray-300"
-                            : "text-gray-700"
+                            : "text-[hsl(var(--card-foreground))]"
                         }
                       `}
                       >
@@ -527,7 +529,7 @@ const CalendarPage = () => {
                       {deadline.type === "exam" ? "Exam" : "Assignment"}
                     </Badge>
                   </div>
-                  <div className="text-sm text-gray-500 flex justify-between mt-1">
+                  <div className="text-sm text-[hsl(var(--card-foreground))] flex justify-between mt-1">
                     <span>{deadline.course}</span>
                     <span>{deadline.dueDate}</span>
                   </div>

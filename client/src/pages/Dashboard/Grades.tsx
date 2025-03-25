@@ -124,7 +124,7 @@ const Grades: React.FC = () => {
       case "Failed":
         return "bg-red-100 text-red-800";
       default:
-        return "bg-gray-100 text-gray-800";
+        return "bg-gray-100 text-[hsl(var(--muted-foreground))]800";
     }
   };
 
@@ -141,20 +141,22 @@ const Grades: React.FC = () => {
       <header className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-2xl font-bold">Grades</h1>
-          <p className="text-gray-600">View and manage student grades</p>
+          <p className="text-[hsl(var(--muted-foreground))]600">
+            View and manage student grades
+          </p>
         </div>
-        <button className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center">
+        <button className="bg-blue-600 text-[hsl(var(--primary-foreground))] px-4 py-2 rounded-lg flex items-center">
           <Download size={18} className="mr-2" />
           Export Grades
         </button>
       </header>
 
-      <div className="bg-white rounded-lg shadow mb-6">
+      <div className="bg-[hsl(var(--card))] rounded-lg shadow mb-6">
         <div className="p-4 flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
           <div className="relative flex-grow">
             <Search
               size={18}
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[hsl(var(--muted-foreground))]"
             />
             <input
               type="text"
@@ -166,7 +168,7 @@ const Grades: React.FC = () => {
           </div>
           <div className="relative">
             <select
-              className="appearance-none pl-4 pr-10 py-2 border rounded-lg bg-white"
+              className="appearance-none pl-4 pr-10 py-2 border rounded-lg bg-[hsl(var(--card))]"
               value={selectedCourse || ""}
               onChange={(e) => setSelectedCourse(e.target.value || null)}
             >
@@ -179,7 +181,7 @@ const Grades: React.FC = () => {
             </select>
             <ChevronDown
               size={18}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[hsl(var(--muted-foreground))]400 pointer-events-none"
             />
           </div>
           <button className="px-4 py-2 border rounded-lg flex items-center">
@@ -189,14 +191,14 @@ const Grades: React.FC = () => {
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="bg-[hsl(var(--card))] rounded-lg shadow overflow-hidden">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+            <thead className="bg-[hsl(var(--muted))]">
               <tr>
                 <th
                   scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  className="px-6 py-3 text-left text-xs font-medium text-[hsl(var(--muted-foreground))]500 uppercase tracking-wider"
                 >
                   <div className="flex items-center">
                     Student
@@ -205,7 +207,7 @@ const Grades: React.FC = () => {
                 </th>
                 <th
                   scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  className="px-6 py-3 text-left text-xs font-medium text-[hsl(var(--muted-foreground))]500 uppercase tracking-wider"
                 >
                   <div className="flex items-center">
                     Course
@@ -214,13 +216,13 @@ const Grades: React.FC = () => {
                 </th>
                 <th
                   scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  className="px-6 py-3 text-left text-xs font-medium text-[hsl(var(--muted-foreground))]500 uppercase tracking-wider"
                 >
                   Assignment
                 </th>
                 <th
                   scope="col"
-                  className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  className="px-6 py-3 text-center text-xs font-medium text-[hsl(var(--muted-foreground))]500 uppercase tracking-wider"
                 >
                   <div className="flex items-center justify-center">
                     Grade
@@ -229,21 +231,21 @@ const Grades: React.FC = () => {
                 </th>
                 <th
                   scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  className="px-6 py-3 text-left text-xs font-medium text-[hsl(var(--muted-foreground))]500 uppercase tracking-wider"
                 >
                   Submission Date
                 </th>
                 <th
                   scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  className="px-6 py-3 text-left text-xs font-medium text-[hsl(var(--muted-foreground))]500 uppercase tracking-wider"
                 >
                   Status
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-[hsl(var(--card))] divide-y divide-gray-200">
               {filteredGrades.map((entry) => (
-                <tr key={entry.id} className="hover:bg-gray-50">
+                <tr key={entry.id} className="hover:bg-[hsl(var(--muted))]">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <div className="flex-shrink-0 h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
@@ -255,23 +257,25 @@ const Grades: React.FC = () => {
                         </span>
                       </div>
                       <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-900">
+                        <div className="text-sm font-medium text-[hsl(var(--muted-foreground))]900">
                           {entry.studentName}
                         </div>
-                        <div className="text-sm text-gray-500">
+                        <div className="text-sm text-[hsl(var(--muted-foreground))]500">
                           {entry.studentId}
                         </div>
                       </div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{entry.course}</div>
+                    <div className="text-sm text-[hsl(var(--muted-foreground))]900">
+                      {entry.course}
+                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">
+                    <div className="text-sm text-[hsl(var(--muted-foreground))]900">
                       {entry.assignment}
                     </div>
-                    <div className="text-sm text-gray-500">
+                    <div className="text-sm text-[hsl(var(--muted-foreground))]500">
                       Graded by: {entry.gradedBy}
                     </div>
                   </td>
@@ -283,12 +287,12 @@ const Grades: React.FC = () => {
                     >
                       {entry.grade}/{entry.maxGrade}
                     </div>
-                    <div className="text-sm text-gray-500">
+                    <div className="text-sm text-[hsl(var(--muted-foreground))]500">
                       {((entry.grade / entry.maxGrade) * 100).toFixed(1)}%
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">
+                    <div className="text-sm text-[hsl(var(--muted-foreground))]900">
                       {new Date(entry.submissionDate).toLocaleDateString()}
                     </div>
                   </td>
@@ -307,7 +311,7 @@ const Grades: React.FC = () => {
           </table>
         </div>
         <div className="px-6 py-4 border-t flex items-center justify-between">
-          <div className="text-sm text-gray-500">
+          <div className="text-sm text-[hsl(var(--muted-foreground))]500">
             Showing <span className="font-medium">{filteredGrades.length}</span>{" "}
             of <span className="font-medium">{grades.length}</span> grades
           </div>
@@ -315,7 +319,7 @@ const Grades: React.FC = () => {
             <button className="px-3 py-1 border rounded text-sm">
               Previous
             </button>
-            <button className="px-3 py-1 bg-blue-600 text-white rounded text-sm">
+            <button className="px-3 py-1 bg-blue-600 text-[hsl(var(--primary-foreground))] rounded text-sm">
               1
             </button>
             <button className="px-3 py-1 border rounded text-sm">Next</button>

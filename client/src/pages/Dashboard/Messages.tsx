@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/useAuth";
@@ -103,7 +103,7 @@ const MessagesPage: React.FC = () => {
     <div className="flex h-[87vh] overflow-hidden">
       <div
         className={cn(
-          "border-r bg-white flex flex-col",
+          "border-r bg-[hsl(var(--background))] flex flex-col",
           activeConversation == null ? "w-full" : "w-80"
         )}
       >
@@ -153,7 +153,7 @@ const MessagesPage: React.FC = () => {
       </div>
 
       {activeConversation !== null && (
-        <div className="flex-1 flex flex-col bg-gray-50">
+        <div className="flex-1 flex flex-col bg-[hsl(var(--muted))]">
           {/* Chat header */}
           <ChatHeader selectedUser={selectedUser} />
 

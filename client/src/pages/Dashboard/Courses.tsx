@@ -145,12 +145,12 @@ const Courses: React.FC = () => {
         </button>
       </header>
 
-      <div className="bg-white rounded-lg shadow mb-6">
+      <div className="bg-[hsl(var(--background))] rounded-lg shadow mb-6">
         <div className="p-4 flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
           <div className="relative flex-grow">
             <Search
               size={18}
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[hsl(var(--muted-foreground))]"
             />
             <input
               type="text"
@@ -171,7 +171,7 @@ const Courses: React.FC = () => {
         {filteredCourses.map((course) => (
           <div
             key={course.id}
-            className="bg-white rounded-lg shadow overflow-hidden"
+            className="bg-[hsl(var(--background))] rounded-lg shadow overflow-hidden"
           >
             <div className="p-6">
               <div className="flex justify-between">
@@ -186,14 +186,16 @@ const Courses: React.FC = () => {
                       {course.status}
                     </span>
                   </div>
-                  <p className="text-gray-600 mt-1">{course.instructor}</p>
-                  <div className="mt-4 flex items-center text-sm text-gray-500">
+                  <p className="text-[hsl(var(--muted-foreground))] mt-1">
+                    {course.instructor}
+                  </p>
+                  <div className="mt-4 flex items-center text-sm text-[hsl(var(--muted-foreground))]">
                     <BookOpen size={16} className="mr-1" />
                     <span>{course.category}</span>
                   </div>
                 </div>
                 <div>
-                  <button className="text-gray-400 hover:text-gray-600">
+                  <button className="text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--muted-foreground))]">
                     <MoreHorizontal size={20} />
                   </button>
                 </div>
@@ -204,7 +206,7 @@ const Courses: React.FC = () => {
                   <Calendar size={20} className="text-blue-600 mr-2" />
                   <div>
                     <p className="text-sm font-medium">Course Period</p>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-[hsl(var(--muted-foreground))]">
                       {new Date(course.startDate).toLocaleDateString()} -{" "}
                       {new Date(course.endDate).toLocaleDateString()}
                     </p>
@@ -214,14 +216,16 @@ const Courses: React.FC = () => {
                   <Clock size={20} className="text-blue-600 mr-2" />
                   <div>
                     <p className="text-sm font-medium">Schedule</p>
-                    <p className="text-sm text-gray-500">{course.schedule}</p>
+                    <p className="text-sm text-[hsl(var(--muted-foreground))]">
+                      {course.schedule}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center">
                   <Users size={20} className="text-blue-600 mr-2" />
                   <div>
                     <p className="text-sm font-medium">Students</p>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-[hsl(var(--muted-foreground))]">
                       {course.students} enrolled
                     </p>
                   </div>
@@ -239,7 +243,7 @@ const Courses: React.FC = () => {
                 <button className="px-4 py-2 border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50">
                   View Details
                 </button>
-                <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                <button className="px-4 py-2 bg-blue-600 text-[hsl(var(--primary-foreground))] rounded-lg hover:bg-blue-700">
                   Manage Course
                 </button>
               </div>

@@ -19,13 +19,13 @@ const ClassChatPage: React.FC = () => {
   }, [classMessages]);
 
   return (
-    <div className="flex flex-col h-[87vh] bg-gray-50 ">
-      <header className="bg-white shadow p-4">
+    <div className="flex flex-col h-[87vh] bg-[hsl(var(--card))]">
+      <header className="bg-[hsl(var(--card))] shadow p-4">
         <div className="flex items-center">
           <MessageCircle className="text-blue-500 mr-2" />
           <h1 className="text-xl font-semibold">Class Chat</h1>
         </div>
-        <p className="text-gray-500 text-sm mt-1">
+        <p className="text-[hsl(var(--card-foreground))] text-sm mt-1">
           Grade {user.grade.split("")[1]}
         </p>
       </header>
@@ -36,7 +36,7 @@ const ClassChatPage: React.FC = () => {
         <ScrollArea className="flex-1 ">
           <div className="overflow-y-auto p-4">
             {classMessages?.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-full text-gray-500">
+              <div className="flex flex-col items-center justify-center h-full text-[hsl(var(--card-foreground))]">
                 <p>No Messages Yet</p>
                 <p className="text-sm">
                   Start the conversation by sending a message!
