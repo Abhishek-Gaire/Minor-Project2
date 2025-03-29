@@ -40,8 +40,9 @@ const MessageInput = ({ sender }) => {
       setSending(false);
     }
   };
+
   return (
-    <div className="bg-white p-4 border-t">
+    <div className="bg-[hsl(var(--background))] p-4 border-t">
       <div className="flex space-x-2">
         <Button variant="outline" size="icon">
           <PaperclipIcon className="h-4 w-4" />
