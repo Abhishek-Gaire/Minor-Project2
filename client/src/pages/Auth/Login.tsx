@@ -121,7 +121,7 @@ const Login = () => {
                 </span>
               </div>
               <div className="text-sm text-center">
-                <Link to="/forget-password">Forget Your Password?</Link>
+                <Link to="/forgot-password">Forget Your Password?</Link>
               </div>
             </div>
           </form>
