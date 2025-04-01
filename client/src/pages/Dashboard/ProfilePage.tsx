@@ -252,7 +252,7 @@ const ProfilePage = ({ initialActiveTab = "profile" }) => {
         {activeTab === "security" && <SecurityTab />}
 
         {/* Help Tab */}
-        {activeTab === "help" && <HelpTab />}
+        {activeTab === "help" && <HelpTab role={user.role} />}
       </div>
     </div>
   );

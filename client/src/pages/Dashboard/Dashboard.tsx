@@ -5,7 +5,7 @@ import { useAuth } from "@/contexts/useAuth";
 
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
-
+  user.role = "teacher";
   const renderTeacherDashboard = () => (
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -37,7 +37,7 @@ const Dashboard: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-[hsl(var(--background))] rounded-lg shadow p-6">
+        <div className="bg-card rounded-lg shadow p-6">
           <h2 className="text-lg font-semibold mb-4">Class Performance</h2>
           <div className="space-y-4">
             {[
@@ -59,7 +59,7 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-[hsl(var(--background))] rounded-lg shadow p-6">
+        <div className="bg-card rounded-lg shadow p-6">
           <h2 className="text-lg font-semibold mb-4">Upcoming Schedule</h2>
           <div className="space-y-4">
             {[
@@ -76,7 +76,9 @@ const Dashboard: React.FC = () => {
                   <p className="font-medium">
                     {schedule.subject} (Grade {schedule.grade})
                   </p>
-                  <p className="text-sm text-gray-500">{schedule.time}</p>
+                  <p className="text-sm text-secondary-foreground">
+                    {schedule.time}
+                  </p>
                 </div>
               </div>
             ))}
@@ -117,7 +119,7 @@ const Dashboard: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-[hsl(var(--background))] rounded-lg shadow p-6">
+        <div className="bg-card rounded-lg shadow p-6">
           <h2 className="text-lg font-semibold mb-4">Recent Grades</h2>
           <div className="space-y-4">
             {[
@@ -133,7 +135,7 @@ const Dashboard: React.FC = () => {
                 <span className="font-medium">{gradeItem.subject}</span>
                 <div>
                   <span className="font-bold mr-2">{gradeItem.grade}</span>
-                  <span className="text-gray-500 text-sm">
+                  <span className="text-secondary-foreground text-sm">
                     {gradeItem.date}
                   </span>
                 </div>
@@ -142,7 +144,7 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-[hsl(var(--background))] rounded-lg shadow p-6">
+        <div className="bg-card rounded-lg shadow p-6">
           <h2 className="text-lg font-semibold mb-4">Upcoming Classes</h2>
           <div className="space-y-4">
             {[
@@ -169,8 +171,12 @@ const Dashboard: React.FC = () => {
                 </div>
                 <div>
                   <p className="font-medium">{classItem.subject}</p>
-                  <p className="text-sm text-gray-500">{classItem.time}</p>
-                  <p className="text-sm text-gray-500">{classItem.room}</p>
+                  <p className="text-sm text-secondary-foreground">
+                    {classItem.time}
+                  </p>
+                  <p className="text-sm text-secondary-foreground">
+                    {classItem.room}
+                  </p>
                 </div>
               </div>
             ))}
@@ -184,7 +190,7 @@ const Dashboard: React.FC = () => {
     <div>
       <header className="mb-8">
         <h1 className="text-2xl font-bold">Dashboard</h1>
-        <p className="text-[hsl(var(--foreground))]">
+        <p className="text-foreground">
           Welcome back, {user.name} ({user.role})
         </p>
       </header>

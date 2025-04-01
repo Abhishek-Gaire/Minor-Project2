@@ -103,7 +103,7 @@ const MessagesPage: React.FC = () => {
     <div className="flex h-[87vh] overflow-hidden">
       <div
         className={cn(
-          "border-r bg-[hsl(var(--background))] flex flex-col",
+          "bg-background flex flex-col",
           activeConversation == null ? "w-full" : "w-80"
         )}
       >
@@ -153,7 +153,7 @@ const MessagesPage: React.FC = () => {
       </div>
 
       {activeConversation !== null && (
-        <div className="flex-1 flex flex-col bg-[hsl(var(--muted))]">
+        <div className="flex-1 flex flex-col bg-muted">
           {/* Chat header */}
           <ChatHeader selectedUser={selectedUser} />
 

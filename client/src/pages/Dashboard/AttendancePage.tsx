@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Calendar,
   Clock,
@@ -6,7 +6,6 @@ import {
   XCircle,
   AlertCircle,
   Download,
-  Filter,
   Search,
   ChevronLeft,
   ChevronRight,
@@ -227,13 +226,13 @@ const TeacherAttendancePage = () => {
         <h1 className="text-2xl font-bold">Attendance Management</h1>
         <div className="flex items-center gap-2">
           <button
-            className="bg-blue-600 text-white px-4 py-2 rounded-md flex items-center"
+            className="bg-blue-600 text-primary px-4 py-2 rounded-md flex items-center"
             onClick={() => setIsEditMode(!isEditMode)}
           >
             <Edit className="h-4 w-4 mr-2" />
             {isEditMode ? "Save Changes" : "Edit Attendance"}
           </button>
-          <button className="bg-gray-100 text-gray-700 px-4 py-2 rounded-md flex items-center">
+          <button className="bg-secondary text-secondary-foreground px-4 py-2 rounded-md flex items-center">
             <Download className="h-4 w-4 mr-2" />
             Export
           </button>
@@ -242,7 +241,7 @@ const TeacherAttendancePage = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
         {/* Class Selection */}
-        <div className="md:col-span-1 bg-white rounded-lg shadow p-4">
+        <div className="md:col-span-1 bg-background rounded-lg border-border shadow p-4">
           <h2 className="text-lg font-semibold mb-4">My Classes</h2>
           <div className="space-y-2">
             {classes.map((cls) => (
@@ -250,13 +249,13 @@ const TeacherAttendancePage = () => {
                 key={cls.id}
                 className={`w-full text-left p-3 rounded-md ${
                   selectedClass === cls.id
-                    ? "bg-blue-50 border-l-4 border-blue-500"
-                    : "hover:bg-gray-50"
+                    ? "bg-accent border-l-4 border-blue-500"
+                    : "hover:bg-accent"
                 }`}
                 onClick={() => setSelectedClass(cls.id)}
               >
                 <div className="font-medium">{cls.name}</div>
-                <div className="text-sm text-gray-500">
+                <div className="text-sm text-accent-foreground">
                   {cls.grade} • Room {cls.room}
                 </div>
               </button>
@@ -267,11 +266,11 @@ const TeacherAttendancePage = () => {
         {/* Main Content */}
         <div className="md:col-span-3 space-y-6">
           {/* Date Navigation */}
-          <div className="bg-white rounded-lg shadow p-4">
+          <div className="bg-background rounded-lg shadow p-4">
             <div className="flex justify-between items-center">
               <div className="flex items-center space-x-4">
                 <button
-                  className="p-2 rounded-full hover:bg-gray-100"
+                  className="p-2 rounded-full hover:bg-accent"
                   onClick={goToPreviousDay}
                 >
                   <ChevronLeft className="h-5 w-5" />
@@ -281,14 +280,14 @@ const TeacherAttendancePage = () => {
                   <span className="font-medium">{formatDate(currentDate)}</span>
                 </div>
                 <button
-                  className="p-2 rounded-full hover:bg-gray-100"
+                  className="p-2 rounded-full hover:bg-accent"
                   onClick={goToNextDay}
                 >
                   <ChevronRight className="h-5 w-5" />
                 </button>
               </div>
               <button
-                className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-md"
+                className="px-3 py-1 text-sm bg-secondary hover:bg-primary-foreground rounded-md"
                 onClick={goToToday}
               >
                 Today
@@ -297,7 +296,7 @@ const TeacherAttendancePage = () => {
           </div>
 
           {/* Attendance Stats */}
-          <div className="bg-white rounded-lg shadow p-4">
+          <div className="bg-primary-foreground rounded-lg shadow p-4">
             <h2 className="text-lg font-semibold mb-4">
               {currentClass?.name} Attendance Summary
             </h2>
@@ -365,23 +364,23 @@ const TeacherAttendancePage = () => {
           </div>
 
           {/* Student List */}
-          <div className="bg-white rounded-lg shadow overflow-hidden">
-            <div className="p-4 border-b">
+          <div className="bg-card rounded-lg shadow overflow-hidden">
+            <div className="p-4 ">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div className="relative flex-1">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Search className="h-5 w-5 text-gray-400" />
+                    <Search className="h-5 w-5 text-foreground" />
                   </div>
                   <input
                     type="text"
                     placeholder="Search students..."
-                    className="pl-10 pr-4 py-2 w-full border rounded-md"
+                    className="pl-10 pr-4 py-2 w-full border rounded-md text-foreground bg-input"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
                 </div>
                 <select
-                  className="p-2 border rounded-md bg-white"
+                  className="p-2 border rounded-md bg-card"
                   value={attendanceFilter}
                   onChange={(e) => setAttendanceFilter(e.target.value)}
                 >
@@ -395,38 +394,38 @@ const TeacherAttendancePage = () => {
             </div>
 
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+              <table className="min-w-full divide-y divide-accent-foreground">
+                <thead className="bg-card">
                   <tr>
                     <th
                       scope="col"
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      className="px-6 py-3 text-left text-xs font-medium text-foreground uppercase tracking-wider"
                     >
                       Student
                     </th>
                     <th
                       scope="col"
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      className="px-6 py-3 text-left text-xs font-medium text-foreground uppercase tracking-wider"
                     >
                       Status
                     </th>
                     <th
                       scope="col"
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      className="px-6 py-3 text-left text-xs font-medium text-foreground uppercase tracking-wider"
                     >
                       Email
                     </th>
                     {isEditMode && (
                       <th
                         scope="col"
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                        className="px-6 py-3 text-left text-xs font-medium text-foreground uppercase tracking-wider"
                       >
                         Actions
                       </th>
                     )}
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-card divide-y divide-accent-foreground">
                   {filteredStudents.length > 0 ? (
                     filteredStudents.map((student) => (
                       <tr key={student.id}>
@@ -440,10 +439,10 @@ const TeacherAttendancePage = () => {
                               />
                             </div>
                             <div className="ml-4">
-                              <div className="text-sm font-medium text-gray-900">
+                              <div className="text-sm font-medium text-foreground">
                                 {student.name}
                               </div>
-                              <div className="text-sm text-gray-500">
+                              <div className="text-sm text-foreground">
                                 ID: {student.id}
                               </div>
                             </div>
@@ -452,12 +451,12 @@ const TeacherAttendancePage = () => {
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center">
                             {getStatusIcon(attendanceData.records[student.id])}
-                            <span className="ml-2 text-sm text-gray-700 capitalize">
+                            <span className="ml-2 text-sm text-foreground capitalize">
                               {attendanceData.records[student.id]}
                             </span>
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
                           {student.email}
                         </td>
                         {isEditMode && (
@@ -523,7 +522,7 @@ const TeacherAttendancePage = () => {
                     <tr>
                       <td
                         colSpan={isEditMode ? 4 : 3}
-                        className="px-6 py-4 text-center text-gray-500"
+                        className="px-6 py-4 text-center text-foreground"
                       >
                         No students found matching your criteria.
                       </td>
@@ -535,17 +534,17 @@ const TeacherAttendancePage = () => {
 
             {/* Pagination */}
             <div className="px-6 py-3 border-t flex items-center justify-between">
-              <div className="text-sm text-gray-500">
+              <div className="text-sm text-foreground">
                 Showing{" "}
                 <span className="font-medium">{filteredStudents.length}</span>{" "}
                 of <span className="font-medium">{students.length}</span>{" "}
                 students
               </div>
               <div className="flex space-x-2">
-                <button className="px-3 py-1 rounded-md bg-gray-100 text-gray-700 disabled:opacity-50">
+                <button className="px-3 py-1 rounded-md bg-primary text-primary-foreground disabled:opacity-50">
                   Previous
                 </button>
-                <button className="px-3 py-1 rounded-md bg-gray-100 text-gray-700 disabled:opacity-50">
+                <button className="px-3 py-1 rounded-md bg-primary text-primary-foreground disabled:opacity-50">
                   Next
                 </button>
               </div>
@@ -553,17 +552,17 @@ const TeacherAttendancePage = () => {
           </div>
 
           {/* Notes Section */}
-          <div className="bg-white rounded-lg shadow p-4">
+          <div className="bg-card rounded-lg shadow p-4">
             <h2 className="text-lg font-semibold mb-4">
               Notes for {formatDate(currentDate)}
             </h2>
             <textarea
-              className="w-full p-3 border rounded-md"
+              className="w-full p-3 border-input bg-input text-foreground rounded-md"
               rows={3}
               placeholder="Add any notes about today's attendance..."
             />
             <div className="mt-2 flex justify-end">
-              <button className="px-4 py-2 bg-blue-600 text-white rounded-md">
+              <button className="px-4 py-2 bg-primary-foreground text-foreground rounded-md">
                 Save Notes
               </button>
             </div>

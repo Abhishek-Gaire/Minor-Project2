@@ -1,18 +1,9 @@
 import React, { useState } from "react";
-import {
-  Plus,
-  Search,
-  Filter,
-  Calendar,
-  FileText,
-  Clock,
-  CheckCircle,
-  AlertCircle,
-  Book,
-  MoreVertical,
-  ChevronDown,
-} from "lucide-react";
+import { Plus, Calendar, Clock, CheckCircle, AlertCircle } from "lucide-react";
 import { useAuth } from "@/contexts/useAuth";
+import CreateAssignment from "@/components/Dashboard/Assignments/CreateAssignment";
+import AssignementCard from "@/components/Dashboard/Assignments/AssignemntCard";
+import Filters from "@/components/Dashboard/Assignments/Filters";
 
 interface Assignment {
   id: number;
@@ -108,7 +99,7 @@ const assignmentsData: Assignment[] = [
 
 const Assignments: React.FC = () => {
   const { user } = useAuth();
-  // user.role = "teacher";
+  user.role = "teacher";
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
   const [assignments, setAssignments] = useState<Assignment[]>(assignmentsData);
@@ -154,22 +145,6 @@ const Assignments: React.FC = () => {
       default:
         return null;
     }
-  };
-
-  const formatTimeRemaining = (dueDate: string) => {
-    const now = new Date();
-    const due = new Date(dueDate);
-    const diff = due.getTime() - now.getTime();
-
-    if (diff <= 0) return "Past due";
-
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-
-    if (days > 0) {
-      return `${days} day${days > 1 ? "s" : ""} remaining`;
-    }
-    return `${hours} hour${hours > 1 ? "s" : ""} remaining`;
   };
 
   // Placeholder for hardcoded filtering logic
@@ -253,131 +228,6 @@ const Assignments: React.FC = () => {
   // View Assignment Details Function
   const handleViewAssignmentDetails = (assignment: Assignment) => {
     setSelectedAssignmentDetails(assignment);
-  };
-
-  // Render Create Assignment Modal
-  const renderCreateAssignmentModal = () => {
-    if (!showCreateAssignmentModal) return null;
-
-    return (
-      <div className="fixed z-50 inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-        <div className="bg-[hsl(var(--card))] p-6 rounded-lg w-[500px]">
-          <h2 className="text-xl font-semibold mb-4">Create New Assignment</h2>
-
-          <div className="space-y-4">
-            <div>
-              <label className="block mb-2">Title</label>
-              <input
-                type="text"
-                className="w-full border rounded-lg p-2"
-                value={newAssignmentForm.title}
-                onChange={(e) =>
-                  setNewAssignmentForm({
-                    ...newAssignmentForm,
-                    title: e.target.value,
-                  })
-                }
-              />
-            </div>
-
-            <div>
-              <label className="block mb-2">Subject</label>
-              <input
-                type="text"
-                className="w-full border rounded-lg p-2"
-                value={newAssignmentForm.subject}
-                onChange={(e) =>
-                  setNewAssignmentForm({
-                    ...newAssignmentForm,
-                    subject: e.target.value,
-                  })
-                }
-              />
-            </div>
-
-            <div>
-              <label className="block mb-2">Grade Level</label>
-              <select
-                className="w-full border rounded-lg p-2"
-                value={newAssignmentForm.grade}
-                onChange={(e) =>
-                  setNewAssignmentForm({
-                    ...newAssignmentForm,
-                    grade: parseInt(e.target.value),
-                  })
-                }
-              >
-                {[5, 6, 7, 8, 9, 10].map((grade) => (
-                  <option key={grade} value={grade}>
-                    {grade}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block mb-2">Description</label>
-              <textarea
-                className="w-full border rounded-lg p-2"
-                rows={4}
-                value={newAssignmentForm.description}
-                onChange={(e) =>
-                  setNewAssignmentForm({
-                    ...newAssignmentForm,
-                    description: e.target.value,
-                  })
-                }
-              />
-            </div>
-
-            <div>
-              <label className="block mb-2">Due Date</label>
-              <input
-                type="datetime-local"
-                className="w-full border rounded-lg p-2"
-                value={newAssignmentForm.dueDate}
-                onChange={(e) =>
-                  setNewAssignmentForm({
-                    ...newAssignmentForm,
-                    dueDate: e.target.value,
-                  })
-                }
-              />
-            </div>
-
-            <div>
-              <label className="block mb-2">Points Possible</label>
-              <input
-                type="number"
-                className="w-full border rounded-lg p-2"
-                value={newAssignmentForm.pointsPossible}
-                onChange={(e) =>
-                  setNewAssignmentForm({
-                    ...newAssignmentForm,
-                    pointsPossible: parseInt(e.target.value),
-                  })
-                }
-              />
-            </div>
-          </div>
-
-          <div className="flex justify-end space-x-2 mt-6">
-            <button
-              className="px-4 py-2 bg-gray-200 rounded-lg"
-              onClick={() => setShowCreateAssignmentModal(false)}
-            >
-              Cancel
-            </button>
-            <button
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg"
-              onClick={handleCreateAssignment}
-            >
-              Create Assignment
-            </button>
-          </div>
-        </div>
-      </div>
-    );
   };
 
   // Render Assignment Details Modal
@@ -475,119 +325,6 @@ const Assignments: React.FC = () => {
     );
   };
 
-  const renderAssignmentCard = (assignment: Assignment) => {
-    return (
-      <div
-        key={assignment.id}
-        className="bg-[hsl(var(--card))] rounded-lg shadow overflow-hidden"
-      >
-        <div className="p-6">
-          <div className="flex justify-between">
-            <div>
-              <div className="flex items-center">
-                <h2 className="text-xl font-semibold">{assignment.title}</h2>
-                <span
-                  className={`ml-3 px-2 py-1 text-xs rounded-full flex items-center ${getStatusColor(
-                    assignment.status
-                  )}`}
-                >
-                  {getStatusIcon(assignment.status)}
-                  {assignment.status}
-                </span>
-              </div>
-              <div className="flex items-center mt-1 text-[hsl(var(--muted-foreground))]">
-                <Book size={16} className="mr-1" />
-                <span>
-                  {assignment.subject} - Grade {assignment.grade}
-                </span>
-              </div>
-            </div>
-            <button className="text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--muted-foreground))]">
-              <MoreVertical size={20} />
-            </button>
-          </div>
-
-          <p className="mt-4 text-[hsl(var(--muted-foreground))]">
-            {assignment.description}
-          </p>
-
-          <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="flex items-center">
-              <Calendar size={20} className="text-blue-600 mr-2" />
-              <div>
-                <p className="text-sm font-medium">Due Date</p>
-                <p className="text-sm text-[hsl(var(--muted-foreground))]">
-                  {new Date(assignment.dueDate).toLocaleDateString()} at{" "}
-                  {new Date(assignment.dueDate).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </p>
-                {assignment.status === "Open" && (
-                  <p className="text-sm text-orange-500 font-medium">
-                    {formatTimeRemaining(assignment.dueDate)}
-                  </p>
-                )}
-              </div>
-            </div>
-            <div className="flex items-center">
-              <FileText size={20} className="text-blue-600 mr-2" />
-              <div>
-                <p className="text-sm font-medium">Points</p>
-                <p className="text-sm text-[hsl(var(--muted-foreground))]">
-                  {assignment.pointsPossible} possible points
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center">
-              <CheckCircle size={20} className="text-blue-600 mr-2" />
-              <div>
-                <p className="text-sm font-medium">Submissions</p>
-                <p className="text-sm text-[hsl(var(--muted-foreground))]">
-                  {assignment.submissions?.length || 0} /{" "}
-                  {assignment.totalStudents || 0} students
-                  {(assignment.submissions?.length || 0) > 0 && (
-                    <span className="ml-1">
-                      (
-                      {Math.round(
-                        ((assignment.submissions?.length || 0) /
-                          (assignment.totalStudents || 1)) *
-                          100
-                      )}
-                      %)
-                    </span>
-                  )}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-6 flex justify-end space-x-3">
-            {user.role === "teacher" && assignment.status === "Grading" && (
-              <button className="px-4 py-2 bg-yellow-600 text-[hsl(var(--primary-foreground))] rounded-lg hover:bg-yellow-700">
-                Grade Submissions
-              </button>
-            )}
-            {user.role === "student" && (
-              <button
-                className="px-4 py-2 bg-blue-600 text-[hsl(var(--primary-foreground))] rounded-lg hover:bg-blue-700"
-                onClick={() => setShowSubmissionModal(assignment)}
-              >
-                Submit Assignment
-              </button>
-            )}
-            <button
-              className="px-4 py-2 border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50"
-              onClick={() => handleViewAssignmentDetails(assignment)}
-            >
-              View Details
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
   return (
     <div>
       <header className="flex justify-between items-center mb-6">
@@ -611,56 +348,41 @@ const Assignments: React.FC = () => {
       </header>
 
       {/* Rest of the existing component */}
-      {renderCreateAssignmentModal()}
+      <CreateAssignment
+        showCreateAssignmentModal={showCreateAssignmentModal}
+        newAssignmentForm={newAssignmentForm}
+        setNewAssignmentForm={setNewAssignmentForm}
+        setShowCreateAssignmentModal={setShowCreateAssignmentModal}
+        handleCreateAssignment={handleCreateAssignment}
+      />
       {renderAssignmentDetailsModal()}
 
-      <div className="bg-[hsl(var(--card))] rounded-lg shadow mb-6">
-        <div className="p-4 flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
-          <div className="relative flex-grow">
-            <Search
-              size={18}
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[hsl(var(--muted-foreground))]"
-            />
-            <input
-              type="text"
-              placeholder="Search assignments..."
-              className="pl-10 pr-4 py-2 border rounded-lg w-full"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-          <div className="relative">
-            <select
-              className="appearance-none pl-4 pr-10 py-2 border rounded-lg bg-[hsl(var(--card))]"
-              value={selectedStatus || ""}
-              onChange={(e) => setSelectedStatus(e.target.value || null)}
-            >
-              <option value="">All Statuses</option>
-              <option value="Upcoming">Upcoming</option>
-              <option value="Open">Open</option>
-              <option value="Grading">Grading</option>
-              <option value="Closed">Closed</option>
-            </select>
-            <ChevronDown
-              size={18}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[hsl(var(--muted-foreground))] pointer-events-none"
-            />
-          </div>
-          <button className="px-4 py-2 border rounded-lg flex items-center">
-            <Filter size={18} className="mr-2" />
-            More Filters
-          </button>
-        </div>
+      <div className="bg-card rounded-lg shadow mb-6">
+        <Filters
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          selectedStatus={selectedStatus}
+          setSelectedStatus={setSelectedStatus}
+        />
       </div>
 
       <div className="space-y-6">
-        {filteredAssignments.map(renderAssignmentCard)}
+        {filteredAssignments.map((assignment) => (
+          <AssignementCard
+            user={user}
+            assignment={assignment}
+            getStatusIcon={getStatusIcon}
+            setShowSubmissionModal={setShowSubmissionModal}
+            getStatusColor={getStatusColor}
+            handleViewAssignmentDetails={handleViewAssignmentDetails}
+          />
+        ))}
       </div>
 
       {/* Assignment Submission Modal */}
       {showSubmissionModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-[hsl(var(--card))] p-6 rounded-lg w-96">
+          <div className="bg-card p-6 rounded-lg w-96">
             <h2 className="text-xl font-semibold mb-4">
               Submit Assignment: {showSubmissionModal.title}
             </h2>
@@ -678,7 +400,7 @@ const Assignments: React.FC = () => {
             />
             <div className="flex justify-end space-x-2">
               <button
-                className="px-4 py-2 bg-[hsl(var(--muted))] rounded-lg"
+                className="px-4 py-2 bg-muted rounded-lg"
                 onClick={() => setShowSubmissionModal(null)}
               >
                 Cancel
