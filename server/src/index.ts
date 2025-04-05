@@ -1,10 +1,13 @@
 import express from "express";
 import morgan from "morgan";
 
+import { errorHandler } from "./middleware/errorHandler";
+
 import authRoutes from "./routes/authRoutes";
 import schoolRoutes from "./routes/institutionalRoutes";
 import messageRoutes from "./routes/messageRoutes";
 import classChatRouter from "./routes/classChatRoutes";
+import adminRouter from "./routes/adminRoutes";
 
 import cookieParser from "cookie-parser";
 
@@ -15,6 +18,7 @@ app.use(morgan("dev")); // Logs in format: :method :url :status :response-time m
 
 import corsConfig from "./config/corsConfig";
 import getLocalIP from "./exceptions/getLocalIP";
+
 app.use(corsConfig);
 
 app.use(express.json()); // To parse JSON bodies
@@ -25,6 +29,10 @@ app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/schools", schoolRoutes);
 app.use("/api/v1/messages", messageRoutes);
 app.use("/api/v1/classMessages", classChatRouter);
+app.use("/api/v1/admin", adminRouter);
+
+app.use(errorHandler);
+
 // Start the server
 const PORT = Number(process.env.PORT) || 5000;
 const IP = getLocalIP();

@@ -1,13 +1,24 @@
 import { Request, Response, NextFunction } from "express";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
 
-export const verifyAdmin = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const isAdmin = true; // Placeholder for real auth logic
-  if (!isAdmin) {
-    return res.status(403).json({ error: "Unauthorized" });
+dotenv.config();
+
+export const verifyAdmin = (req: any, res: Response, next: NextFunction) => {
+  const token = req.cookies.adminToken;
+
+  if (!token) {
+    res
+      .status(401)
+      .json({ succcess: false, message: "Access denied. No token provided." });
+    return;
   }
-  next();
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!);
+    req.admin = decoded;
+    next();
+  } catch (err) {
+    next(err);
+  }
 };

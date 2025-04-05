@@ -1,58 +1,46 @@
-import express from "express";
+import express, { Router } from "express";
+import { login } from "../controllers/adminControllers/authController";
+
 import {
-  login,
-  // forgotPassword,
-  // resetPassword,
-} from "../controllers/authControllers";
+  createStudent,
+  getStudent,
+  updateStudent,
+  deleteStudent,
+} from "../controllers/adminControllers/studentControllers";
 
-const router = express.Router();
-
-router.post("/login", login);
-// router.post("/forgot-password", forgotPassword);
-// router.post("/reset-password", resetPassword);
-
-export default router;
-// src/routes/student.routes.ts
-import express from 'express';
-import { createStudent, getStudent, updateStudent, deleteStudent } from '../controllers/student.controller';
-import { authenticateUser } from '../middleware/auth'; // Assuming you have auth middleware
-
-const router = express.Router();
-
-// Apply authentication middleware to all routes
-router.use(authenticateUser);
-
-// CRUD Routes
-router.post('/', createStudent);
-router.get('/:id', getStudent);
-router.put('/:id', updateStudent);
-router.delete('/:id', deleteStudent);
-
-export default router;
-import express from 'express';
-import { 
-  createTeacher, 
-  getAllTeachers, 
-  getTeacherById, 
-  updateTeacher, 
+import {
+  createTeacher,
+  getAllTeachers,
+  getTeacherById,
+  updateTeacher,
   deleteTeacher,
   changePassword,
-  updateStatus
-} from '../controllers/teacherController';
-import { authenticate } from '../middleware/authMiddleware';
-import { authorize } from '../middleware/roleMiddleware';
+  updateStatus,
+} from "../controllers/adminControllers/teacherController";
 
-const router = express.Router();
+import { verifyAdmin } from "../middleware/authMiddleware";
 
-// Public routes
-router.post('/', createTeacher);
+const adminRouter: Router = express.Router();
 
-// Protected routes
-router.get('/', authenticate, authorize(['ADMIN']), getAllTeachers);
-router.get('/:id', authenticate, authorize(['ADMIN', 'TEACHER']), getTeacherById);
-router.put('/:id', authenticate, authorize(['ADMIN', 'TEACHER']), updateTeacher);
-router.delete('/:id', authenticate, authorize(['ADMIN']), deleteTeacher);
-router.put('/:id/password', authenticate, authorize(['ADMIN', 'TEACHER']), changePassword);
-router.patch('/:id/status', authenticate, authorize(['ADMIN']), updateStatus);
+// Apply authentication middleware to all routes
+adminRouter.use(verifyAdmin);
 
-export default router;
+adminRouter.post("/student/create", createStudent);
+adminRouter
+  .route("/student/:id")
+  .get(getStudent)
+  .put(updateStudent)
+  .delete(deleteStudent);
+adminRouter.post("/login", login);
+adminRouter.post("/teacher/create", createTeacher);
+adminRouter.get("/teacher", getAllTeachers);
+adminRouter
+  .route("/teacher/:id")
+  .get(getTeacherById)
+  .put(updateTeacher)
+  .delete(deleteTeacher);
+
+adminRouter.put("/teacher/:id/password", changePassword);
+adminRouter.patch("/teacher/:id/status", updateStatus);
+
+export default adminRouter;

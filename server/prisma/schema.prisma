@@ -171,6 +171,7 @@ model ClassChatMessages{
   timestamp DateTime  @default(now())
   class String
 }
+
 model Teacher {
   id             String         @id @default(uuid())
   name           String
@@ -181,6 +182,8 @@ model Teacher {
   classes        Int            @default(0)
   status         TeacherStatus  @default(ACTIVE)
   employmentType EmploymentType @default(FULLTIME)
+  schoolId String
+  school   School @relation(fields: [schoolId], references: [id])
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
   teacherDetails TeacherDetails?
