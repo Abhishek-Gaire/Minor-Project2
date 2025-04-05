@@ -29,8 +29,8 @@ const StudentsList = ({
     <div
       key={student.id}
       className={cn(
-        "p-3 cursor-pointer hover:bg-gray-100 flex items-start gap-3 border-b",
-        activeConversation === student.id ? "bg-gray-100" : ""
+        "p-3 cursor-pointer hover:bg-muted flex items-start gap-3",
+        activeConversation === student.id ? "bg--muted" : ""
       )}
       onClick={handleStudentClick}
     >

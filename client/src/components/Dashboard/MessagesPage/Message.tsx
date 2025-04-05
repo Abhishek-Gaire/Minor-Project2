@@ -16,8 +16,8 @@ const Message = ({ message }) => {
         className={cn(
           "max-w-3/4 p-3 shadow-sm",
           user.name === message.sender
-            ? "bg-blue-500 text-white rounded-l-lg rounded-tr-lg"
-            : "bg-white rounded-r-lg rounded-tl-lg border"
+            ? "bg-blue-500 text-primary-foreground rounded-l-lg rounded-tr-lg"
+            : "bg-background rounded-r-lg rounded-tl-lg border"
         )}
       >
         {user.name !== message.sender && (
@@ -28,7 +28,9 @@ const Message = ({ message }) => {
           <div
             className={cn(
               "text-xs text-right",
-              user.name === message.sender ? "text-blue-100" : "text-gray-500"
+              user.name === message.sender
+                ? "text-blue-100"
+                : "text-muted-foreground"
             )}
           >
             {getTimeDifference(message.timeStamp)}

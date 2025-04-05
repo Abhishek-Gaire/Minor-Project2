@@ -157,7 +157,7 @@ export const teacherNavigation: NavItem[] = [
     to: "/dashboard/teacher",
     icon: LayoutDashboard,
   },
-  { name: "My Courses", to: "/dashboard/teacher/courses", icon: BookOpen },
+  // { name: "My Courses", to: "/dashboard/teacher/courses", icon: BookOpen },
   {
     name: "Gradebook",
     to: "/dashboard/teacher/gradebook",
@@ -186,7 +186,7 @@ export const studentNavigation: NavItem[] = [
     to: "/dashboard/student",
     icon: LayoutDashboard,
   },
-  { name: "My Courses", to: "/dashboard/student/courses", icon: BookOpen },
+  // { name: "My Courses", to: "/dashboard/student/courses", icon: BookOpen },
   { name: "Grades", to: "/dashboard/student/grades", icon: GraduationCap },
   {
     name: "Assignments",

@@ -50,7 +50,7 @@ const Layout = () => {
 
   return (
     <ThemeProvider>
-      <div className="min-h-screen bg-[hsl(var(--background))]">
+      <div className="min-h-screen bg-background">
         <aside
           className={cn(
             "fixed top-0 left-0 z-40 h-screen transition-transform duration-300 ease-in-out hidden md:block",

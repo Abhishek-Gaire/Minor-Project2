@@ -12,7 +12,7 @@ import { Clock, MoreHorizontal } from "lucide-react";
 
 const ChatHeader = ({ selectedUser }) => {
   return (
-    <div className="bg-white p-4 border-b flex items-center justify-between">
+    <div className=" bg-card p-4 flex items-center justify-between">
       <div className="flex items-center gap-3">
         <Avatar className={getAvatarColor("student")}>
           <AvatarFallback>{getInitials(selectedUser)}</AvatarFallback>

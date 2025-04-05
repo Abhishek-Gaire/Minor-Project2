@@ -33,8 +33,8 @@ const FilteredConversations = ({
   return (
     <div
       key={conversation.id}
-      className={`p-3 cursor-pointer hover:bg-gray-100 flex items-start gap-3 border-b ${
-        activeConversation === conversation.id ? "bg-gray-100" : ""
+      className={`p-3 cursor-pointer hover:bg-muted flex items-start gap-3 ${
+        activeConversation === conversation.id ? "bg-muted" : ""
       }`}
       onClick={() => handleConversationClick(conversation)}
     >

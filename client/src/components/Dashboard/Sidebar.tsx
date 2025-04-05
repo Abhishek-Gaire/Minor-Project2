@@ -20,15 +20,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
   let navItems = role === "student" ? studentNavigation : teacherNavigation;
 
   return (
-    <div className="flex h-full flex-col overflow-y-auto bg-[hsl(var(--background))] border-r border-[hsl(var(--border))]">
-      <div className="flex h-16 items-center justify-between px-4 bg-[hsl(var(--muted))] border-b border-[hsl(var(--border))]">
-        <h1 className="text-xl font-semibold text-[hsl(var(--foreground))]">
-          Smart Class
-        </h1>
+    <div className="flex h-full flex-col overflow-y-auto bg-background border-r border-border">
+      <div className="flex h-16 items-center justify-between px-4 bg-muted border-b border-border">
+        <h1 className="text-xl font-semibold text-foreground">Smart Class</h1>
         {!isMobile && (
           <button
             onClick={() => setIsSidebarOpen(false)}
-            className="rounded-lg p-1.5 text-[hsl(var(--muted-foreground))] hover:bg-[hsl(var(--accent))] lg:hidden"
+            className="rounded-lg p-1.5 text-muted-foreground hover:bg-accent lg:hidden"
           >
             <CloseIcon className="h-5 w-5" />
           </button>
@@ -45,8 +43,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   className={cn(
                     "flex items-center p-3 rounded-lg transition-colors",
                     location.pathname === item.to
-                      ? "bg-[hsl(var(--accent))] text-[hsl(var(--accent-foreground))]"
-                      : "text-[hsl(var(--muted-foreground))] hover:bg-[hsl(var(--muted))]"
+                      ? "bg-accent text-accent-foreground"
+                      : "text-muted-foreground hover:bg-muted"
                   )}
                 >
                   <Icon size={20} className="mr-3" />

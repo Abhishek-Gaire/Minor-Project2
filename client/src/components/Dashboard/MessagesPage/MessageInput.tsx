@@ -53,7 +53,7 @@ const MessageInput = ({
   };
 
   return (
-    <div className="bg-white p-4 border-t">
+    <div className="bg-card p-4 ">
       <div className="flex space-x-2">
         <Button variant="outline" size="icon">
           <PaperclipIcon className="h-4 w-4" />
@@ -70,11 +70,14 @@ const MessageInput = ({
             }
           }}
         />
-        <Button onClick={handleSendMessage}>
+        <Button
+          onClick={handleSendMessage}
+          className="bg-card text-muted-foreground"
+        >
           {sending ? (
             <Loader2 className="h-4 w-4 mr-2 animate-spin" />
           ) : (
-            <Send className="h-4 w-4 mr-2" />
+            <Send className="h-4 w-4 mr-2 " />
           )}
           {sending ? "Sending..." : "Send"}
         </Button>

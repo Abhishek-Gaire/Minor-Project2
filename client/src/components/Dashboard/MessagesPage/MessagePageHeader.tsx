@@ -11,7 +11,7 @@ const MessagePageHeader = ({
 }) => {
   return (
     <>
-      <header className="bg-white shadow p-4">
+      <header className="bg-card shadow p-4">
         <div className="flex items-center">
           <MessageSquare className="text-blue-500 mr-2" />
           <h1 className="text-xl font-semibold">Messages</h1>
@@ -21,7 +21,7 @@ const MessagePageHeader = ({
       <div className="p-4">
         <div className="relative">
           <Search
-            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground"
             size={18}
           />
           <Input

@@ -42,7 +42,7 @@ const MessageInput = ({ sender }) => {
   };
 
   return (
-    <div className="bg-[hsl(var(--background))] p-4 border-t">
+    <div className="bg-card p-4 ">
       <div className="flex space-x-2">
         <Button variant="outline" size="icon">
           <PaperclipIcon className="h-4 w-4" />
@@ -59,7 +59,10 @@ const MessageInput = ({ sender }) => {
             }
           }}
         />
-        <Button onClick={handleSendMessage}>
+        <Button
+          onClick={handleSendMessage}
+          className="bg-card text-muted-foreground"
+        >
           {sending ? (
             <Loader2 className="h-4 w-4 mr-2 animate-spin" />
           ) : (

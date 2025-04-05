@@ -17,9 +17,7 @@ const MessageBubble = ({
   return (
     <div
       className={`max-w-xs md:max-w-md rounded-lg p-3 ${
-        isCurrentUser
-          ? "bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))]"
-          : "bg-[hsl(var(--background))] border"
+        isCurrentUser ? "bg-primary text-primary-foreground" : "bg-background "
       }`}
     >
       <div className="flex items-center mb-1">
