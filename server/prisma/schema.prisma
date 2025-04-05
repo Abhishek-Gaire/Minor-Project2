@@ -171,3 +171,50 @@ model ClassChatMessages{
   timestamp DateTime  @default(now())
   class String
 }
+model Teacher {
+  id             String         @id @default(uuid())
+  name           String
+  email          String         @unique
+  password       String
+  subjects       String[]
+  phone          String?
+  classes        Int            @default(0)
+  status         TeacherStatus  @default(ACTIVE)
+  employmentType EmploymentType @default(FULLTIME)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  teacherDetails TeacherDetails?
+}
+
+model TeacherDetails {
+  id                String   @id @default(uuid())
+  teacherId         String   @unique
+  teacher           Teacher  @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  address           String?
+  city              String?
+  state             String?
+  zipCode           String?
+  dateOfBirth       DateTime?
+  qualification     String?
+  experience        Int?
+  specialization    String?
+  emergencyContact  String?
+  joinDate          DateTime?
+  additionalNotes   String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+enum TeacherStatus {
+  ACTIVE
+  INACTIVE
+  ONLEAVE
+  TERMINATED
+}
+
+enum EmploymentType {
+  FULLTIME
+  PARTTIME
+  CONTRACT
+  TEMPORARY
+}
