@@ -14,6 +14,18 @@ import {
   Calendar,
   Folder,
   User,
+  Home,
+  School,
+  FileText,
+  Globe,
+  BarChart,
+  Database,
+  Activity,
+  UserCircle,
+  DollarSign,
+  Book,
+  Bell,
+  Settings,
 } from "lucide-react";
 import { NavItem } from "./types";
 
@@ -140,17 +152,6 @@ export const navigation = [
   { name: "Contact", href: "/contact" },
 ];
 
-export const adminNavigation: NavItem[] = [
-  { name: "Dashboard", to: "/dashboard", icon: LayoutDashboard },
-  { name: "Students", to: "/dashboard/students", icon: Users },
-  { name: "Courses", to: "/dashboard/courses", icon: BookOpen },
-  { name: "Grades", to: "/dashboard/grades", icon: GraduationCap },
-  { name: "Assignments", to: "/dashboard/assignments", icon: ClipboardList },
-  { name: "Class Chat", to: "/dashboard/chat", icon: MessageCircle },
-  { name: "Messages", to: "/dashboard/messages", icon: MessageSquare },
-  { name: "Online Class", to: "/dashboard/online-class", icon: Video },
-];
-
 export const teacherNavigation: NavItem[] = [
   {
     name: "Dashboard",
@@ -219,5 +220,101 @@ export const mockNotifications = [
     title: "Fee Payment",
     message: "New payment received",
     time: "2 hours ago",
+  },
+];
+
+export const superadminSidebarItems: NavItem[] = [
+  {
+    name: "Dashboard",
+    to: `/superadmin/dashboard`,
+    icon: Home,
+  },
+  {
+    name: "Schools",
+    to: `/superadmin/schools`,
+    icon: School,
+  },
+  {
+    name: "Admins",
+    to: `/superadmin/schoolAdmins`,
+    icon: Shield,
+  },
+  {
+    name: "Reports",
+    to: `/superadmin/reports`,
+    icon: FileText,
+  },
+  {
+    name: "Global Settings",
+    to: `/superadmin/globalSettings`,
+    icon: Globe,
+  },
+  {
+    name: "Analytics",
+    to: `/superadmin/analytics`,
+    icon: BarChart,
+  },
+  {
+    name: "System",
+    to: `/superadmin/system`,
+    icon: Database,
+  },
+];
+
+export const adminSidebarItems: NavItem[] = [
+  {
+    name: "Dashboard",
+    to: `/admin/adminDashboard`,
+    icon: Activity,
+  },
+  {
+    name: "Students",
+    to: `/admin/students`,
+    icon: GraduationCap,
+  },
+  {
+    name: "Teachers",
+    to: `/admin/teachers`,
+    icon: UserCircle,
+  },
+  {
+    name: "Classes",
+    to: `/admin/classes`,
+    icon: BookOpen,
+  },
+  {
+    name: "Attendance",
+    to: `/admin/attendance`,
+    icon: Clock,
+  },
+  {
+    name: "Payments",
+    to: `/admin/payments`,
+    icon: DollarSign,
+  },
+  {
+    name: "Messages",
+    to: `/admin/messages`,
+    icon: MessageSquare,
+  },
+  {
+    name: "Courses",
+    to: `/admin/courses`,
+    icon: Book,
+  },
+  {
+    name: "Schedule",
+    to: `/admin/schedule`,
+    icon: Calendar,
+  },
+  {
+    name: "Notifications",
+    to: `/admin/notifications`,
+    icon: Bell,
+  },
+  {
+    name: "Settings",
+    to: `/admin/settings`,
+    icon: Settings,
   },
 ];

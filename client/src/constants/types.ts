@@ -92,3 +92,67 @@ export interface Participant {
   isScreenSharing?: boolean;
   isTeacher?: boolean;
 }
+
+export const studentFormSchema = z.object({
+  // Personal Details
+  firstName: z.string().min(2, "First name must be at least 2 characters"),
+  middleName: z.string().optional(),
+  lastName: z.string().min(2, "Last name must be at least 2 characters"),
+  gender: z.enum(["male", "female", "other"]),
+  dateOfBirth: z.string(),
+
+  // Academic Details
+  grade: z.enum(["5", "6", "7", "8", "9", "10"]),
+  section: z.string().min(1, "Section is required"),
+  rollNumber: z.string().optional(),
+  previousSchool: z.string().optional(),
+  academicYear: z.string().min(4, "Please enter a valid academic year"),
+
+  // Contact Information
+  email: z.string().email("Please enter a valid email address"),
+  phone: z.string().min(10, "Phone number must be at least 10 digits"),
+  alternatePhone: z.string().optional(),
+  address: z.string().min(5, "Address must be at least 5 characters"),
+  city: z.string().min(2, "City must be at least 2 characters"),
+  state: z.string().min(2, "State must be at least 2 characters"),
+  zipCode: z.string().min(5, "Zip code must be at least 5 characters"),
+
+  // Parent/Guardian Information
+  parentName: z.string().min(2, "Parent name must be at least 2 characters"),
+  relationship: z.enum(["mother", "father", "guardian", "other"]),
+  parentPhone: z.string().min(10, "Phone number must be at least 10 digits"),
+  parentEmail: z.string().email("Please enter a valid email address"),
+
+  // Additional Information
+  bloodGroup: z.string().optional(),
+  medicalInformation: z.string().optional(),
+  hobbies: z.string().optional(),
+  extraCurricular: z.string().optional(),
+  additionalNotes: z.string().optional(),
+});
+
+export const teacherSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  email: z.string().email("Invalid email format"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+  subjects: z.array(z.string()).min(1, "At least one subject is required"),
+  phone: z.string().optional(),
+  classes: z.number().int().min(0).optional(),
+  status: z.enum(["ACTIVE", "INACTIVE", "ONLEAVE", "TERMINATED"]).optional(),
+  employmentType: z
+    .enum(["FULLTIME", "PARTTIME", "CONTRACT", "TEMPORARY"])
+    .optional(),
+
+  // Optional TeacherDetails fields
+  address: z.string().optional(),
+  city: z.string().optional(),
+  state: z.string().optional(),
+  zipCode: z.string().optional(),
+  dateOfBirth: z.string().optional(), // Will be converted to Date
+  qualification: z.string().optional(),
+  experience: z.number().int().min(0).optional(),
+  specialization: z.string().optional(),
+  emergencyContact: z.string().optional(),
+  joinDate: z.string().optional(), // Will be converted to Date
+  additionalNotes: z.string().optional(),
+});
