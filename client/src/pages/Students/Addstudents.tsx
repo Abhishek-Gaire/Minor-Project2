@@ -6,10 +6,10 @@ import { toast } from "react-toastify";
 const AddStudent = () => {
   const navigate = useNavigate();
   const [form, setForm] = useState({
-    name: "",
-    email: "",
-    grade: "",
-    age: "",
+    name: "sworup",
+    email: "sworupkhadka1323@gmail.com",
+    grade: "12",
+    age: "22",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
