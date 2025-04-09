@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { z } from "zod";
 import { Button } from "@/components/ui/button.tsx";
 import {
   Card,
@@ -25,9 +26,35 @@ import {
 } from "@/components/ui/dialog.tsx";
 import { Label } from "@/components/ui/label.tsx";
 import { Checkbox } from "@/components/ui/checkbox.tsx";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { teacherSchema } from "@/constants/types";
+
+// Status and employment type mappings for UI display and schema compatibility
+const statusMap = {
+  Active: "ACTIVE",
+  "On Leave": "ONLEAVE",
+  Inactive: "INACTIVE",
+  Terminated: "TERMINATED",
+  // Reverse mapping
+  ACTIVE: "Active",
+  ONLEAVE: "On Leave",
+  INACTIVE: "Inactive",
+  TERMINATED: "Terminated",
+};
+
+const employmentTypeMap = {
+  "Full-time": "FULLTIME",
+  "Part-time": "PARTTIME",
+  Contract: "CONTRACT",
+  Temporary: "TEMPORARY",
+  // Reverse mapping
+  FULLTIME: "Full-time",
+  PARTTIME: "Part-time",
+  CONTRACT: "Contract",
+  TEMPORARY: "Temporary",
+};
 
 export const TeachersManagementPage = () => {
-  // Mock data for teachers
   const initialTeachers = [
     {
       name: "Sarah Johnson",
@@ -36,8 +63,9 @@ export const TeachersManagementPage = () => {
       email: "sjohnson@school.edu",
       phone: "123-456-7890",
       classes: 5,
-      status: "Active",
-      employmentType: "Full-time",
+      status: "ACTIVE",
+      employmentType: "FULLTIME",
+      password: "password123", // In a real app, we would never store plain text passwords
     },
     {
       name: "Michael Chen",
@@ -46,8 +74,9 @@ export const TeachersManagementPage = () => {
       email: "mchen@school.edu",
       phone: "123-456-7891",
       classes: 4,
-      status: "Active",
-      employmentType: "Full-time",
+      status: "ACTIVE",
+      employmentType: "FULLTIME",
+      password: "password123",
     },
     {
       name: "David Wilson",
@@ -56,8 +85,9 @@ export const TeachersManagementPage = () => {
       email: "dwilson@school.edu",
       phone: "123-456-7892",
       classes: 3,
-      status: "Active",
-      employmentType: "Full-time",
+      status: "ACTIVE",
+      employmentType: "FULLTIME",
+      password: "password123",
     },
     {
       name: "Elena Rodriguez",
@@ -66,8 +96,9 @@ export const TeachersManagementPage = () => {
       email: "erodriguez@school.edu",
       phone: "123-456-7893",
       classes: 6,
-      status: "On Leave",
-      employmentType: "Full-time",
+      status: "ONLEAVE",
+      employmentType: "FULLTIME",
+      password: "password123",
     },
     {
       name: "James Taylor",
@@ -76,8 +107,9 @@ export const TeachersManagementPage = () => {
       email: "jtaylor@school.edu",
       phone: "123-456-7894",
       classes: 8,
-      status: "Active",
-      employmentType: "Part-time",
+      status: "ACTIVE",
+      employmentType: "PARTTIME",
+      password: "password123",
     },
     {
       name: "Lisa Wong",
@@ -86,8 +118,9 @@ export const TeachersManagementPage = () => {
       email: "lwong@school.edu",
       phone: "123-456-7895",
       classes: 4,
-      status: "Active",
-      employmentType: "Part-time",
+      status: "ACTIVE",
+      employmentType: "PARTTIME",
+      password: "password123",
     },
     {
       name: "Robert Smith",
@@ -96,8 +129,9 @@ export const TeachersManagementPage = () => {
       email: "rsmith@school.edu",
       phone: "123-456-7896",
       classes: 5,
-      status: "Active",
-      employmentType: "Full-time",
+      status: "ACTIVE",
+      employmentType: "FULLTIME",
+      password: "password123",
     },
     {
       name: "Emily Davis",
@@ -106,8 +140,9 @@ export const TeachersManagementPage = () => {
       email: "edavis@school.edu",
       phone: "123-456-7897",
       classes: 6,
-      status: "Active",
-      employmentType: "Full-time",
+      status: "ACTIVE",
+      employmentType: "FULLTIME",
+      password: "password123",
     },
   ];
 
@@ -153,46 +188,107 @@ export const TeachersManagementPage = () => {
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [currentTeacher, setCurrentTeacher] = useState(null);
+  const [formErrors, setFormErrors] = useState({});
   const [newTeacher, setNewTeacher] = useState({
     name: "",
     email: "",
     phone: "",
+    password: "",
     subjects: [],
-    status: "Active",
-    employmentType: "Full-time",
+    status: "ACTIVE",
+    employmentType: "FULLTIME",
     classes: 0,
+    address: "",
+    city: "",
+    state: "",
+    zipCode: "",
+    dateOfBirth: "",
+    qualification: "",
+    experience: 0,
+    specialization: "",
+    emergencyContact: "",
+    joinDate: "",
+    additionalNotes: "",
   });
   const [searchTerm, setSearchTerm] = useState("");
   const [subjectFilter, setSubjectFilter] = useState("All Subjects");
   const [statusFilter, setStatusFilter] = useState("All Statuses");
   const [currentPage, setCurrentPage] = useState(1);
+  const [showAdvancedFields, setShowAdvancedFields] = useState(false);
   const itemsPerPage = 5;
+
+  // Validate teacher data using Zod schema
+  const validateTeacher = (teacherData) => {
+    try {
+      teacherSchema.parse(teacherData);
+      return { valid: true, errors: {} };
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const errorMap = {};
+        error.errors.forEach((err) => {
+          errorMap[err.path.join(".")] = err.message;
+        });
+        return { valid: false, errors: errorMap };
+      }
+      return { valid: false, errors: { general: "Validation failed" } };
+    }
+  };
 
   // Handler for adding a new teacher
   const handleAddTeacher = () => {
+    // Validate the new teacher data
+    const { valid, errors } = validateTeacher(newTeacher);
+
+    if (!valid) {
+      setFormErrors(errors);
+      return;
+    }
+
     const nextId = `T-${1000 + teachers.length + 1}`;
     const teacherToAdd = { ...newTeacher, id: nextId };
     setTeachers([...teachers, teacherToAdd]);
     setIsAddDialogOpen(false);
+    setFormErrors({});
     setNewTeacher({
       name: "",
       email: "",
       phone: "",
+      password: "",
       subjects: [],
-      status: "Active",
-      employmentType: "Full-time",
+      status: "ACTIVE",
+      employmentType: "FULLTIME",
       classes: 0,
+      address: "",
+      city: "",
+      state: "",
+      zipCode: "",
+      dateOfBirth: "",
+      qualification: "",
+      experience: 0,
+      specialization: "",
+      emergencyContact: "",
+      joinDate: "",
+      additionalNotes: "",
     });
   };
 
   // Handler for updating a teacher
   const handleUpdateTeacher = () => {
+    // Validate the updated teacher data
+    const { valid, errors } = validateTeacher(currentTeacher);
+
+    if (!valid) {
+      setFormErrors(errors);
+      return;
+    }
+
     setTeachers(
       teachers.map((teacher) =>
         teacher.id === currentTeacher.id ? currentTeacher : teacher
       )
     );
     setIsEditDialogOpen(false);
+    setFormErrors({});
   };
 
   // Handler for subject checkbox in add/edit forms
@@ -236,7 +332,9 @@ export const TeachersManagementPage = () => {
       teacher.subjects.includes(subjectFilter);
 
     const matchesStatus =
-      statusFilter === "All Statuses" || teacher.status === statusFilter;
+      statusFilter === "All Statuses" ||
+      statusMap[teacher.status] === statusFilter ||
+      teacher.status === statusFilter;
 
     return matchesSearch && matchesSubject && matchesStatus;
   });
@@ -253,10 +351,10 @@ export const TeachersManagementPage = () => {
   // Counts for summary cards
   const totalTeachersCount = teachers.length;
   const fullTimeCount = teachers.filter(
-    (t) => t.employmentType === "Full-time"
+    (t) => t.employmentType === "FULLTIME"
   ).length;
   const partTimeCount = teachers.filter(
-    (t) => t.employmentType === "Part-time"
+    (t) => t.employmentType === "PARTTIME"
   ).length;
 
   return (
@@ -324,6 +422,8 @@ export const TeachersManagementPage = () => {
           <option>All Statuses</option>
           <option>Active</option>
           <option>On Leave</option>
+          <option>Inactive</option>
+          <option>Terminated</option>
         </select>
       </div>
 
@@ -368,12 +468,16 @@ export const TeachersManagementPage = () => {
                   <TableCell>
                     <span
                       className={`px-2 py-1 rounded-full text-xs ${
-                        teacher.status === "Active"
+                        teacher.status === "ACTIVE"
                           ? "bg-green-100 text-green-800"
-                          : "bg-yellow-100 text-yellow-800"
+                          : teacher.status === "ONLEAVE"
+                          ? "bg-yellow-100 text-yellow-800"
+                          : teacher.status === "INACTIVE"
+                          ? "bg-gray-100 text-gray-800"
+                          : "bg-red-100 text-red-800"
                       }`}
                     >
-                      {teacher.status}
+                      {statusMap[teacher.status] || teacher.status}
                     </span>
                   </TableCell>
                   <TableCell className="space-x-2">
@@ -392,6 +496,7 @@ export const TeachersManagementPage = () => {
                       size="sm"
                       onClick={() => {
                         setCurrentTeacher(teacher);
+                        setFormErrors({});
                         setIsEditDialogOpen(true);
                       }}
                     >
@@ -450,10 +555,22 @@ export const TeachersManagementPage = () => {
             <DialogTitle>Add New Teacher</DialogTitle>
           </DialogHeader>
           <div className="grid gap-4 py-4">
+            {Object.keys(formErrors).length > 0 && (
+              <Alert variant="destructive" className="bg-red-50 border-red-200">
+                <AlertDescription>
+                  <ul className="list-disc pl-5">
+                    {Object.values(formErrors).map((error, index) => (
+                      <li key={index}>{error}</li>
+                    ))}
+                  </ul>
+                </AlertDescription>
+              </Alert>
+            )}
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="name" className="text-right">
-                  Full Name
+                  Full Name*
                 </Label>
                 <Input
                   id="name"
@@ -462,11 +579,15 @@ export const TeachersManagementPage = () => {
                     setNewTeacher({ ...newTeacher, name: e.target.value })
                   }
                   placeholder="John Doe"
+                  className={formErrors.name ? "border-red-500" : ""}
                 />
+                {formErrors.name && (
+                  <p className="text-red-500 text-xs mt-1">{formErrors.name}</p>
+                )}
               </div>
               <div>
                 <Label htmlFor="email" className="text-right">
-                  Email
+                  Email*
                 </Label>
                 <Input
                   id="email"
@@ -476,7 +597,33 @@ export const TeachersManagementPage = () => {
                     setNewTeacher({ ...newTeacher, email: e.target.value })
                   }
                   placeholder="john.doe@school.edu"
+                  className={formErrors.email ? "border-red-500" : ""}
                 />
+                {formErrors.email && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {formErrors.email}
+                  </p>
+                )}
+              </div>
+              <div>
+                <Label htmlFor="password" className="text-right">
+                  Password*
+                </Label>
+                <Input
+                  id="password"
+                  type="password"
+                  value={newTeacher.password}
+                  onChange={(e) =>
+                    setNewTeacher({ ...newTeacher, password: e.target.value })
+                  }
+                  placeholder="******"
+                  className={formErrors.password ? "border-red-500" : ""}
+                />
+                {formErrors.password && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {formErrors.password}
+                  </p>
+                )}
               </div>
               <div>
                 <Label htmlFor="phone" className="text-right">
@@ -519,8 +666,10 @@ export const TeachersManagementPage = () => {
                     setNewTeacher({ ...newTeacher, status: e.target.value })
                   }
                 >
-                  <option>Active</option>
-                  <option>On Leave</option>
+                  <option value="ACTIVE">Active</option>
+                  <option value="ONLEAVE">On Leave</option>
+                  <option value="INACTIVE">Inactive</option>
+                  <option value="TERMINATED">Terminated</option>
                 </select>
               </div>
               <div>
@@ -538,13 +687,16 @@ export const TeachersManagementPage = () => {
                     })
                   }
                 >
-                  <option>Full-time</option>
-                  <option>Part-time</option>
+                  <option value="FULLTIME">Full-time</option>
+                  <option value="PARTTIME">Part-time</option>
+                  <option value="CONTRACT">Contract</option>
+                  <option value="TEMPORARY">Temporary</option>
                 </select>
               </div>
             </div>
+
             <div>
-              <Label className="block mb-2">Subjects</Label>
+              <Label className="block mb-2">Subjects*</Label>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 max-h-60 overflow-y-auto p-2 border rounded-md">
                 {allSubjects.map((subject) => (
                   <div key={subject} className="flex items-center space-x-2">
@@ -559,10 +711,186 @@ export const TeachersManagementPage = () => {
                   </div>
                 ))}
               </div>
+              {formErrors.subjects && (
+                <p className="text-red-500 text-xs mt-1">
+                  {formErrors.subjects}
+                </p>
+              )}
+            </div>
+
+            <div className="border-t pt-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowAdvancedFields(!showAdvancedFields)}
+                className="mb-4"
+              >
+                {showAdvancedFields ? "Hide" : "Show"} Advanced Fields
+              </Button>
+
+              {showAdvancedFields && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                  <div>
+                    <Label htmlFor="address">Address</Label>
+                    <Input
+                      id="address"
+                      value={newTeacher.address}
+                      onChange={(e) =>
+                        setNewTeacher({
+                          ...newTeacher,
+                          address: e.target.value,
+                        })
+                      }
+                      placeholder="123 Main St"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="city">City</Label>
+                    <Input
+                      id="city"
+                      value={newTeacher.city}
+                      onChange={(e) =>
+                        setNewTeacher({ ...newTeacher, city: e.target.value })
+                      }
+                      placeholder="Anytown"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="state">State</Label>
+                    <Input
+                      id="state"
+                      value={newTeacher.state}
+                      onChange={(e) =>
+                        setNewTeacher({ ...newTeacher, state: e.target.value })
+                      }
+                      placeholder="CA"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="zipCode">Zip Code</Label>
+                    <Input
+                      id="zipCode"
+                      value={newTeacher.zipCode}
+                      onChange={(e) =>
+                        setNewTeacher({
+                          ...newTeacher,
+                          zipCode: e.target.value,
+                        })
+                      }
+                      placeholder="12345"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="dateOfBirth">Date of Birth</Label>
+                    <Input
+                      id="dateOfBirth"
+                      type="date"
+                      value={newTeacher.dateOfBirth}
+                      onChange={(e) =>
+                        setNewTeacher({
+                          ...newTeacher,
+                          dateOfBirth: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="qualification">Qualification</Label>
+                    <Input
+                      id="qualification"
+                      value={newTeacher.qualification}
+                      onChange={(e) =>
+                        setNewTeacher({
+                          ...newTeacher,
+                          qualification: e.target.value,
+                        })
+                      }
+                      placeholder="PhD in Mathematics"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="experience">Years of Experience</Label>
+                    <Input
+                      id="experience"
+                      type="number"
+                      value={newTeacher.experience}
+                      onChange={(e) =>
+                        setNewTeacher({
+                          ...newTeacher,
+                          experience: parseInt(e.target.value) || 0,
+                        })
+                      }
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="specialization">Specialization</Label>
+                    <Input
+                      id="specialization"
+                      value={newTeacher.specialization}
+                      onChange={(e) =>
+                        setNewTeacher({
+                          ...newTeacher,
+                          specialization: e.target.value,
+                        })
+                      }
+                      placeholder="Advanced Calculus, Data Science"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="emergencyContact">Emergency Contact</Label>
+                    <Input
+                      id="emergencyContact"
+                      value={newTeacher.emergencyContact}
+                      onChange={(e) =>
+                        setNewTeacher({
+                          ...newTeacher,
+                          emergencyContact: e.target.value,
+                        })
+                      }
+                      placeholder="Jane Doe: 123-456-7890"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="joinDate">Joining Date</Label>
+                    <Input
+                      id="joinDate"
+                      type="date"
+                      value={newTeacher.joinDate}
+                      onChange={(e) =>
+                        setNewTeacher({
+                          ...newTeacher,
+                          joinDate: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <Label htmlFor="additionalNotes">Additional Notes</Label>
+                    <textarea
+                      id="additionalNotes"
+                      className="w-full p-2 border rounded-md h-24"
+                      value={newTeacher.additionalNotes}
+                      onChange={(e) =>
+                        setNewTeacher({
+                          ...newTeacher,
+                          additionalNotes: e.target.value,
+                        })
+                      }
+                      placeholder="Additional information about the teacher"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setIsAddDialogOpen(false);
+                setFormErrors({});
+              }}
+            >
               Cancel
             </Button>
             <Button onClick={handleAddTeacher}>Add Teacher</Button>
@@ -579,53 +907,131 @@ export const TeachersManagementPage = () => {
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div className="grid grid-cols-3 gap-4">
-                <div className="font-medium">Name:</div>
+                <div className="font-semibold">Name:</div>
                 <div className="col-span-2">{currentTeacher.name}</div>
 
-                <div className="font-medium">ID:</div>
+                <div className="font-semibold">ID:</div>
                 <div className="col-span-2">{currentTeacher.id}</div>
 
-                <div className="font-medium">Email:</div>
+                <div className="font-semibold">Email:</div>
                 <div className="col-span-2">{currentTeacher.email}</div>
 
-                <div className="font-medium">Phone:</div>
-                <div className="col-span-2">{currentTeacher.phone}</div>
+                <div className="font-semibold">Phone:</div>
+                <div className="col-span-2">
+                  {currentTeacher.phone || "N/A"}
+                </div>
 
-                <div className="font-medium">Status:</div>
+                <div className="font-semibold">Classes:</div>
+                <div className="col-span-2">{currentTeacher.classes}</div>
+
+                <div className="font-semibold">Status:</div>
                 <div className="col-span-2">
                   <span
                     className={`px-2 py-1 rounded-full text-xs ${
-                      currentTeacher.status === "Active"
+                      currentTeacher.status === "ACTIVE"
                         ? "bg-green-100 text-green-800"
-                        : "bg-yellow-100 text-yellow-800"
+                        : currentTeacher.status === "ONLEAVE"
+                        ? "bg-yellow-100 text-yellow-800"
+                        : currentTeacher.status === "INACTIVE"
+                        ? "bg-gray-100 text-gray-800"
+                        : "bg-red-100 text-red-800"
                     }`}
                   >
-                    {currentTeacher.status}
+                    {statusMap[currentTeacher.status] || currentTeacher.status}
                   </span>
                 </div>
 
-                <div className="font-medium">Employment:</div>
+                <div className="font-semibold">Employment:</div>
                 <div className="col-span-2">
-                  {currentTeacher.employmentType}
-                </div>
-
-                <div className="font-medium">Classes:</div>
-                <div className="col-span-2">{currentTeacher.classes}</div>
-
-                <div className="font-medium">Subjects:</div>
-                <div className="col-span-2">
-                  <div className="flex flex-wrap gap-1">
-                    {currentTeacher.subjects.map((subject) => (
-                      <span
-                        key={subject}
-                        className="px-2 py-1 bg-gray-100 rounded-full text-xs"
-                      >
-                        {subject}
-                      </span>
-                    ))}
-                  </div>
+                  {employmentTypeMap[currentTeacher.employmentType] ||
+                    currentTeacher.employmentType}
                 </div>
               </div>
+
+              <div className="space-y-2">
+                <div className="font-semibold">Subjects:</div>
+                <div className="flex flex-wrap gap-1">
+                  {currentTeacher.subjects.map((subject) => (
+                    <span
+                      key={subject}
+                      className="px-2 py-1 bg-gray-100 rounded-full text-xs"
+                    >
+                      {subject}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {currentTeacher.address && (
+                <div className="space-y-2">
+                  <div className="font-semibold">Address:</div>
+                  <div>
+                    {currentTeacher.address}
+                    {currentTeacher.city && `, ${currentTeacher.city}`}
+                    {currentTeacher.state && `, ${currentTeacher.state}`}
+                    {currentTeacher.zipCode && ` ${currentTeacher.zipCode}`}
+                  </div>
+                </div>
+              )}
+
+              {currentTeacher.dateOfBirth && (
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="font-semibold">Date of Birth:</div>
+                  <div className="col-span-2">{currentTeacher.dateOfBirth}</div>
+                </div>
+              )}
+
+              {currentTeacher.qualification && (
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="font-semibold">Qualification:</div>
+                  <div className="col-span-2">
+                    {currentTeacher.qualification}
+                  </div>
+                </div>
+              )}
+
+              {currentTeacher.experience > 0 && (
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="font-semibold">Experience:</div>
+                  <div className="col-span-2">
+                    {currentTeacher.experience} years
+                  </div>
+                </div>
+              )}
+
+              {currentTeacher.specialization && (
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="font-semibold">Specialization:</div>
+                  <div className="col-span-2">
+                    {currentTeacher.specialization}
+                  </div>
+                </div>
+              )}
+
+              {currentTeacher.emergencyContact && (
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="font-semibold">Emergency:</div>
+                  <div className="col-span-2">
+                    {currentTeacher.emergencyContact}
+                  </div>
+                </div>
+              )}
+
+              {currentTeacher.joinDate && (
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="font-semibold">Joined:</div>
+                  <div className="col-span-2">{currentTeacher.joinDate}</div>
+                </div>
+              )}
+
+              {currentTeacher.additionalNotes && (
+                <div className="space-y-2">
+                  <div className="font-semibold">Notes:</div>
+                  <div className="text-sm bg-gray-50 p-2 rounded">
+                    {currentTeacher.additionalNotes}
+                  </div>
+                </div>
+              )}
             </div>
             <DialogFooter>
               <Button onClick={() => setIsViewDialogOpen(false)}>Close</Button>
@@ -639,13 +1045,28 @@ export const TeachersManagementPage = () => {
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
           <DialogContent className="max-w-2xl max-h-screen overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Edit Teacher: {currentTeacher.name}</DialogTitle>
+              <DialogTitle>Edit Teacher</DialogTitle>
             </DialogHeader>
             <div className="grid gap-4 py-4">
+              {Object.keys(formErrors).length > 0 && (
+                <Alert
+                  variant="destructive"
+                  className="bg-red-50 border-red-200"
+                >
+                  <AlertDescription>
+                    <ul className="list-disc pl-5">
+                      {Object.values(formErrors).map((error, index) => (
+                        <li key={index}>{error}</li>
+                      ))}
+                    </ul>
+                  </AlertDescription>
+                </Alert>
+              )}
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="edit-name" className="text-right">
-                    Full Name
+                    Full Name*
                   </Label>
                   <Input
                     id="edit-name"
@@ -656,11 +1077,17 @@ export const TeachersManagementPage = () => {
                         name: e.target.value,
                       })
                     }
+                    className={formErrors.name ? "border-red-500" : ""}
                   />
+                  {formErrors.name && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {formErrors.name}
+                    </p>
+                  )}
                 </div>
                 <div>
                   <Label htmlFor="edit-email" className="text-right">
-                    Email
+                    Email*
                   </Label>
                   <Input
                     id="edit-email"
@@ -672,7 +1099,13 @@ export const TeachersManagementPage = () => {
                         email: e.target.value,
                       })
                     }
+                    className={formErrors.email ? "border-red-500" : ""}
                   />
+                  {formErrors.email && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {formErrors.email}
+                    </p>
+                  )}
                 </div>
                 <div>
                   <Label htmlFor="edit-phone" className="text-right">
@@ -720,8 +1153,10 @@ export const TeachersManagementPage = () => {
                       })
                     }
                   >
-                    <option>Active</option>
-                    <option>On Leave</option>
+                    <option value="ACTIVE">Active</option>
+                    <option value="ONLEAVE">On Leave</option>
+                    <option value="INACTIVE">Inactive</option>
+                    <option value="TERMINATED">Terminated</option>
                   </select>
                 </div>
                 <div>
@@ -739,13 +1174,16 @@ export const TeachersManagementPage = () => {
                       })
                     }
                   >
-                    <option>Full-time</option>
-                    <option>Part-time</option>
+                    <option value="FULLTIME">Full-time</option>
+                    <option value="PARTTIME">Part-time</option>
+                    <option value="CONTRACT">Contract</option>
+                    <option value="TEMPORARY">Temporary</option>
                   </select>
                 </div>
               </div>
+
               <div>
-                <Label className="block mb-2">Subjects</Label>
+                <Label className="block mb-2">Subjects*</Label>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 max-h-60 overflow-y-auto p-2 border rounded-md">
                   {allSubjects.map((subject) => (
                     <div key={subject} className="flex items-center space-x-2">
@@ -765,16 +1203,195 @@ export const TeachersManagementPage = () => {
                     </div>
                   ))}
                 </div>
+                {formErrors.subjects && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {formErrors.subjects}
+                  </p>
+                )}
+              </div>
+
+              <div className="border-t pt-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setShowAdvancedFields(!showAdvancedFields)}
+                  className="mb-4"
+                >
+                  {showAdvancedFields ? "Hide" : "Show"} Advanced Fields
+                </Button>
+
+                {showAdvancedFields && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                    <div>
+                      <Label htmlFor="edit-address">Address</Label>
+                      <Input
+                        id="edit-address"
+                        value={currentTeacher.address || ""}
+                        onChange={(e) =>
+                          setCurrentTeacher({
+                            ...currentTeacher,
+                            address: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="edit-city">City</Label>
+                      <Input
+                        id="edit-city"
+                        value={currentTeacher.city || ""}
+                        onChange={(e) =>
+                          setCurrentTeacher({
+                            ...currentTeacher,
+                            city: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="edit-state">State</Label>
+                      <Input
+                        id="edit-state"
+                        value={currentTeacher.state || ""}
+                        onChange={(e) =>
+                          setCurrentTeacher({
+                            ...currentTeacher,
+                            state: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="edit-zipCode">Zip Code</Label>
+                      <Input
+                        id="edit-zipCode"
+                        value={currentTeacher.zipCode || ""}
+                        onChange={(e) =>
+                          setCurrentTeacher({
+                            ...currentTeacher,
+                            zipCode: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="edit-dateOfBirth">Date of Birth</Label>
+                      <Input
+                        id="edit-dateOfBirth"
+                        type="date"
+                        value={currentTeacher.dateOfBirth || ""}
+                        onChange={(e) =>
+                          setCurrentTeacher({
+                            ...currentTeacher,
+                            dateOfBirth: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="edit-qualification">Qualification</Label>
+                      <Input
+                        id="edit-qualification"
+                        value={currentTeacher.qualification || ""}
+                        onChange={(e) =>
+                          setCurrentTeacher({
+                            ...currentTeacher,
+                            qualification: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="edit-experience">
+                        Years of Experience
+                      </Label>
+                      <Input
+                        id="edit-experience"
+                        type="number"
+                        value={currentTeacher.experience || 0}
+                        onChange={(e) =>
+                          setCurrentTeacher({
+                            ...currentTeacher,
+                            experience: parseInt(e.target.value) || 0,
+                          })
+                        }
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="edit-specialization">
+                        Specialization
+                      </Label>
+                      <Input
+                        id="edit-specialization"
+                        value={currentTeacher.specialization || ""}
+                        onChange={(e) =>
+                          setCurrentTeacher({
+                            ...currentTeacher,
+                            specialization: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="edit-emergencyContact">
+                        Emergency Contact
+                      </Label>
+                      <Input
+                        id="edit-emergencyContact"
+                        value={currentTeacher.emergencyContact || ""}
+                        onChange={(e) =>
+                          setCurrentTeacher({
+                            ...currentTeacher,
+                            emergencyContact: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="edit-joinDate">Joining Date</Label>
+                      <Input
+                        id="edit-joinDate"
+                        type="date"
+                        value={currentTeacher.joinDate || ""}
+                        onChange={(e) =>
+                          setCurrentTeacher({
+                            ...currentTeacher,
+                            joinDate: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                    <div className="md:col-span-2">
+                      <Label htmlFor="edit-additionalNotes">
+                        Additional Notes
+                      </Label>
+                      <textarea
+                        id="edit-additionalNotes"
+                        className="w-full p-2 border rounded-md h-24"
+                        value={currentTeacher.additionalNotes || ""}
+                        onChange={(e) =>
+                          setCurrentTeacher({
+                            ...currentTeacher,
+                            additionalNotes: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
             <DialogFooter>
               <Button
                 variant="outline"
-                onClick={() => setIsEditDialogOpen(false)}
+                onClick={() => {
+                  setIsEditDialogOpen(false);
+                  setFormErrors({});
+                }}
               >
                 Cancel
               </Button>
-              <Button onClick={handleUpdateTeacher}>Save Changes</Button>
+              <Button onClick={handleUpdateTeacher}>Update Teacher</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>

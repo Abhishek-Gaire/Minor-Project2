@@ -1,5 +1,5 @@
 import Layout from "../components/Layout.tsx";
-// import { pageNotFoundImage } from "../../public/pageNotFound.webp";
+
 const RouteNotFound = () => {
   return (
     <Layout>
