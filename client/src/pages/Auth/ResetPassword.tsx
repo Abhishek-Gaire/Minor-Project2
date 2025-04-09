@@ -5,10 +5,8 @@ import { School } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import Layout from "../../components/Layout";
 
-import Layout from "../../components/Layout.tsx";
-
-// Define schema for reset password form
 const resetPasswordSchema = z
   .object({
     password: z
@@ -31,7 +29,7 @@ const ResetPassword = () => {
   const { token } = useParams<{ token: string }>();
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isTokenValid, setIsTokenValid] = useState(true); // Assume token is valid initially
+  const [isTokenValid, setIsTokenValid] = useState(true);
 
   const {
     register,
@@ -45,37 +43,17 @@ const ResetPassword = () => {
     },
   });
 
-  // Verify token validity when component mounts
-  // useEffect(() => {
-  //   const verifyToken = async () => {
-  //     try {
-  //       // Call your API to verify token
-  //       // const response = await verifyResetToken(token);
-  //       // setIsTokenValid(response.isValid);
-  //     } catch (error) {
-  //       console.error("Token verification error:", error);
-  //       setIsTokenValid(false);
-  //     }
-  //   };
-  //   
-  //   verifyToken();
-  // }, [token]);
-
   const onSubmit = async (data: ResetPasswordFormInputs) => {
     setIsSubmitting(true);
     try {
-      // Here you would call your API to reset the password
-      // const response = await resetPassword(token, data.password);
-      
-      // Simulating API call with timeout
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      // await resetPassword(token, data.password);
       toast.success("Password reset successfully!");
       navigate("/login", { replace: true });
     } catch (error: any) {
       console.error("Password reset error:", error);
       toast.error(
-        error?.message || "Failed to reset password. Please try again."
+        error?.response?.data?.message ||
+          "Failed to reset password. Please try again."
       );
     } finally {
       setIsSubmitting(false);
@@ -93,7 +71,8 @@ const ResetPassword = () => {
                 Invalid or Expired Link
               </h2>
               <p className="mt-2 text-sm text-gray-600">
-                This password reset link is invalid or has expired. Please request a new one.
+                This password reset link is invalid or has expired. Please
+                request a new one.
               </p>
               <button
                 onClick={() => navigate("/forget-password")}
@@ -146,7 +125,9 @@ const ResetPassword = () => {
                   className="input-field"
                 />
                 {errors.confirmPassword && (
-                  <p className="text-red-500">{errors.confirmPassword.message}</p>
+                  <p className="text-red-500">
+                    {errors.confirmPassword.message}
+                  </p>
                 )}
               </div>
               <button

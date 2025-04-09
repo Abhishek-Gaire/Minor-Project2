@@ -39,16 +39,18 @@ const ForgetPassword = () => {
     try {
       // Here you would call your API to send a password reset email
       // const response = await sendPasswordResetEmail(data.email, data.role);
-      
+
       // Simulating API call with timeout
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       // If successful, show success message
       toast.success("Reset link sent to your email!");
       setEmailSent(true);
     } catch (error: any) {
       console.error("Password reset error:", error);
-      toast.error(error?.message || "Failed to send reset link. Please try again.");
+      toast.error(
+        error?.message || "Failed to send reset link. Please try again."
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -110,7 +112,8 @@ const ForgetPassword = () => {
           ) : (
             <div className="mt-4 space-y-4">
               <p className="text-sm text-gray-600">
-                We've sent a password reset link to your email. Please check your inbox and follow the instructions to reset your password.
+                We've sent a password reset link to your email. Please check
+                your inbox and follow the instructions to reset your password.
               </p>
               <button
                 onClick={() => setEmailSent(false)}
@@ -122,8 +125,8 @@ const ForgetPassword = () => {
           )}
 
           <div className="text-sm text-center mt-4">
-            <Link 
-              to="/login" 
+            <Link
+              to="/login"
               className="flex items-center justify-center text-indigo-600 hover:text-indigo-500"
             >
               <ArrowLeft className="h-4 w-4 mr-1" />
