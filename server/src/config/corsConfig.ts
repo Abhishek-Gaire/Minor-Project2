@@ -17,3 +17,4 @@ const corsOptions = {
 const corsConfig = cors(corsOptions);
 
 export default corsConfig;
+export const socketCorsOptions = corsOptions; // for Socket.IO

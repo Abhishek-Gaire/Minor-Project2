@@ -44,6 +44,7 @@ export const createTeacher = async (
       specialization,
       emergencyContact,
       joinDate,
+      schoolId,
       additionalNotes,
       ...teacherData
     } = validatedData;
@@ -56,6 +57,7 @@ export const createTeacher = async (
           name: teacherData.name,
           email: teacherData.email,
           password: hashedPassword,
+          schoolId: schoolId,
           subjects: teacherData.subjects,
           phone: teacherData.phone,
           classes: teacherData.classes || 0,

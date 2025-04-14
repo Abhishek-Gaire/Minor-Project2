@@ -76,6 +76,7 @@ export const teacherSchema = z.object({
   email: z.string().email("Invalid email format"),
   password: z.string().min(8, "Password must be at least 8 characters"),
   subjects: z.array(z.string()).min(1, "At least one subject is required"),
+  schoolId: z.string(),
   phone: z.string().optional(),
   classes: z.number().int().min(0).optional(),
   status: z.enum(["ACTIVE", "INACTIVE", "ONLEAVE", "TERMINATED"]).optional(),

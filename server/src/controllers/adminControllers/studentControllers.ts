@@ -1,7 +1,7 @@
 // src/controllers/student.controller.ts
 import { Request, Response, NextFunction } from "express";
 import { PrismaClient } from "@prisma/client";
-import { CustomError } from "../utils/customError";
+import { CustomError } from "../../exceptions/customError";
 import bcrypt from "bcrypt";
 
 import { studentSchema } from "../../types/schema";
@@ -127,7 +127,7 @@ export const getStudent = async (
         school: {
           select: {
             id: true,
-            name: true,
+            schoolName: true,
           },
         },
       },
