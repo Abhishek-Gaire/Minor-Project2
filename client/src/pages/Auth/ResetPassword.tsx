@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState ,useEffect} from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { School } from "lucide-react";
@@ -27,6 +27,26 @@ type ResetPasswordFormInputs = z.infer<typeof resetPasswordSchema>;
 
 const ResetPassword = () => {
   const { token } = useParams<{ token: string }>();
+
+// Inside your component:
+useEffect(() => {
+  const verifyToken = async () => {
+    try {
+      const response = await fetch(`http://localhost:3000/api/v1/auth/verify-reset-token/${token}`);
+      const data = await response.json();
+      
+      if (!response.ok) {
+        setIsTokenValid(false);
+      }
+    } catch (error) {
+      console.error("Token verification error:", error);
+      setIsTokenValid(false);
+    }
+  };
+  
+  verifyToken();
+}, [token]);
+ 
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isTokenValid, setIsTokenValid] = useState(true);
@@ -46,14 +66,31 @@ const ResetPassword = () => {
   const onSubmit = async (data: ResetPasswordFormInputs) => {
     setIsSubmitting(true);
     try {
-      // await resetPassword(token, data.password);
+      // Make the actual API call to reset password
+      const response = await fetch('http://localhost:3000/api/v1/auth/reset-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          token: token,
+          password: data.password
+        }),
+      });
+      
+      const result = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(result.message || 'Something went wrong');
+      }
+      
       toast.success("Password reset successfully!");
       navigate("/login", { replace: true });
     } catch (error: any) {
       console.error("Password reset error:", error);
       toast.error(
-        error?.response?.data?.message ||
-          "Failed to reset password. Please try again."
+        error?.message || error?.response?.data?.message || 
+        "Failed to reset password. Please try again."
       );
     } finally {
       setIsSubmitting(false);
