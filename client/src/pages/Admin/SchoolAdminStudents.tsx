@@ -98,6 +98,16 @@ const StudentsPage = () => {
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
+  const handleStudentDeleted = (deletedId) => {
+    setStudents(students.filter(student => student.id !== deletedId));
+  };
+  
+  // Function to handle edit navigation
+  const handleEditStudent = (student) => {
+    // Navigate to edit page or open edit modal
+    navigate(`/students/edit/${student.id}`);
+    // OR set state to show edit modal
+  };
 
   // Debounced search handler
   const handleSearch = debounce((term: string) => {
@@ -139,7 +149,11 @@ const StudentsPage = () => {
         <InputSection handleSearch={handleSearch} setFilters={setFilters} />
 
         {/* Enhanced Table with Selection */}
-        <TableSelection paginatedData={paginatedData} />
+        <TableSelection 
+      paginatedData={students} 
+      onStudentDeleted={handleStudentDeleted}
+      onEditStudent={handleEditStudent}
+    />
 
         {/* Pagination Controls */}
         <PaginatedControls
