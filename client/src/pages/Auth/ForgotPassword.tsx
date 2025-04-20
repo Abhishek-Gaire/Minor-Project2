@@ -37,13 +37,24 @@ const ForgetPassword = () => {
   const onSubmit = async (data: ForgotPasswordFormInputs) => {
     setIsSubmitting(true);
     try {
-      // Here you would call your API to send a password reset email
-      // const response = await sendPasswordResetEmail(data.email, data.role);
-
-      // Simulating API call with timeout
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // If successful, show success message
+      // Make the actual API call
+      const response = await fetch('http://localhost:3000/api/v1/auth/forget-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: data.email,
+          role: data.role
+        }),
+      });
+      
+      const result = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(result.message || 'Something went wrong');
+      }
+  
       toast.success("Reset link sent to your email!");
       setEmailSent(true);
     } catch (error: any) {

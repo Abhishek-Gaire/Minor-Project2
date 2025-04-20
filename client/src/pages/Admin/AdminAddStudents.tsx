@@ -59,13 +59,41 @@ const AddStudentForm: React.FC = () => {
     },
   });
 
-  const onSubmit = (data: FormValues) => {
-    console.log(data);
-    toast({
-      title: "Student Added Successfully",
-      description: `${data.firstName} ${data.lastName} has been added to grade ${data.grade}.`,
-    });
-    // Here you would typically send the data to your API
+  const onSubmit = async (data: FormValues) => {
+    try {
+      // Make the API call to add a new student
+      const response = await fetch('http://localhost:3000/api/v1/students', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+      
+      const result = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(result.message || 'Failed to add student');
+      }
+      
+      console.log(result);
+      toast({
+        title: "Student Added Successfully",
+        description: `${data.firstName} ${data.lastName} has been added to grade ${data.grade}.`,
+      });
+      
+      // Optionally reset the form after successful submission
+      form.reset();
+      setActiveTab("personal");
+      
+    } catch (error: any) {
+      console.error("Error adding student:", error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to add student. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const moveToNextTab = () => {
