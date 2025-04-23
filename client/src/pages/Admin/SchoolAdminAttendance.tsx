@@ -3,7 +3,7 @@ import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} f
 import {Input} from "@/components/ui/input.tsx";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table.tsx";
 
-export const AttendanceManagementPage = () => {
+const AttendanceManagementPage = () => {
     return (
 
         <div className="space-y-6">
@@ -225,3 +225,5 @@ export const AttendanceManagementPage = () => {
         </div>
     );
 };
+
+export default AttendanceManagementPage;

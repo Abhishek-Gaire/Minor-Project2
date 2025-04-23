@@ -4,7 +4,7 @@ import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} f
 import {Badge} from "@/components/ui/badge.tsx";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table.tsx";
 
-export const ClassManagementPage = () => {
+const ClassManagementPage = () => {
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
@@ -197,3 +197,5 @@ export const ClassManagementPage = () => {
         </div>
     );
 };
+
+export default ClassManagementPage;

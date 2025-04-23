@@ -54,7 +54,7 @@ const employmentTypeMap = {
   TEMPORARY: "Temporary",
 };
 
-export const TeachersManagementPage = () => {
+const TeachersManagementPage = () => {
   const initialTeachers = [
     {
       name: "Sarah Johnson",
@@ -1399,3 +1399,5 @@ export const TeachersManagementPage = () => {
     </div>
   );
 };
+
+export default TeachersManagementPage;

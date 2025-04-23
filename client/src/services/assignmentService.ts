@@ -3,7 +3,7 @@
 import axios from 'axios';
 
 // Define base URL for API calls
-const API_BASE_URL = process.env.VITE_BACKEND_URI!;
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URI!;
 
 // Types
 export interface Assignment {

@@ -59,6 +59,26 @@ export interface Message {
   isSelf?: boolean;
 }
 
+export interface Student {
+  name: string;
+  id: string;
+  email: string;
+  schoolId: string;
+  createdAt: Date;
+  grade: string; // Assuming $Enums.Grade is a string (replace with actual type if needed)
+  rollNumber: string | null;
+}
+
+export interface Conversation {
+  id: number;
+  sender: string;
+  content: string;
+  conversationId: string;
+  receiver: string;
+  timeStamp: Date;
+  delivered: boolean;
+}
+
 export interface ClassMessage {
   id: number;
   sender: string;
@@ -68,17 +88,26 @@ export interface ClassMessage {
 }
 
 // Define the schema for form validation
-export const classFormSchema = z.object({
-  title: z.string().min(1, { message: "Title is required" }),
-  description: z.string().min(1, { message: "Description is required" }),
-  startTime: z.string().min(1, { message: "Start time is required" }),
-  endTime: z
-    .string()
-    .min(1, { message: "End time is required" })
-    .refine((endTime, data) => new Date(endTime) > new Date(data.startTime), {
-      message: "End time must be after start time",
-    }),
-});
+
+export const classFormSchema = z
+  .object({
+    title: z.string().min(1, { message: "Title is required" }),
+    description: z.string().min(1, { message: "Description is required" }),
+    startTime: z.string().min(1, { message: "Start time is required" }),
+    endTime: z.string().min(1, { message: "End time is required" }),
+  })
+  .superRefine((data, ctx) => {
+    const start = new Date(data.startTime);
+    const end = new Date(data.endTime);
+
+    if (end <= start) {
+      ctx.addIssue({
+        path: ["endTime"],
+        message: "End time must be after start time",
+        code: z.ZodIssueCode.custom,
+      });
+    }
+  });
 
 // Create a TypeScript type from the Zod schema
 export type ClassFormData = z.infer<typeof classFormSchema>;

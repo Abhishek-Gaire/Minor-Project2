@@ -14,6 +14,7 @@ const Layout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const isMobile = useIsMobile();
   const { user, loading, logout, refreshAuth } = useAuth();
+
   const { role } = useParams();
   const location = useLocation();
 
