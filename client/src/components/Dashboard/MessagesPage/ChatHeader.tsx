@@ -10,7 +10,7 @@ import { getAvatarColor, getInitials } from "@/lib/utils";
 
 import { Clock, MoreHorizontal } from "lucide-react";
 
-const ChatHeader = ({ selectedUser }) => {
+const ChatHeader = ({ selectedUser ,isOnline=false}) => {
   return (
     <div className=" bg-card p-4 flex items-center justify-between">
       <div className="flex items-center gap-3">
@@ -20,8 +20,12 @@ const ChatHeader = ({ selectedUser }) => {
         <div>
           <div className="font-medium">{selectedUser}</div>
           <div className="text-xs text-gray-500 flex items-center">
-            <div className="bg-green-500 h-2 w-2 rounded-full mr-1"></div>
-            Online
+            {isOnline ? (
+              <div className="bg-green-500 h-2 w-2 rounded-full mr-1"></div>
+            ) : (
+              <div className="bg-gray-500 h-2 w-2 rounded-full mr-1"></div>
+            )}
+            {isOnline ? "Online" : "Offline"}
           </div>
         </div>
       </div>

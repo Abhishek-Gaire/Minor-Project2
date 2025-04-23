@@ -3,26 +3,27 @@ import { useState } from "react";
 import { Loader2, PaperclipIcon, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { supabase } from "@/lib/supabase-config";
 import { toast } from "react-toastify";
 
 interface MessageInputProps {
+  sendPrivateMessage: (messageData: {
+    sender: string;
+    receiver: string;
+    content: string;
+  }) => void;
   recipientId: string;
   senderId: string;
-  setConversationId: (id: string | null) => void;
 }
 
-const BACKEND_URI = import.meta.env.VITE_BACKEND_URI!;
-
 const MessageInput = ({
+  sendPrivateMessage,
   recipientId,
   senderId,
-  setConversationId,
 }: MessageInputProps) => {
   const [messageInput, setMessageInput] = useState("");
   const [sending, setSending] = useState(false);
 
-  const handleSendMessage = async () => {
+  const handleSendMessage = async (e: React.FormEvent) => {
     if (!messageInput.trim()) return;
     setSending(true);
     const messageData = {
@@ -32,17 +33,7 @@ const MessageInput = ({
     };
 
     try {
-      const response = await fetch(`${BACKEND_URI}/api/v1/messages`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(messageData),
-      });
-      const responseData = await response.json();
-      const savedMessage = responseData.data;
-      setConversationId(responseData.conversationId);
-
-      const { error } = await supabase.from("Messages").insert(savedMessage);
-      if (error) throw error;
+      sendPrivateMessage(messageData);
       setMessageInput("");
     } catch (error) {
       console.error("Error sending message:", error);
@@ -66,7 +57,7 @@ const MessageInput = ({
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
               e.preventDefault();
-              handleSendMessage();
+              handleSendMessage(e);
             }
           }}
         />

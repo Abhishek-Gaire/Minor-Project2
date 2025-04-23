@@ -2,8 +2,16 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar.tsx";
 import { Badge } from "@/components/ui/badge.tsx";
 import { useAuth } from "@/contexts/useAuth";
 import { getInitials, getTimeDifference } from "@/lib/utils";
+import { Conversation } from "@/constants/types";
 
-const FilteredConversations = ({
+interface FilteredConversationsProps {
+  conversation,
+  setActiveConversation: (id: string) => void;
+  setSelectedUser: (user: string) => void;
+  activeConversation: string | null;
+}
+
+const FilteredConversations: React.FC<FilteredConversationsProps> = ({
   conversation,
   setActiveConversation,
   activeConversation,
@@ -14,7 +22,7 @@ const FilteredConversations = ({
     user.name === conversation.receiver
       ? conversation.sender
       : conversation.receiver;
-  const getAvatarColor = (type) => {
+  const getAvatarColor = (type: string) => {
     switch (type) {
       case "student":
         return "bg-blue-500";

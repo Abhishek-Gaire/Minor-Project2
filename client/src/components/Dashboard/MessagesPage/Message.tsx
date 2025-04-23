@@ -33,7 +33,7 @@ const Message = ({ message }) => {
                 : "text-muted-foreground"
             )}
           >
-            {getTimeDifference(message.timeStamp)}
+            {getTimeDifference(message.timestamp)}
           </div>
         </div>
       </div>

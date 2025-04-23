@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import Message from "./Message";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Message as MessageType } from "@/constants/types";
 
 const MessagesList = ({ messages, loading }) => {
   const messageEndRef = useRef<HTMLDivElement>(null);
@@ -23,7 +24,7 @@ const MessagesList = ({ messages, loading }) => {
             </p>
           </div>
         ) : (
-          messages?.map((message) => (
+          messages?.map((message:MessageType) => (
             <Message message={message} key={message.id} />
           ))
         )}
