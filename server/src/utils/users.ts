@@ -1,32 +1,61 @@
+// Define User and Room structure
 interface User {
   id: string;
   username: string;
-  room: string;
 }
+type RoomUsers = Record<string, User[]>;
+const users: RoomUsers = {};
 
-const users: User[] = [];
-
-// Join user to chat
-export function userJoin(id: string, username: string, room: string): User {
-  const user = { id, username, room };
-  users.push(user);
-  return user;
-}
-
-// Get Current User
-export function getCurrentUser(id: string): User | undefined {
-  return users.find((user) => user.id === id);
-}
-
-// User Leaves Chat
-export function userLeave(id: string): User | undefined {
-  const index = users.findIndex((user) => user.id === id);
-  if (index !== -1) {
-    return users.splice(index, 1)[0];
+// Join a user to a room
+export function userJoin(id: string, username: string, roomId: string): User | null {
+  const user = { id, username };
+  if (!users[roomId]) {
+    users[roomId] = [user];
+    return user;
   }
+
+  if (users[roomId].length < 2) {
+    users[roomId].push(user);
+    return user;
+  }
+
+  return null; // Room full
 }
 
-// Get Room Users
-export function getRoomUsers(room: string): User[] {
-  return users.filter((user) => user.room === room);
+// Get a user by their socket ID
+export function getCurrentUser(id: string): User | undefined {
+  for (const room in users) {
+    const user = users[room].find((u) => u.id === id);
+    if (user) return user;
+  }
+  return undefined;
+}
+
+// Remove user from any room
+export function userLeave(id: string): User | undefined {
+  for (const room in users) {
+    const index = users[room].findIndex((u) => u.id === id);
+    if (index !== -1) {
+      const [removed] = users[room].splice(index, 1);
+      if (users[room].length === 0) {
+        delete users[room];
+      }
+      return removed;
+    }
+  }
+  return undefined;
+}
+
+// Get users in a specific room
+export function getRoomUsers(roomId: string): User[] {
+  return users[roomId] || [];
+}
+
+export function isUserInConversation(username: string, conversationId: string): boolean {
+  const roomUsers = users[conversationId];
+  if (!roomUsers) {
+    return false; // Conversation/room does not exist
+  }
+  const isOnline = roomUsers.some((user) => user.username === username);
+  return isOnline;
 }

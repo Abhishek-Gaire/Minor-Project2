@@ -1,6 +1,9 @@
-import { Messages, Student } from "@prisma/client";
+import { Messages, Prisma, PrismaClient, Student } from "@prisma/client";
 import prisma from "../config/dbConfig";
 
+// type PrismaTransactionClient = Parameters<typeof prisma.$transaction>[0];
+
+type PrismaClientOrTransaction = PrismaClient | Prisma.TransactionClient;
 // Get Conversation Id
 const getConversationId = async (
   sender: string,
@@ -36,7 +39,8 @@ const savePrivateMessage = async (
   conversationId: string,
   content: string,
   sender: string,
-  receiver: string
+  receiver: string,
+  delivered: boolean,
 ): Promise<Messages> => {
   const savedMessage = await prisma.messages.create({
     data: {
@@ -44,7 +48,7 @@ const savePrivateMessage = async (
       receiver: receiver,
       conversationId: conversationId,
       content: content,
-      delivered: false,
+      delivered,
     },
   });
   return savedMessage;
@@ -53,9 +57,10 @@ const savePrivateMessage = async (
 // Get 50 private messages between two participants
 const getPrivateMessages = async (
   conversationId: string,
-  limit = 50
+  tx: PrismaClientOrTransaction = prisma,
+  limit: number = 50
 ): Promise<Messages[]> => {
-  const messages = await prisma.messages.findMany({
+  const messages = await tx.messages.findMany({
     where: {
       conversationId: conversationId,
     },
@@ -69,8 +74,11 @@ const getPrivateMessages = async (
 };
 
 // Mark messages as read (make deliver true)
-const markMessagesAsRead = async (conversationId: string): Promise<void> => {
-  await prisma.messages.updateMany({
+const markMessagesAsRead = async (
+  conversationId: string,
+  tx: PrismaClientOrTransaction = prisma
+): Promise<void> => {
+  await tx.messages.updateMany({
     where: {
       conversationId: conversationId,
       delivered: false,
@@ -87,7 +95,7 @@ const getUnreadMessagesCount = async (
 ): Promise<number> => {
   return await prisma.messages.count({
     where: {
-      conversationId,
+      conversationId, 
       delivered: false,
     },
   });
@@ -96,9 +104,28 @@ const getUnreadMessagesCount = async (
 const getAllPrivateMessages = async (
   id: string
 ): Promise<{ filteredMessages: Messages[]; students: Student[] }> => {
-  const userObject = await prisma.student.findUnique({
+  let userObject, students;
+  userObject = await prisma.student.findUnique({
     where: { id: id },
   });
+
+  if (userObject) {
+    // If the user is a student, get all students in the same grade
+    students = await prisma.student.findMany({
+      where: {
+        grade: userObject.grade,
+      },
+    });
+  } else {
+    // Else, assume it's a teacher
+    userObject = await prisma.teacher.findUnique({
+      where: { id: id },
+    });
+
+    students = await prisma.student.findMany({
+      take: 20, // Limit to 20 students
+    });
+  }
   const allMessages = await prisma.messages.findMany({
     where: {
       OR: [
@@ -137,13 +164,6 @@ const getAllPrivateMessages = async (
       seenPairs.add(key);
     }
   }
-
-  const students = await prisma.student.findMany({
-    where: {
-      grade: userObject!.grade,
-    },
-  });
-
   return { filteredMessages, students };
 };
 
