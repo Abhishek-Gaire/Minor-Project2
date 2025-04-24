@@ -10,9 +10,9 @@ const prisma = new PrismaClient();
 
 // **Login For Student and Teacher
 export const login: RequestHandler = async (req: Request, res: Response) => {
-  const { email, password, role } = req.body;
+  const { email, bodyPassword, role } = req.body;
 
-  if (!email || !password || !role) {
+  if (!email || !bodyPassword || !role) {
     res.status(401).json({
       success: false,
       message: "Provide all the fields",
@@ -30,7 +30,7 @@ export const login: RequestHandler = async (req: Request, res: Response) => {
       });
       return;
     }
-    isMatch = password === userExists.password;
+    isMatch = bodyPassword === userExists.password;
 
     // isMatch = await bcrypt.compare(password, userExists.password);
     if (!isMatch) {
@@ -50,7 +50,16 @@ export const login: RequestHandler = async (req: Request, res: Response) => {
       path: "/",
     });
   } else {
-    userExists = await prisma.teacher.findFirst({ where: { email } });
+    userExists = await prisma.teacher.findFirst({
+      where: { email },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        grade: true,
+        password: true,
+      },
+    });
     if (!userExists) {
       res.status(404).json({
         success: false,
@@ -58,7 +67,7 @@ export const login: RequestHandler = async (req: Request, res: Response) => {
       });
       return;
     }
-    isMatch = password === userExists.password;
+    isMatch = bodyPassword === userExists.password;
     // isMatch = await bcrypt.compare(password, userExists.password);
     if (!isMatch) {
       res.status(401).json({
@@ -78,14 +87,18 @@ export const login: RequestHandler = async (req: Request, res: Response) => {
     });
   }
 
+  
+  const { password, ...safeUser } = userExists;
+
   res.status(200).json({
     message: "Login successful",
     accessToken: token,
     data: {
-      ...userExists,
+      ...safeUser,
       role: role.toLowerCase(),
     },
   });
+  
   return;
 };
 
@@ -105,7 +118,15 @@ export const forgotPassword: RequestHandler = async (
   if (role === "Student") {
     userExists = await prisma.student.findFirst({ where: { email } });
   } else {
-    userExists = await prisma.teacher.findFirst({ where: { email } });
+    userExists = await prisma.teacher.findFirst({
+      where: { email },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        grade: true,
+      },
+    });
   }
 
   if (!userExists) {

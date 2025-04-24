@@ -20,7 +20,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password, role }),
+        body: JSON.stringify({ email, bodyPassword: password, role }),
         credentials: "include",
       });
 

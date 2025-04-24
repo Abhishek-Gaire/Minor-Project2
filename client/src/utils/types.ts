@@ -4,9 +4,6 @@ export interface Participant {
   isHost: boolean;
 }
 
-export interface ChatRoomProps {
-  gradeLevel: number;
-}
 
 export interface User {
   id: string;

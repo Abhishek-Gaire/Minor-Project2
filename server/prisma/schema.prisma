@@ -51,21 +51,48 @@ model SuperAdmin {
   password  String
   createdAt DateTime @default(now())
 
-  @@map("super_admins")
+  @@map("super_admins") 
+}
+
+model Submission {
+  id              Int       @id @default(autoincrement())
+  studentId       String
+  studentName     String
+  submissionDate  DateTime? // optional
+  grade           Int?      // optional
+  submissionFile  String?   // optional
+  submissionUrl   String?   // optional
+  assignmentId    Int       // foreign key to Assignment
+
+  // Relations
+  assignment      Assignment @relation(fields: [assignmentId], references: [id])
+}
+
+enum AssignmentStatus {
+  Upcoming
+  Open
+  Closed
+  Grading
 }
 
 model Assignment {
-  id           String   @id @default(uuid())
-  title        String
-  fileUrl      String
-  uploadedById String
-  role         String
-  uploadedAt   DateTime @default(now())
+  id             Int              @id @default(autoincrement())
+  title          String
+  subject        String
+  grade          Int
+  description    String
+  dueDate        DateTime
+  pointsPossible Int
+  status         AssignmentStatus
+  updatedAt     DateTime @default(now())
+  teacherId      String
+  totalStudents  Int?
 
   // Relations
-  student Student? @relation(fields: [uploadedById], references: [id], map: "Assignment_student_uploadedById_fkey")
-  teacher Teacher? @relation(fields: [uploadedById], references: [id], map: "Assignment_teacher_uploadedById_fkey")
+  teacher        Teacher          @relation(fields: [teacherId], references: [id])
+  submissions    Submission[]     // assuming a Submission model exists
 }
+
 
 model Conversations {
   id           String     @id @default(uuid())
@@ -99,7 +126,6 @@ model Student {
   grade          Grade
   rollNumber     String?
   studentDetails StudentDetails?
-  Assignment     Assignment[]
 
   @@map("students")
 }
@@ -169,6 +195,7 @@ model Teacher {
   subjects       String[]
   phone          String?
   classes        Int             @default(0)
+  grade          Grade[]         @default([G8]) // ✅ enum array with default
   status         TeacherStatus   @default(ACTIVE)
   employmentType EmploymentType  @default(FULLTIME)
   schoolId       String
@@ -178,6 +205,7 @@ model Teacher {
   teacherDetails TeacherDetails?
   Assignment     Assignment[]
 }
+
 
 model TeacherDetails {
   id               String    @id @default(uuid())

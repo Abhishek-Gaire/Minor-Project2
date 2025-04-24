@@ -10,18 +10,19 @@ import schoolRoutes from "./routes/institutionalRoutes";
 import messageRoutes from "./routes/messageRoutes";
 import classChatRouter from "./routes/classChatRoutes";
 import adminRouter from "./routes/adminRoutes";
+import assignmentRoutes from "./routes/assignmentRoutes";
 import corsConfig, { socketCorsOptions } from "./config/corsConfig";
 import getLocalIP from "./exceptions/getLocalIP";
 
 import cookieParser from "cookie-parser";
 import {
   getCurrentUser,
-  getRoomUsers,
   isUserInConversation,
   userJoin,
   userLeave,
   userJoinClassChat
 } from "./utils/users";
+
 import * as classChatService from "./services/classChatServices";
 import * as privateMessageService from "./services/privateMessageServices";
 
@@ -50,6 +51,7 @@ app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/schools", schoolRoutes);
 app.use("/api/v1/messages", messageRoutes);
 app.use("/api/v1/classMessages", classChatRouter);
+app.use("/api/v1/assignments", assignmentRoutes);
 app.use("/api/v1/admin", adminRouter);
 
 app.use(errorHandler);

@@ -10,12 +10,16 @@ import ProfilePage from "@/pages/Dashboard/ProfilePage";
 import StudyMaterialsPage from "@/pages/Dashboard/StudyMaterials";
 import CalendarPage from "@/pages/Dashboard/CalendarPage";
 import TeacherAttendancePage from "@/pages/Dashboard/AttendancePage";
+import AssignmentDetails from "@/pages/Dashboard/AssignmentDetails";
 
 const dashboardRoutes = [
   { index: true, element: <Dashboard /> },
   { path: "students", element: <Students /> },
   { path: "courses", element: <Courses /> },
-  { path: "assignments", element: <Assignments /> },
+  { path: "assignments", children: [
+    { index: true, element: <Assignments /> },
+    { path: ":id", element: <AssignmentDetails /> },
+  ]},
   { path: "chat", element: <ClassChatPage /> },
   { path: "grades", element: <Grades /> },
   { path: "gradebook", element: <Grades /> },

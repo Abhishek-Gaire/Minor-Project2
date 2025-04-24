@@ -49,7 +49,7 @@ export const assignmentService = {
   // Get all assignments (with filtering capability)
   async getAssignments(filters?: { status?: string; searchTerm?: string }) {
     try {
-      const response = await axios.get(`${API_BASE_URL}/assignments`, { 
+      const response = await axios.get(`${API_BASE_URL}/api/v1/assignments/get`, { 
         params: filters 
       });
       return response.data;
@@ -62,7 +62,7 @@ export const assignmentService = {
   // Get a single assignment by ID
   async getAssignmentById(id: number) {
     try {
-      const response = await axios.get(`${API_BASE_URL}/assignments/${id}`);
+      const response = await axios.get(`${API_BASE_URL}/api/v1/assignments/get/${id}`);
       return response.data;
     } catch (error) {
       console.error(`Error fetching assignment with ID ${id}:`, error);
@@ -73,11 +73,10 @@ export const assignmentService = {
   // Create a new assignment (teachers only)
   async createAssignment(assignmentData: CreateAssignmentForm, teacherId: number) {
     try {
-      const response = await axios.post(`${API_BASE_URL}/assignments`, {
+      const response = await axios.post(`${API_BASE_URL}/api/v1/assignments/create`, {
         ...assignmentData,
         teacherId,
         status: 'Upcoming',
-        createdAt: new Date().toISOString()
       }, {
         headers: {
           'Content-Type': 'application/json'
@@ -93,7 +92,7 @@ export const assignmentService = {
   // Update an existing assignment (teachers only)
   async updateAssignment(id: number, assignmentData: Partial<Assignment>) {
     try {
-      const response = await axios.put(`${API_BASE_URL}/assignments/${id}`, assignmentData, {
+      const response = await axios.put(`${API_BASE_URL}/api/v1/assignments/update/${id}`, assignmentData, {
         headers: {
           'Content-Type': 'application/json'
         }
@@ -108,7 +107,7 @@ export const assignmentService = {
   // Delete an assignment (teachers only)
   async deleteAssignment(id: number) {
     try {
-      const response = await axios.delete(`${API_BASE_URL}/assignments/${id}`);
+      const response = await axios.delete(`${API_BASE_URL}/api/v1/assignments/delete/${id}`);
       return response.data;
     } catch (error) {
       console.error(`Error deleting assignment with ID ${id}:`, error);
@@ -129,7 +128,7 @@ export const assignmentService = {
         formData.append('comments', submissionData.comments);
       }
       
-      const response = await axios.post(`${API_BASE_URL}/assignments/submit`, formData, {
+      const response = await axios.post(`${API_BASE_URL}/api/v1/assignments/submit`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -144,7 +143,7 @@ export const assignmentService = {
   // Get all submissions for an assignment (teachers only)
   async getSubmissions(assignmentId: number) {
     try {
-      const response = await axios.get(`${API_BASE_URL}/assignments/${assignmentId}/submissions`);
+      const response = await axios.get(`${API_BASE_URL}/api/v1/assignments/submissions/${assignmentId}`);
       return response.data;
     } catch (error) {
       console.error(`Error fetching submissions for assignment ${assignmentId}:`, error);

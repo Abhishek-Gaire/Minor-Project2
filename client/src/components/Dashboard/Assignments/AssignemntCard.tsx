@@ -1,14 +1,14 @@
 
 import React from "react";
 import { Assignment } from "@/services/assignmentService";
+import { User } from "@/utils/types";
+import { Link } from "react-router-dom";
 
 interface AssignmentCardProps {
-  user: any; // Replace with proper user type from your auth context
+  user: User; // Replace with proper user type from your auth context
   assignment: Assignment;
   getStatusIcon: (status: Assignment["status"]) => JSX.Element | null;
   getStatusColor: (status: Assignment["status"]) => string;
-  setShowSubmissionModal: React.Dispatch<React.SetStateAction<Assignment | null>>;
-  handleViewAssignmentDetails: (assignment: Assignment) => void;
 }
 
 const AssignmentCard: React.FC<AssignmentCardProps> = ({
@@ -16,8 +16,6 @@ const AssignmentCard: React.FC<AssignmentCardProps> = ({
   assignment,
   getStatusIcon,
   getStatusColor,
-  setShowSubmissionModal,
-  handleViewAssignmentDetails,
 }) => {
   // Calculate submission stats
   const submissionCount = assignment.submissions?.length || 0;
@@ -35,7 +33,7 @@ const AssignmentCard: React.FC<AssignmentCardProps> = ({
 
   // Check if current user (student) has submitted
   const hasSubmitted = user.role === "student" && assignment.submissions?.some(
-    sub => sub.studentId === user.id
+    sub => sub.studentId as undefined as string === user.id
   );
 
   return (
@@ -83,19 +81,9 @@ const AssignmentCard: React.FC<AssignmentCardProps> = ({
       <div className="flex justify-end">
         <button
           className="bg-blue-100 text-blue-800 px-4 py-1 rounded-lg mr-2"
-          onClick={() => handleViewAssignmentDetails(assignment)}
         >
-          View Details
+         <Link to={`/dashboard/${user.role}/assignments/${assignment.id}`}>View Details</Link>
         </button>
-
-        {user.role === "student" && assignment.status === "Open" && !hasSubmitted && (
-          <button
-            className="bg-blue-600 text-white px-4 py-1 rounded-lg"
-            onClick={() => setShowSubmissionModal(assignment)}
-          >
-            Submit
-          </button>
-        )}
 
         {user.role === "student" && hasSubmitted && (
           <span className="text-green-600 px-4 py-1">✓ Submitted</span>

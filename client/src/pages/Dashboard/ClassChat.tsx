@@ -11,10 +11,11 @@ const BACKEND_URI = import.meta.env.VITE_BACKEND_URI!;
 
 const ClassChatPage: React.FC = () => {
   const { user } = useAuth();
+  console.log(user.grade)
   const [classMessages, setClassMessages] = useState<ClassMessage[]>([]);
   const [loading, setLoading] = useState(true);
   const [socket, setSocket] = useState<Socket | null>(null);
-
+  const [selectedClass, setSelectedClass] = useState<string | null>(user?.grade); // Track selected class
   const messageEndRef = useRef<HTMLDivElement>(null);
 
   // Initialize socket connection
@@ -31,10 +32,10 @@ const ClassChatPage: React.FC = () => {
     newSocket.on("sendClassMessage", (message) => {
       setClassMessages((prev) => [...prev, message]);
     });
-    newSocket.emit("getClassHistory", { className: user.grade });
     newSocket.on("error", (error) => {
       console.error("Socket error:", error.message);
     });
+
     return () => {
       newSocket.off("classHistory", handleClassMessages);
       newSocket.off("sendClassMessage", (message) => {
@@ -45,17 +46,18 @@ const ClassChatPage: React.FC = () => {
       });
       newSocket.disconnect();
     };
-  }, [user]);
+  }, []);
 
   // Join Room For Class Chat
   useEffect(() => {
-    if (socket && user) {
+    if (socket && user && selectedClass) {
       socket.emit("joinClassRoom", {
         userName: user.name,
-        conversationId: user.grade,
+        conversationId: selectedClass, // Use selected class instead of user.grade
       });
+      socket.emit("getClassHistory", { className: selectedClass }); // Fetch history for selected class
     }
-  }, [socket, user]);
+  }, [socket, user, selectedClass]);
 
   // Scroll to bottom
   const scrollToBottom = () => {
@@ -81,22 +83,57 @@ const ClassChatPage: React.FC = () => {
     scrollToBottom();
   }, [classMessages]);
 
+// Render class selection dropdown for teachers
+const renderClassSelection = () => {
+  const classes = Array.isArray(user.grade)
+    ? user.grade
+    : user.grade
+    ? [user.grade]
+    : ["Grade 1", "Grade 2", "Grade 3", "Grade 4", "Grade 5"]; // Fallback example list
+
+  return (
+    <div className="flex flex-col items-center justify-center h-full">
+      <h2 className="text-xl font-semibold mb-4">Select a Class</h2>
+      <select
+        className="p-2 border rounded"
+        value={selectedClass || ""}
+        onChange={(e) => setSelectedClass(e.target.value)}
+      >
+        <option value="">-- Select a Class --</option>
+        {classes.map((className) => (
+          <option key={className} value={className}>
+            {className}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+};
+
+
   return (
     <div className="flex flex-col h-[87vh] bg-background">
-      <header className="bg-card shadow p-4 ">
+      <header className="bg-card shadow p-4">
         <div className="flex items-center">
           <MessageCircle className="text-blue-500 mr-2" />
           <h1 className="text-xl font-semibold">Class Chat</h1>
         </div>
         <p className="text-card-foreground text-sm mt-1">
-          Grade {user.grade.split("")[1]}
+          {user?.role === "teacher" && selectedClass
+            ? `Selected Class: ${selectedClass}`
+            : user?.role === "student"
+            ? `Grade ${user?.grade.split("")[1]}`
+            : ""}
         </p>
       </header>
 
-      {loading ? (
-        <div className="flex justify-center p-4 ">Loading messages....</div>
+      {/* Show class selection for teachers */}
+      {user?.role === "teacher" && !selectedClass ? (
+        renderClassSelection()
+      ) : loading ? (
+        <div className="flex justify-center p-4">Loading messages....</div>
       ) : (
-        <ScrollArea className="flex-1 ">
+        <ScrollArea className="flex-1">
           <div className="overflow-y-auto p-4">
             {classMessages?.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full text-card-foreground">
@@ -107,7 +144,11 @@ const ClassChatPage: React.FC = () => {
               </div>
             ) : (
               classMessages.map((message) => (
-                <ClassMessageList user={user} message={message} />
+                <ClassMessageList
+                  key={message.id}
+                  user={user}
+                  message={message}
+                />
               ))
             )}
           </div>
@@ -115,7 +156,12 @@ const ClassChatPage: React.FC = () => {
         </ScrollArea>
       )}
 
-      <MessageInput sender={user} sendClassChatMessage={sendClassChatMessage} />
+      {selectedClass && (
+        <MessageInput
+          sender={user}
+          sendClassChatMessage={sendClassChatMessage}
+        />
+      )}
     </div>
   );
 };

@@ -5,7 +5,7 @@ import { useAuth } from "@/contexts/useAuth";
 
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
-  user.role = "teacher";
+
   const renderTeacherDashboard = () => (
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">

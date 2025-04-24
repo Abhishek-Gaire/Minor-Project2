@@ -7,14 +7,18 @@ import publicRoutes from "./publicRoutes.tsx";
 import dashboardRoutes from "./dashboardRoutes.tsx";
 import adminRoutes from "./schoolAdminRoutes.tsx";
 import superAdminRoutes from "./superAdminRoutes.tsx";
-
+import ProtectedRoute from "../components/Dashboard/ProtectedRoute";
 import RouteNotFound from "../pages/RouteNotFound";
 
 export const router = createBrowserRouter([
   ...publicRoutes,
   {
     path: "/dashboard/:role",
-    element: <Layout />,
+    element: (
+      <ProtectedRoute>
+        <Layout />
+      </ProtectedRoute>
+    ),
     children: dashboardRoutes,
   },
   {
