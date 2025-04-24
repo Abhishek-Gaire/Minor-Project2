@@ -1,5 +1,13 @@
 import express, { Router } from "express";
-import { login } from "../controllers/adminControllers/authController";
+
+import {
+  adminLogin,
+  adminResetPassword,
+  adminForgotPassword,
+  adminChangePassword,
+  adminVerify,
+  adminLogout,
+} from "../controllers/adminControllers/authController";
 
 import {
   createStudent,
@@ -22,18 +30,27 @@ import { verifyAdmin } from "../middleware/authMiddleware";
 
 const adminRouter: Router = express.Router();
 
-// Apply authentication middleware to all routes
+// Public
+adminRouter.post("/login", adminLogin);
+adminRouter.post("/forgot-password", adminForgotPassword);
+adminRouter.post("/reset-password", adminResetPassword);
+
+// Protected
 adminRouter.use(verifyAdmin);
 
-adminRouter.post("/student/create", createStudent);
+adminRouter.route("/student")
+.post(createStudent);
+
 adminRouter
   .route("/student/:id")
   .get(getStudent)
   .put(updateStudent)
   .delete(deleteStudent);
-adminRouter.post("/login", login);
-adminRouter.post("/teacher/create", createTeacher);
-adminRouter.get("/teacher", getAllTeachers);
+
+adminRouter.route("/teacher")
+  .post(createTeacher)
+  .get(getAllTeachers);
+
 adminRouter
   .route("/teacher/:id")
   .get(getTeacherById)
@@ -43,4 +60,7 @@ adminRouter
 adminRouter.put("/teacher/:id/password", changePassword);
 adminRouter.patch("/teacher/:id/status", updateStatus);
 
+adminRouter.post("/change-password", adminChangePassword);
+adminRouter.get("/verify", adminVerify);
+adminRouter.post("/logout", adminLogout);
 export default adminRouter;

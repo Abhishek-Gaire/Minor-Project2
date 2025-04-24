@@ -5,14 +5,21 @@ import {
   resetPassword,
   changePassword,
   verifyUser,
+  userLogout
 } from "../controllers/authControllers";
 import { authenticate } from "../middleware/auth";
+
 const authRouter = express.Router();
 
 authRouter.post("/login", login);
 authRouter.post("/forgot-password", forgotPassword);
 authRouter.post("/reset-password", resetPassword);
-authRouter.post("/changePassword", changePassword);
-authRouter.get("/verify", authenticate, verifyUser);
+
+// Protected
+authRouter.use(authenticate);
+
+authRouter.post("/change-password", changePassword);
+authRouter.get("/verify", verifyUser);
+authRouter.post("/logout", userLogout);
 
 export default authRouter;

@@ -111,9 +111,8 @@ const Navbar = () => {
           <div className="sm:hidden bg-white shadow-lg">
             <div className="flex flex-col space-y-4 px-4 py-2">
               {navigation.map((item) => (
-                <div className="flex justify-center border-b pb-2">
+                <div key={item.name} className="flex justify-center border-b pb-2">
                   <Link
-                    key={item.name}
                     to={item.href}
                     className="text-gray-600 hover:text-gray-900 transition-colors duration-200"
                     onClick={toggleMobileMenu}

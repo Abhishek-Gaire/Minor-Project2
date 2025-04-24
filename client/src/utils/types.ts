@@ -4,7 +4,6 @@ export interface Participant {
   isHost: boolean;
 }
 
-
 export interface User {
   id: string;
   name?: string;
@@ -13,11 +12,25 @@ export interface User {
   grade?: string;
 }
 
+export interface Admin {
+  id: string;
+  name?: string;
+  email: string;
+  schoolId: string;
+}
+
 export interface LoginResponse {
   userData: User | null;
   error: string | null;
 }
 
+export interface AdminContextType {
+  admin: Admin | null;
+  loading: boolean;
+  adminLogin: (email: string, password: string) => Promise<LoginResponse>;
+  adminLogout: () => void;
+  refreshAuth: () => void;
+}
 export interface AuthContextType {
   user: User | null;
   loading: boolean;

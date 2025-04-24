@@ -280,3 +280,44 @@ export const verifyUser: RequestHandler = async (
     return;
   }
 };
+
+// User Logout Controller (for students and teachers)
+export const userLogout: RequestHandler = async (req: Request, res: Response) => {
+  try {
+    const role = (req as any).role;
+    
+    // Clear appropriate cookie based on role
+    if (role === "student") {
+      res.clearCookie("studentAccessToken", {
+        httpOnly: true,
+        secure: false, // Set to true in production with HTTPS
+        sameSite: "lax",
+        path: "/",
+      });
+    } else if (role === "teacher") {
+      res.clearCookie("teacherAccessToken", {
+        httpOnly: true,
+        secure: false, // Set to true in production with HTTPS
+        sameSite: "lax",
+        path: "/",
+      });
+    } else {
+      res.status(400).json({
+        success: false,
+        message: "Invalid user role",
+      });
+      return;
+    }
+
+    res.status(200).json({
+      success: true,
+      message: `${role} logged out successfully`,
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message || "Internal server error",
+    });
+    return;
+  }
+};

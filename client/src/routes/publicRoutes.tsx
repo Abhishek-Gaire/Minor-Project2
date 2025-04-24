@@ -8,9 +8,11 @@ import { MeetingRoom } from "../components/Meetings/MeetingRoom.tsx";
 import OnlineClassPage from "@/pages/Dashboard/OnlineClass.tsx";
 import ResetPassword from "@/pages/Auth/ResetPassword.tsx";
 import ForgetPassword from "@/pages/Auth/ForgotPassword.tsx";
+import AdminLogin from "@/pages/Auth/AdminLogin.tsx";
 
 const publicRoutes = [
   { path: "/", element: <HomePage /> },
+  { path: "/admin/login", element: <AdminLogin /> },
   { path: "/about", element: <AboutPage /> },
   { path: "/contact", element: <ContactPage /> },
   { path: "/features", element: <FeaturesPage /> },

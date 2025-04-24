@@ -9,6 +9,7 @@ import adminRoutes from "./schoolAdminRoutes.tsx";
 import superAdminRoutes from "./superAdminRoutes.tsx";
 import ProtectedRoute from "../components/Dashboard/ProtectedRoute";
 import RouteNotFound from "../pages/RouteNotFound";
+import AdminProtectedRoute from "@/components/Admin/AdminProtectedRoute.tsx";
 
 export const router = createBrowserRouter([
   ...publicRoutes,
@@ -23,7 +24,11 @@ export const router = createBrowserRouter([
   },
   {
     path: "/:role",
-    element: <AdminLayout />,
+    element: (
+      <AdminProtectedRoute>
+        <AdminLayout />
+      </AdminProtectedRoute>
+    ),
     children: [...adminRoutes, ...superAdminRoutes],
   },
   { path: "*", element: <RouteNotFound /> },

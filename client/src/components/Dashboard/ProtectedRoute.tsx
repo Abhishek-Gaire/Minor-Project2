@@ -14,15 +14,15 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   if (!loading && !user) {
     return <Navigate to="/login" replace />;
   }
-
-  // Optional: Show loading state while verifying
+// Show loading state while verifying authentication
   if (loading) {
     return (
-      <div>
-        <Loader2 className="h-8 w-8 mr-2 animate-spin" />
+      <div className="flex justify-center items-center h-screen">
+        <Loader2 className="h-8 w-8 animate-spin text-gray-500" />
       </div>
-    ); // Or your loading component
+    );
   }
+
 
   return <>{children}</>;
 };

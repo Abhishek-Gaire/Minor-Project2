@@ -2,260 +2,269 @@ import { Request, Response, RequestHandler } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
-import { Prisma, PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 dotenv.config();
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 const prisma = new PrismaClient();
 
-// **Login For Student and Teacher
-export const login: RequestHandler = async (req: Request, res: Response) => {
-  const { email, password, role } = req.body;
+// Admin Login
+export const adminLogin: RequestHandler = async (
+  req: Request,
+  res: Response
+) => {
+  const { email, password } = req.body;
 
-  if (!email || !password || !role) {
+  if (!email || !password) {
     res.status(401).json({
       success: false,
-      message: "Provide all the fields",
+      message: "Please provide email and password",
     });
     return;
   }
-  let userExists, isMatch, token;
 
-  if (role === "Student") {
-    userExists = await prisma.student.findFirst({ where: { email } });
-    if (!userExists) {
+  try {
+    // Find admin by email
+    const adminExists = await prisma.admin.findFirst({ where: { email } });
+
+    if (!adminExists) {
       res.status(404).json({
         success: false,
-        message: "Student Not Found",
+        message: "Admin not found",
       });
       return;
     }
-    isMatch = password === userExists.password;
 
-    // isMatch = await bcrypt.compare(password, userExists.password);
+    // Compare passwords
+    const isMatch = password === adminExists.password;
+    // In production, use: const isMatch = await bcrypt.compare(password, adminExists.password);
+
     if (!isMatch) {
       res.status(401).json({
         success: false,
-        message: "Invalid Credentials",
+        message: "Invalid credentials",
       });
       return;
     }
 
-    token = jwt.sign({ id: userExists.id }, JWT_SECRET, { expiresIn: "24h" });
+    // Generate JWT token
+    const token = jwt.sign({ id: adminExists.id }, JWT_SECRET, {
+      expiresIn: "24h",
+    });
 
-    res.cookie("studentAccessToken", token, {
+    // Set HTTP-only cookie
+    res.cookie("adminAccessToken", token, {
       httpOnly: true,
-      secure: false,
+      secure: false, // Set to true in production with HTTPS
       sameSite: "lax",
       path: "/",
     });
-  } else {
-    userExists = await prisma.teacher.findFirst({ where: { email } });
-    if (!userExists) {
-      res.status(404).json({
-        success: false,
-        message: "Teacher Not Found",
-      });
-      return;
-    }
-    isMatch = password === userExists.password;
-    // isMatch = await bcrypt.compare(password, userExists.password);
-    if (!isMatch) {
-      res.status(401).json({
-        success: false,
-        message: "Invalid Credentials",
-      });
-      return;
-    }
 
-    token = jwt.sign({ id: userExists.id }, JWT_SECRET, { expiresIn: "24h" });
-
-    res.cookie("teacherAccessToken", token, {
-      httpOnly: true,
-      secure: false,
-      sameSite: "lax",
-      path: "/",
+    // Return success response
+    res.status(200).json({
+      message: "Admin login successful",
+      accessToken: token,
+      data: {
+        ...adminExists,
+        role: "Admin",
+      },
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message || "Internal server error",
     });
   }
-
-  res.status(200).json({
-    message: "Login successful",
-    accessToken: token,
-    data: {
-      ...userExists,
-      role: role.toLowerCase(),
-    },
-  });
-  return;
 };
 
-export const forgotPassword: RequestHandler = async (
+export const adminForgotPassword: RequestHandler = async (
   req: Request,
   res: Response
 ) => {
-  const { email, role } = req.body;
+  const { email } = req.body;
 
-  if (!email || !role) {
-    res.status(400).json({ success: false, message: "Provide email and role" });
+  if (!email) {
+    res.status(400).json({ success: false, message: "Please provide email" });
     return;
   }
 
-  let userExists;
+  try {
+    const adminExists = await prisma.admin.findFirst({ where: { email } });
 
-  if (role === "Student") {
-    userExists = await prisma.student.findFirst({ where: { email } });
-  } else {
-    userExists = await prisma.teacher.findFirst({ where: { email } });
+    if (!adminExists) {
+      res.status(404).json({ success: false, message: "Admin not found" });
+      return;
+    }
+
+    const resetToken = jwt.sign({ id: adminExists.id }, JWT_SECRET, {
+      expiresIn: "15m",
+    });
+
+    // Send email logic (replace with your email service)
+    console.log(`Admin reset token for ${email}: ${resetToken}`);
+
+    res
+      .status(200)
+      .json({
+        success: true,
+        message: "Reset link sent to your email",
+        resetToken,
+      });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message || "Internal server error",
+    });
   }
-
-  if (!userExists) {
-    res.status(404).json({ success: false, message: `${role} not found` });
-    return;
-  }
-
-  const resetToken = jwt.sign({ id: userExists.id }, JWT_SECRET, {
-    expiresIn: "15m",
-  });
-
-  // Send email logic (replace with your email service)
-  console.log(`Reset token for ${email}: ${resetToken}`);
-
-  res
-    .status(200)
-    .json({ success: true, message: "Reset link sent", resetToken });
-  return;
 };
 
-export const resetPassword: RequestHandler = async (
+export const adminResetPassword: RequestHandler = async (
   req: Request,
   res: Response
 ) => {
-  const { token, newPassword, role } = req.body;
+  const { token, newPassword } = req.body;
 
-  if (!token || !newPassword || !role) {
-    res.status(400).json({ success: false, message: "Provide all fields" });
+  if (!token || !newPassword) {
+    res
+      .status(400)
+      .json({
+        success: false,
+        message: "Please provide token and new password",
+      });
     return;
   }
 
   try {
     const decoded: any = jwt.verify(token, JWT_SECRET);
-    let user;
 
-    if (role === "Student") {
-      user = await prisma.student.update({
-        where: { id: decoded.id },
-        data: { password: newPassword }, // Hash password in production
-      });
-    } else {
-      user = await prisma.teacher.update({
-        where: { id: decoded.id },
-        data: { password: newPassword },
-      });
-    }
+    await prisma.admin.update({
+      where: { id: decoded.id },
+      data: { password: newPassword }, // Hash password in production
+    });
 
     res
       .status(200)
       .json({ success: true, message: "Password reset successful" });
-    return;
   } catch (error) {
     res
       .status(400)
       .json({ success: false, message: "Invalid or expired token" });
-    return;
   }
 };
 
-export const changePassword: RequestHandler = async (
+export const adminChangePassword: RequestHandler = async (
   req: Request,
   res: Response
 ) => {
-  const { oldPassword, newPassword, role } = req.body;
-  const userId = (req as any).user.id; // Extracted from middleware after authentication
+  const { oldPassword, newPassword } = req.body;
+  const adminId = (req as any).user.id; // Extracted from middleware after authentication
 
-  if (!oldPassword || !newPassword || !role) {
-    res.status(400).json({ success: false, message: "Provide all fields" });
+  if (!oldPassword || !newPassword) {
+    res
+      .status(400)
+      .json({
+        success: false,
+        message: "Please provide old and new passwords",
+      });
     return;
   }
 
-  let user;
+  try {
+    const admin = await prisma.admin.findFirst({ where: { id: adminId } });
 
-  if (role === "student") {
-    user = await prisma.student.findFirst({ where: { id: userId } });
-  } else {
-    user = await prisma.teacher.findFirst({ where: { id: userId } });
+    if (!admin) {
+      res.status(404).json({ success: false, message: "Admin not found" });
+      return;
+    }
+
+    if (admin.password !== oldPassword) {
+      res
+        .status(401)
+        .json({ success: false, message: "Incorrect old password" });
+      return;
+    }
+
+    await prisma.admin.update({
+      where: { id: adminId },
+      data: { password: newPassword }, // Hash password in production
+    });
+
+    res
+      .status(200)
+      .json({ success: true, message: "Password changed successfully" });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message || "Internal server error",
+    });
   }
-
-  if (!user) {
-    res.status(404).json({ success: false, message: `${role} not found` });
-    return;
-  }
-
-  if (user.password !== oldPassword) {
-    res.status(401).json({ success: false, message: "Incorrect old password" });
-    return;
-  }
-  const tableName = role.toLowerCase();
-  const model = prisma[tableName] as any;
-
-  await model.update({
-    where: { id: userId },
-    data: { password: newPassword },
-  });
-
-  res
-    .status(200)
-    .json({ success: true, message: "Password changed successfully" });
-  return;
 };
 
-export const verifyUser: RequestHandler = async (
+export const adminVerify: RequestHandler = async (
   req: Request,
   res: Response
 ) => {
   try {
     const { user } = req as any;
+
     if (!user) {
       res.status(404).json({
         success: false,
-        message: "Authorization Failed",
+        message: "Authorization failed",
       });
       return;
     }
 
-    let userDetails;
-    if ((req as any).role === "student") {
-      userDetails = await prisma.student.findUnique({
-        where: { id: user.id },
-      });
-    } else if ((req as any).role === "teacher") {
-      userDetails = await prisma.teacher.findUnique({
-        where: { id: user.id },
-      });
-    } else {
-      userDetails = null;
-    }
+    const adminDetails = await prisma.admin.findUnique({
+      where: { id: user.id },
+    });
 
-    if (!userDetails) {
+    if (!adminDetails) {
       res.status(404).json({
         success: false,
-        message: "User Not Found",
+        message: "Admin not found",
       });
       return;
     }
+
     res.status(200).json({
       success: true,
-      message: "User Verified Successfully",
+      message: "Admin verified successfully",
       data: {
-        ...userDetails,
-        role: (req as any).role,
+        ...adminDetails,
+        role: "Admin",
       },
     });
-    return;
   } catch (error: any) {
     res.status(500).json({
       success: false,
-      message: error.message || "Internal Server Error",
+      message: error.message || "Internal server error",
     });
-    return;
+  }
+};
+
+// Admin Logout Controller
+export const adminLogout: RequestHandler = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    // Clear the admin access token cookie
+    res.clearCookie("adminAccessToken", {
+      httpOnly: true,
+      secure: false, // Set to true in production with HTTPS
+      sameSite: "lax",
+      path: "/",
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Admin logged out successfully",
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message || "Internal server error",
+    });
   }
 };
