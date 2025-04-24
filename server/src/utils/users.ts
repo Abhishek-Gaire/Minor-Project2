@@ -22,6 +22,22 @@ export function userJoin(id: string, username: string, roomId: string): User | n
   return null; // Room full
 }
 
+// Join a user to a room
+export function userJoinClassChat(id: string, username: string, roomId: string): User | null {
+  const user = { id, username };
+  if (!users[roomId]) {
+    users[roomId] = [user];
+    return user;
+  }
+
+  if (users[roomId].length < 20) {
+    users[roomId].push(user);
+    return user;
+  }
+
+  return null; // Room full
+}
+
 // Get a user by their socket ID
 export function getCurrentUser(id: string): User | undefined {
   for (const room in users) {

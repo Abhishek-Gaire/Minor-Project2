@@ -46,9 +46,9 @@ const MessageInput = ({
   return (
     <div className="bg-card p-4 ">
       <div className="flex space-x-2">
-        <Button variant="outline" size="icon">
+        {/* <Button variant="outline" size="icon">
           <PaperclipIcon className="h-4 w-4" />
-        </Button>
+        </Button> */}
         <Textarea
           value={messageInput}
           onChange={(e) => setMessageInput(e.target.value)}

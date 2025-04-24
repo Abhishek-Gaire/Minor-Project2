@@ -84,7 +84,7 @@ export interface ClassMessage {
   sender: string;
   content: string;
   timestamp: Date;
-  class?: number;
+  class?: string;
 }
 
 // Define the schema for form validation

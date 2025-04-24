@@ -20,15 +20,16 @@ import {
   isUserInConversation,
   userJoin,
   userLeave,
+  userJoinClassChat
 } from "./utils/users";
 import * as classChatService from "./services/classChatServices";
 import * as privateMessageService from "./services/privateMessageServices";
 
-import { formatMessage } from "./utils/message";
 import prisma from "./config/dbConfig";
 
 // Store sockets by username for private messaging
 const userSockets = new Map<string, Socket>();
+const classChatSockets = new Map<string, Socket>();
 
 const app = express();
 const server = http.createServer(app);
@@ -71,89 +72,118 @@ io.on("connection", (socket: Socket) => {
     socket.join(conversationId);
   });
 
-  // // Listen for class chat message
-  // socket.on("chatMessage", async (msg) => {
-  //   const user = getCurrentUser(socket.id);
+  socket.on("joinClassRoom", async ({ userName, conversationId }) => {
+    const user = userJoinClassChat(socket.id, userName, conversationId);
 
-  //   if (!user) {
-  //     return;
-  //   }
-  //   try {
-  //     const formattedMessage = formatMessage(user.username, msg);
+    if (!user) {
+      return;
+    }
 
-  //     // Save message to database
-  //     await classChatService.addClassMessage(user.username, msg, user.room);
+    // Store socket by username
+    classChatSockets.set(userName, socket);
 
-  //     // Broadcast message to room
-  //     io.to(user.room).emit("classMessage", formattedMessage);
-  //   } catch (error) {
-  //     console.error("Error sending message:", error);
-  //     socket.emit("error", { message: "Failed to send class message" });
-  //   }
-  // });
+    socket.join(conversationId);
+  });
 
-  // Listen for Private Message
-  socket.on("sendPrivateMessage", async ({ from, to, msg, conversationId,delivered=false }) => {
-    if (!from || !to || !conversationId) {
-      socket.emit("error", { message: "Missing required fields" });
+  // Listen for class chat message
+  socket.on("receiveClassMessage", async ({ msg, className }) => {
+    const user = getCurrentUser(socket.id);
+
+    if (!user) {
       return;
     }
     try {
-      // Save private message to database
-      const savedMessage = await privateMessageService.savePrivateMessage(
-        conversationId,
-        msg,
-        from,
-        to,
-        delivered,
-      );
+      // Save message to database
+      const newMessage = await classChatService.addClassMessage(user.username, msg, className);
 
-      // Format message to match Message type
-      const formattedMessage: {
-        id: number;
-        sender: string;
-        receiver: string;
-        content: string;
-        timestamp?: Date;
-        delivered?: boolean;
-        isSelf?: boolean;
-      } = {
-        id: savedMessage.id,
-        sender: savedMessage.sender,
-        receiver: savedMessage.receiver,
-        content: savedMessage.content,
-        timestamp: savedMessage.timeStamp,
-        delivered: savedMessage.delivered,
-        isSelf: false,
-      };
-
-      // Emit to receiver
-      const receiverSocket = userSockets.get(to);
-      if (receiverSocket) {
-        receiverSocket.emit("receivePrivateMessage", {
-          ...formattedMessage,
-          isSelf: false,
-        });
-      } else {
-        console.log(`Receiver ${to} not connected`);
-      }
-
-      // Emit to sender
-      socket.emit("receivePrivateMessage", {
-        ...formattedMessage,
-        isSelf: true,
-      });
+      // Broadcast message to room
+      io.to(className).emit("sendClassMessage", newMessage);
     } catch (error) {
-      console.error("Error sending private message:", error);
-      socket.emit("error", { message: "Failed to send private message" });
+      console.error("Error sending message:", error);
+      socket.emit("error", { message: "Failed to send class message" });
     }
   });
+
+  // Get class chat History
+  socket.on("getClassHistory", async ({ className }) => {
+    if (!className) {
+      socket.emit("error", { message: "Missing class name" });
+      return;
+    }
+    try {
+      const messages = await classChatService.getMessagesByClassName(className);
+      socket.emit("classHistory", messages);
+    } catch (error) {
+      console.error("Error retrieving class history:", error);
+      socket.emit("error", { message: "Failed to retrieve class history" });
+    }
+  });
+  // Listen for Private Message
+  socket.on(
+    "sendPrivateMessage",
+    async ({ from, to, msg, conversationId, delivered = false }) => {
+      if (!from || !to || !conversationId) {
+        socket.emit("error", { message: "Missing required fields" });
+        return;
+      }
+      try {
+        // Save private message to database
+        const savedMessage = await privateMessageService.savePrivateMessage(
+          conversationId,
+          msg,
+          from,
+          to,
+          delivered
+        );
+
+        // Format message to match Message type
+        const formattedMessage: {
+          id: number;
+          sender: string;
+          receiver: string;
+          content: string;
+          timestamp?: Date;
+          delivered?: boolean;
+          isSelf?: boolean;
+        } = {
+          id: savedMessage.id,
+          sender: savedMessage.sender,
+          receiver: savedMessage.receiver,
+          content: savedMessage.content,
+          timestamp: savedMessage.timeStamp,
+          delivered: savedMessage.delivered,
+          isSelf: false,
+        };
+
+        // Emit to receiver
+        const receiverSocket = userSockets.get(to);
+        if (receiverSocket) {
+          receiverSocket.emit("receivePrivateMessage", {
+            ...formattedMessage,
+            isSelf: false,
+          });
+        } else {
+          console.log(`Receiver ${to} not connected`);
+        }
+
+        // Emit to sender
+        socket.emit("receivePrivateMessage", {
+          ...formattedMessage,
+          isSelf: true,
+        });
+      } catch (error) {
+        console.error("Error sending private message:", error);
+        socket.emit("error", { message: "Failed to send private message" });
+      }
+    }
+  );
 
   // Check if a user is online
   socket.on("checkOnlineStatus", ({ username, conversationId }) => {
     const isOnline = isUserInConversation(username, conversationId);
     socket.emit("onlineStatus", { username, isOnline });
   });
+
   // Get private message history between two users
   socket.on("getPrivateHistory", async ({ currentUser, otherUser }) => {
     if (!currentUser || !otherUser) {

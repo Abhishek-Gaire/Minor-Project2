@@ -1,17 +1,80 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { MessageCircle } from "lucide-react";
-import useClassMessage from "@/hooks/useClassMessage";
 import MessageInput from "@/components/Dashboard/ClassChat/MessageInput";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import ClassMessageList from "@/components/Dashboard/ClassChat/ClassMessageList";
+import { useAuth } from "@/contexts/useAuth";
+import { ClassMessage } from "@/constants/types";
+import io, { Socket } from "socket.io-client";
+
+const BACKEND_URI = import.meta.env.VITE_BACKEND_URI!;
 
 const ClassChatPage: React.FC = () => {
+  const { user } = useAuth();
+  const [classMessages, setClassMessages] = useState<ClassMessage[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [socket, setSocket] = useState<Socket | null>(null);
+
   const messageEndRef = useRef<HTMLDivElement>(null);
 
-  const { loading, classMessages, user } = useClassMessage();
+  // Initialize socket connection
+  useEffect(() => {
+    const newSocket = io(BACKEND_URI);
+    setSocket(newSocket);
 
+    const handleClassMessages = (messages: ClassMessage[]) => {
+      setClassMessages(messages);
+      setLoading(false);
+    };
+
+    newSocket.on("classHistory", handleClassMessages);
+    newSocket.on("sendClassMessage", (message) => {
+      setClassMessages((prev) => [...prev, message]);
+    });
+    newSocket.emit("getClassHistory", { className: user.grade });
+    newSocket.on("error", (error) => {
+      console.error("Socket error:", error.message);
+    });
+    return () => {
+      newSocket.off("classHistory", handleClassMessages);
+      newSocket.off("sendClassMessage", (message) => {
+        setClassMessages((prev) => [...prev, message]);
+      });
+      newSocket.off("error", (error) => {
+        console.error("Socket error:", error.message);
+      });
+      newSocket.disconnect();
+    };
+  }, [user]);
+
+  // Join Room For Class Chat
+  useEffect(() => {
+    if (socket && user) {
+      socket.emit("joinClassRoom", {
+        userName: user.name,
+        conversationId: user.grade,
+      });
+    }
+  }, [socket, user]);
+
+  // Scroll to bottom
   const scrollToBottom = () => {
     messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const sendClassChatMessage = ({
+    grade,
+    content,
+  }: {
+    grade: string;
+    content: string;
+  }) => {
+    if (socket) {
+      socket.emit("receiveClassMessage", {
+        className: grade,
+        msg: content,
+      });
+    }
   };
 
   useEffect(() => {
@@ -52,7 +115,7 @@ const ClassChatPage: React.FC = () => {
         </ScrollArea>
       )}
 
-      <MessageInput sender={user} />
+      <MessageInput sender={user} sendClassChatMessage={sendClassChatMessage} />
     </div>
   );
 };
