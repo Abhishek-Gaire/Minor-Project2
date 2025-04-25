@@ -48,3 +48,37 @@ export const registerInstitutionHandler: RequestHandler = async (
     return;
   }
 };
+
+export const getAllInstitutionHandler: RequestHandler = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const schools = await prisma.school.findMany({
+      select: {
+        id: true,
+        schoolName: true,
+        schoolAddress: true,
+        imageUrl: true,
+      },
+    });
+    if (!schools) {
+      res.status(404).json({
+        success: false,
+        message: "No schools found",
+      });
+      return;
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Schools fetched successfully",
+      data: schools,
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message || "Internal server error",
+    });
+  }
+};

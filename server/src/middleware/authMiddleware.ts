@@ -5,8 +5,8 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export const verifyAdmin = (req: any, res: Response, next: NextFunction) => {
-  const token = req.cookies.adminToken;
-
+  const token = req.cookies.adminAccessToken;
+  
   if (!token) {
     res
       .status(401)

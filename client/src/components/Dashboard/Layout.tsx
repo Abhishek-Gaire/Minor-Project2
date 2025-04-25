@@ -17,13 +17,6 @@ const Layout = () => {
   const { role } = useParams();
   const location = useLocation();
 
-  // // Close sidebar on mobile by default
-  // useEffect(() => {
-  //   if (isMobile) {
-  //     setIsSidebarOpen(false);
-  //   }
-  // }, [isMobile]);
-
   // Close sidebar when route changes on mobile
   useEffect(() => {
     if (isMobile) {

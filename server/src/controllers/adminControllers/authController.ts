@@ -36,8 +36,7 @@ export const adminLogin: RequestHandler = async (
     }
 
     // Compare passwords
-    const isMatch = password === adminExists.password;
-    // In production, use: const isMatch = await bcrypt.compare(password, adminExists.password);
+    const isMatch = await bcrypt.compare(password, adminExists.password);
 
     if (!isMatch) {
       res.status(401).json({
@@ -205,9 +204,9 @@ export const adminVerify: RequestHandler = async (
   res: Response
 ) => {
   try {
-    const { user } = req as any;
+    const { admin } = req as any;
 
-    if (!user) {
+    if (!admin) {
       res.status(404).json({
         success: false,
         message: "Authorization failed",
@@ -216,7 +215,7 @@ export const adminVerify: RequestHandler = async (
     }
 
     const adminDetails = await prisma.admin.findUnique({
-      where: { id: user.id },
+      where: { id: admin.id },
     });
 
     if (!adminDetails) {
@@ -232,7 +231,6 @@ export const adminVerify: RequestHandler = async (
       message: "Admin verified successfully",
       data: {
         ...adminDetails,
-        role: "Admin",
       },
     });
   } catch (error: any) {

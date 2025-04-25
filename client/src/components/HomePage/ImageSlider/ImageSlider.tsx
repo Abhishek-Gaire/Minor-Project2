@@ -2,9 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { SlideOverlay } from "./SlideOverlay";
 import { SlideNavigation } from "./SlideNavigation";
 
-import { slides } from "../../../constants/constants.ts";
-
-export function ImageSlider() {
+export function ImageSlider({slides}) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const touchStartX = useRef<number | null>(null);
@@ -62,17 +60,17 @@ export function ImageSlider() {
         {slides.map((slide) => (
           <div key={slide.id} className="min-w-full h-full relative">
             <img
-              src={`${slide.image}?auto-format&fit=crop&w=1920&q=80`}
-              alt={slide.name}
+              src={`${slide.imageUrl}?auto-format&fit=crop&w=1920&q=80`}
+              alt={slide.schoolName}
               className="w-full h-full object-cover"
             />
             <SlideOverlay
-              name={slide.name}
+              name={slide.schoolName}
               description={slide.description}
-              location={slide.location}
+              location={slide.schoolAddress}
               onLearnMore={() =>
                 console.log(
-                  `Learn more about ${slide.name} and put university or school website link here`
+                  `Learn more about ${slide.schoolName} and put university or school website link here`
                 )
               }
             />

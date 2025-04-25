@@ -44,6 +44,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = async () => {
     try {
+      console.log("Inside Logout")
       setLoading(true);
       const response = await fetch(`${BACKEND_URI}/api/v1/auth/logout`, {
         method: "POST",

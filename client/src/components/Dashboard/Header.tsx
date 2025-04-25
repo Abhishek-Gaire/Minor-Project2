@@ -94,9 +94,12 @@ const Header = ({
                 <User className="h-4 w-4 mr-2 text-[hsl(var(--muted-foreground))]" />
                 <span className="text-[hsl(var(--foreground))]">Profile</span>
               </DropdownMenuItem>
-              <DropdownMenuItem className="p-2 text-red-600 hover:bg-[hsl(var(--muted))]">
+              <DropdownMenuItem
+                className="p-2 text-red-600 hover:bg-[hsl(var(--muted))]"
+                onClick={onLogout}
+              >
                 <LogOut className="h-4 w-4 mr-2" />
-                <span onClick={onLogout}>Log out</span>
+                <span>Log out</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

@@ -1,17 +1,39 @@
+import { useAdminAuth } from "@/contexts/useAdminAuth";
 import { cn } from "@/lib/utils.ts";
-import { ChevronLeft, ChevronRight, Menu } from "lucide-react";
-import React from "react";
+import { ChevronLeft, ChevronRight, Menu, LogOut, ChevronDown } from "lucide-react";
+import React, { useState, useRef, useEffect } from "react";
 
 interface AdminHeaderProps {
   toggleSidebar: () => void;
   role: string;
   sidebarOpen: boolean;
 }
+
 const AdminHeader: React.FC<AdminHeaderProps> = ({
   toggleSidebar,
   role,
   sidebarOpen,
 }) => {
+  const {adminLogout} = useAdminAuth()
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
+
   return (
     <header
       className={cn(
@@ -45,13 +67,34 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({
       </div>
       <div className="flex items-center gap-4">
         {/* Profile and notification icons would go here */}
-        <div
-          className={cn(
-            "px-3 py-1 rounded-full text-white text-sm",
-            role === "superadmin" ? "bg-blue-600" : "bg-emerald-600"
+        <div className="relative" ref={dropdownRef}>
+          <button
+            onClick={toggleDropdown}
+            className={cn(
+              "px-3 py-1 rounded-full text-white text-sm flex items-center gap-1",
+              role === "superadmin" ? "bg-blue-600" : "bg-emerald-600"
+            )}
+          >
+            {role === "superadmin" ? "Super Admin" : "School Admin"}
+            <ChevronDown size={16} className={cn(dropdownOpen && "rotate-180", "transition-transform")} />
+          </button>
+
+          {/* Dropdown menu */}
+          {dropdownOpen && (
+            <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-20 border border-gray-200">
+              <button
+                onClick={() => {
+                  adminLogout();
+                  setDropdownOpen(false);
+                }}
+                className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              >
+                <LogOut size={16} className="mr-2" />
+                Logout
+              </button>
+              {/* Additional dropdown items can be added here */}
+            </div>
           )}
-        >
-          {role === "superadmin" ? "Super Admin" : "School Admin"}
         </div>
       </div>
     </header>
