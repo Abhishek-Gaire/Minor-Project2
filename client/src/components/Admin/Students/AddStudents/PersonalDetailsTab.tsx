@@ -2,12 +2,12 @@ import { TabsContent } from "@/components/ui/tabs.tsx";
 import { User } from "lucide-react";
 
 import { Input } from "@/components/ui/input.tsx";
-import {Separator} from "@/components/ui/separator.tsx";
-import {Label} from "@/components/ui/label.tsx";
+import { Separator } from "@/components/ui/separator.tsx";
+import { Label } from "@/components/ui/label.tsx";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group.tsx";
-import {Button} from "@/components/ui/button.tsx";
+import { Button } from "@/components/ui/button.tsx";
 
-const PersonalDetailsTab = ({form,moveToNextTab}) => {
+const PersonalDetailsTab = ({ form, moveToNextTab }) => {
   return (
     <TabsContent value="personal" className="space-y-4">
       <h3 className="text-lg font-medium flex items-center">

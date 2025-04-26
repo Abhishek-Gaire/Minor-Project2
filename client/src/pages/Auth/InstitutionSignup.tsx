@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { School } from "lucide-react";
 
-import { RegistrationForm } from "../../components/Registration/RegistrationForm";
-import { RegistrationBenefits } from "../../components/Registration/RegistrationBenefits";
-import Layout from "../../components/Layout.tsx";
+import { RegistrationForm } from "@/components/Registration/RegistrationForm";
+import { RegistrationBenefits } from "@/components/Registration/RegistrationBenefits";
+import Layout from "@/components/Layout.tsx";
 
 const InstitutionSignup = () => {
   const [loading, setLoading] = useState(false);

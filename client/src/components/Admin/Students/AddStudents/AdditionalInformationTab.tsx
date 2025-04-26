@@ -12,10 +12,18 @@ import { Textarea } from "@/components/ui/textarea.tsx";
 import { Input } from "@/components/ui/input.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { TabsContent } from "@/components/ui/tabs.tsx";
+import { forwardRef } from "react";
 
-const AdditionalInformationTab = ({ form, moveToPreviousTab }) => {
+interface AdditionalInformationTabProps {
+  form: any; 
+  moveToPreviousTab: () => void;
+  isSubmitDisabled: boolean;
+}
+
+const AdditionalInformationTab = forwardRef<HTMLDivElement,AdditionalInformationTabProps>(
+  ({ form, moveToPreviousTab, isSubmitDisabled }, ref) => {
   return (
-    <TabsContent value="additional" className="space-y-4">
+    <TabsContent ref={ref} value="additional" className="space-y-4">
       <h3 className="text-lg font-medium flex items-center">
         <FileText className="h-5 w-5 mr-2 text-blue-600" />
         Additional Information
@@ -87,12 +95,12 @@ const AdditionalInformationTab = ({ form, moveToPreviousTab }) => {
         <Button type="button" variant="outline" onClick={moveToPreviousTab}>
           Previous
         </Button>
-        <Button type="submit" className="bg-green-600 hover:bg-green-700">
+        <Button type="submit" className="bg-green-600 hover:bg-green-700" disabled={isSubmitDisabled}>
           Submit Student Information
         </Button>
       </div>
     </TabsContent>
   );
-};
+});
 
 export default AdditionalInformationTab;

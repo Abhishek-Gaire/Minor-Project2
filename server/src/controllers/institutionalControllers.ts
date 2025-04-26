@@ -1,5 +1,6 @@
-import { RequestHandler, Request, Response } from "express";
+import { RequestHandler, Request, Response, NextFunction } from "express";
 import { PrismaClient } from "@prisma/client";
+import { CustomError } from "../exceptions/customError";
 
 const SUPABASE_URL = process.env.SUPABASE_URL as string;
 
@@ -80,5 +81,31 @@ export const getAllInstitutionHandler: RequestHandler = async (
       success: false,
       message: error.message || "Internal server error",
     });
+  }
+};
+
+export const getInstitutionByIdHandler: RequestHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { id } = req.params;
+  try {
+    const school = await prisma.school.findUnique({
+      where: {
+        id: id,
+      },
+    });
+    if (!school) {
+      throw new CustomError("School not found", 404);
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "School fetched successfully",
+      data: school,
+    });
+  } catch (error: any) {
+    next(error);
   }
 };

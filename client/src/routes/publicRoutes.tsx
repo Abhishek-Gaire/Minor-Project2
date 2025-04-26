@@ -9,6 +9,8 @@ import OnlineClassPage from "@/pages/Dashboard/OnlineClass.tsx";
 import ResetPassword from "@/pages/Auth/ResetPassword.tsx";
 import ForgetPassword from "@/pages/Auth/ForgotPassword.tsx";
 import AdminLogin from "@/pages/Auth/AdminLogin.tsx";
+import { RegistrationSuccess } from "@/pages/Auth/RegistrationSuccess";
+import { SchoolProfile } from "@/pages/Landing/SchoolProfile.tsx";
 
 const publicRoutes = [
   { path: "/", element: <HomePage /> },
@@ -22,6 +24,11 @@ const publicRoutes = [
   { path: "/live-classes", element: <OnlineClassPage /> },
   { path: "/reset-password", element: <ResetPassword /> },
   { path: "/forgot-password", element: <ForgetPassword /> },
+  { path: "/registration-success/:id", element: <RegistrationSuccess /> },
+  {
+    path: "/school/:id",
+    element: <SchoolProfile />
+  },
 ];
 
 export default publicRoutes;

@@ -8,7 +8,18 @@ import {
   SelectValue,
 } from "@/components/ui/select.tsx";
 
-const InputSection = ({ setFilters, handleSearch }) => {
+interface InputSectionProps {
+  setFilters: React.Dispatch<
+    React.SetStateAction<{
+      status: string;
+      grade: string;
+      fees: string;
+    }>
+  >;
+  handleSearch: (term: string) => void;
+}
+
+const InputSection = ({ setFilters, handleSearch }: InputSectionProps) => {
   return (
     <div className="p-4 border-b flex flex-col sm:flex-row justify-between gap-4">
       <div className="relative w-full sm:w-64">

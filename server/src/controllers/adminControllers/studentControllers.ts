@@ -5,7 +5,7 @@ import { CustomError } from "../../exceptions/customError";
 import bcrypt from "bcrypt";
 
 import { studentSchema } from "../../types/schema";
-
+import { generatePassword } from "../../utils/password";
 const prisma = new PrismaClient();
 
 // 1. CREATE - Add a new student
@@ -15,11 +15,26 @@ export const createStudent = async (
   next: NextFunction
 ) => {
   try {
+    const admin = (req as any).admin;
+    if (!admin) {
+      throw new CustomError("Unauthorized", 401);
+    }
+
+    // Generate random password
+    const generatedPassword = generatePassword(12);
+
+    // Add schoolId and generatedPassword into req.body
+    const modifiedBody = {
+      ...req.body,
+      schoolId: admin.schoolId,
+      password: generatedPassword,
+    };
+
     // Validate request body
-    const validatedData = studentSchema.parse(req.body);
+    const validatedData = studentSchema.parse(modifiedBody);
 
     // Hash password
-    const hashedPassword = await bcrypt.hash(validatedData.password, 10);
+    const hashedPassword = await bcrypt.hash(generatedPassword, 10);
 
     // Format full name
     const fullName = [
@@ -57,7 +72,7 @@ export const createStudent = async (
           email: validatedData.email,
           password: hashedPassword,
           schoolId: validatedData.schoolId,
-          grade: validatedData.grade as any, // Type casting because Prisma expects an enum
+          grade: `G${validatedData.grade}` as any,
           rollNumber: validatedData.rollNumber,
         },
       });
@@ -66,7 +81,7 @@ export const createStudent = async (
       await tx.studentDetails.create({
         data: {
           studentId: student.id,
-          gender: validatedData.gender.toUpperCase() as any, // Convert to enum format
+          gender: validatedData.gender as any, // Convert to enum format
           dateOfBirth: new Date(validatedData.dateOfBirth),
           section: validatedData.section,
           previousSchool: validatedData.previousSchool,
@@ -78,7 +93,7 @@ export const createStudent = async (
           state: validatedData.state,
           zipCode: validatedData.zipCode,
           parentName: validatedData.parentName,
-          relationship: validatedData.relationship.toUpperCase() as any, // Convert to enum format
+          relationship: validatedData.relationship as any, // Convert to enum format
           parentPhone: validatedData.parentPhone,
           parentEmail: validatedData.parentEmail,
           bloodGroup: validatedData.bloodGroup,
@@ -107,8 +122,50 @@ export const createStudent = async (
   }
 };
 
+// 1.5. READ - Get all students for the admin's school
+export const getAllStudents = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const admin = (req as any).admin;
+    if (!admin) {
+      throw new CustomError("Unauthorized", 401);
+    }
+
+    const students = await prisma.student.findMany({
+      where: { schoolId: admin.schoolId },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        grade: true,
+        rollNumber: true,
+        studentDetails: {
+          select: {
+            phone: true,
+            section: true,
+            academicYear: true,
+            gender: true,
+          },
+        },
+      },
+      orderBy: { name: "asc" },
+    });
+
+    res.status(200).json({
+      status: true,
+      message: "Students retrieved successfully",
+      data: students,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 // 2. READ - Get student by ID with details
-export const getStudent = async (
+export const getStudentById = async (
   req: Request,
   res: Response,
   next: NextFunction

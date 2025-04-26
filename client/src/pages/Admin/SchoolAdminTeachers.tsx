@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { z } from "zod";
 import { Button } from "@/components/ui/button.tsx";
 import {
   Card,
@@ -28,6 +27,8 @@ import { Label } from "@/components/ui/label.tsx";
 import { Checkbox } from "@/components/ui/checkbox.tsx";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { teacherSchema } from "@/constants/types";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 // Status and employment type mappings for UI display and schema compatibility
 const statusMap = {
@@ -54,162 +55,139 @@ const employmentTypeMap = {
   TEMPORARY: "Temporary",
 };
 
+const initialTeachers = [
+  {
+    name: "Sarah Johnson",
+    id: "T-1001",
+    subjects: ["Algebra", "Calculus", "Statistics"],
+    email: "sjohnson@school.edu",
+    phone: "123-456-7890",
+    classes: 5,
+    status: "ACTIVE",
+    employmentType: "FULLTIME",
+    password: "password123", // In a real app, we would never store plain text passwords
+  },
+  {
+    name: "Michael Chen",
+    id: "T-1002",
+    subjects: ["Physics", "Chemistry"],
+    email: "mchen@school.edu",
+    phone: "123-456-7891",
+    classes: 4,
+    status: "ACTIVE",
+    employmentType: "FULLTIME",
+    password: "password123",
+  },
+  {
+    name: "David Wilson",
+    id: "T-1003",
+    subjects: ["World History", "American History"],
+    email: "dwilson@school.edu",
+    phone: "123-456-7892",
+    classes: 3,
+    status: "ACTIVE",
+    employmentType: "FULLTIME",
+    password: "password123",
+  },
+  {
+    name: "Elena Rodriguez",
+    id: "T-1004",
+    subjects: ["Spanish", "French", "ESL"],
+    email: "erodriguez@school.edu",
+    phone: "123-456-7893",
+    classes: 6,
+    status: "ONLEAVE",
+    employmentType: "FULLTIME",
+    password: "password123",
+  },
+  {
+    name: "James Taylor",
+    id: "T-1005",
+    subjects: ["Physical Education", "Health"],
+    email: "jtaylor@school.edu",
+    phone: "123-456-7894",
+    classes: 8,
+    status: "ACTIVE",
+    employmentType: "PARTTIME",
+    password: "password123",
+  },
+  {
+    name: "Lisa Wong",
+    id: "T-1006",
+    subjects: ["Art", "Design"],
+    email: "lwong@school.edu",
+    phone: "123-456-7895",
+    classes: 4,
+    status: "ACTIVE",
+    employmentType: "PARTTIME",
+    password: "password123",
+  },
+  {
+    name: "Robert Smith",
+    id: "T-1007",
+    subjects: ["Music Theory", "Band"],
+    email: "rsmith@school.edu",
+    phone: "123-456-7896",
+    classes: 5,
+    status: "ACTIVE",
+    employmentType: "FULLTIME",
+    password: "password123",
+  },
+  {
+    name: "Emily Davis",
+    id: "T-1008",
+    subjects: ["Biology", "Environmental Science"],
+    email: "edavis@school.edu",
+    phone: "123-456-7897",
+    classes: 6,
+    status: "ACTIVE",
+    employmentType: "FULLTIME",
+    password: "password123",
+  },
+];
+
+// List of all available subjects
+const allSubjects = [
+  "Algebra",
+  "Calculus",
+  "Statistics",
+  "Geometry",
+  "Physics",
+  "Chemistry",
+  "Biology",
+  "Environmental Science",
+  "World History",
+  "American History",
+  "Geography",
+  "Civics",
+  "English Literature",
+  "Creative Writing",
+  "Grammar",
+  "Spanish",
+  "French",
+  "German",
+  "Japanese",
+  "ESL",
+  "Physical Education",
+  "Health",
+  "Art",
+  "Design",
+  "Music Theory",
+  "Band",
+  "Orchestra",
+  "Drama",
+  "Computer Science",
+  "Economics",
+  "Psychology",
+  "Sociology",
+];
+
 const TeachersManagementPage = () => {
-  const initialTeachers = [
-    {
-      name: "Sarah Johnson",
-      id: "T-1001",
-      subjects: ["Algebra", "Calculus", "Statistics"],
-      email: "sjohnson@school.edu",
-      phone: "123-456-7890",
-      classes: 5,
-      status: "ACTIVE",
-      employmentType: "FULLTIME",
-      password: "password123", // In a real app, we would never store plain text passwords
-    },
-    {
-      name: "Michael Chen",
-      id: "T-1002",
-      subjects: ["Physics", "Chemistry"],
-      email: "mchen@school.edu",
-      phone: "123-456-7891",
-      classes: 4,
-      status: "ACTIVE",
-      employmentType: "FULLTIME",
-      password: "password123",
-    },
-    {
-      name: "David Wilson",
-      id: "T-1003",
-      subjects: ["World History", "American History"],
-      email: "dwilson@school.edu",
-      phone: "123-456-7892",
-      classes: 3,
-      status: "ACTIVE",
-      employmentType: "FULLTIME",
-      password: "password123",
-    },
-    {
-      name: "Elena Rodriguez",
-      id: "T-1004",
-      subjects: ["Spanish", "French", "ESL"],
-      email: "erodriguez@school.edu",
-      phone: "123-456-7893",
-      classes: 6,
-      status: "ONLEAVE",
-      employmentType: "FULLTIME",
-      password: "password123",
-    },
-    {
-      name: "James Taylor",
-      id: "T-1005",
-      subjects: ["Physical Education", "Health"],
-      email: "jtaylor@school.edu",
-      phone: "123-456-7894",
-      classes: 8,
-      status: "ACTIVE",
-      employmentType: "PARTTIME",
-      password: "password123",
-    },
-    {
-      name: "Lisa Wong",
-      id: "T-1006",
-      subjects: ["Art", "Design"],
-      email: "lwong@school.edu",
-      phone: "123-456-7895",
-      classes: 4,
-      status: "ACTIVE",
-      employmentType: "PARTTIME",
-      password: "password123",
-    },
-    {
-      name: "Robert Smith",
-      id: "T-1007",
-      subjects: ["Music Theory", "Band"],
-      email: "rsmith@school.edu",
-      phone: "123-456-7896",
-      classes: 5,
-      status: "ACTIVE",
-      employmentType: "FULLTIME",
-      password: "password123",
-    },
-    {
-      name: "Emily Davis",
-      id: "T-1008",
-      subjects: ["Biology", "Environmental Science"],
-      email: "edavis@school.edu",
-      phone: "123-456-7897",
-      classes: 6,
-      status: "ACTIVE",
-      employmentType: "FULLTIME",
-      password: "password123",
-    },
-  ];
-
-  // List of all available subjects
-  const allSubjects = [
-    "Algebra",
-    "Calculus",
-    "Statistics",
-    "Geometry",
-    "Physics",
-    "Chemistry",
-    "Biology",
-    "Environmental Science",
-    "World History",
-    "American History",
-    "Geography",
-    "Civics",
-    "English Literature",
-    "Creative Writing",
-    "Grammar",
-    "Spanish",
-    "French",
-    "German",
-    "Japanese",
-    "ESL",
-    "Physical Education",
-    "Health",
-    "Art",
-    "Design",
-    "Music Theory",
-    "Band",
-    "Orchestra",
-    "Drama",
-    "Computer Science",
-    "Economics",
-    "Psychology",
-    "Sociology",
-  ];
-
-  // State variables
   const [teachers, setTeachers] = useState(initialTeachers);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [currentTeacher, setCurrentTeacher] = useState(null);
-  const [formErrors, setFormErrors] = useState({});
-  const [newTeacher, setNewTeacher] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    password: "",
-    subjects: [],
-    status: "ACTIVE",
-    employmentType: "FULLTIME",
-    classes: 0,
-    address: "",
-    city: "",
-    state: "",
-    zipCode: "",
-    dateOfBirth: "",
-    qualification: "",
-    experience: 0,
-    specialization: "",
-    emergencyContact: "",
-    joinDate: "",
-    additionalNotes: "",
-  });
   const [searchTerm, setSearchTerm] = useState("");
   const [subjectFilter, setSubjectFilter] = useState("All Subjects");
   const [statusFilter, setStatusFilter] = useState("All Statuses");
@@ -217,43 +195,20 @@ const TeachersManagementPage = () => {
   const [showAdvancedFields, setShowAdvancedFields] = useState(false);
   const itemsPerPage = 5;
 
-  // Validate teacher data using Zod schema
-  const validateTeacher = (teacherData) => {
-    try {
-      teacherSchema.parse(teacherData);
-      return { valid: true, errors: {} };
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        const errorMap = {};
-        error.errors.forEach((err) => {
-          errorMap[err.path.join(".")] = err.message;
-        });
-        return { valid: false, errors: errorMap };
-      }
-      return { valid: false, errors: { general: "Validation failed" } };
-    }
-  };
-
-  // Handler for adding a new teacher
-  const handleAddTeacher = () => {
-    // Validate the new teacher data
-    const { valid, errors } = validateTeacher(newTeacher);
-
-    if (!valid) {
-      setFormErrors(errors);
-      return;
-    }
-
-    const nextId = `T-${1000 + teachers.length + 1}`;
-    const teacherToAdd = { ...newTeacher, id: nextId };
-    setTeachers([...teachers, teacherToAdd]);
-    setIsAddDialogOpen(false);
-    setFormErrors({});
-    setNewTeacher({
+  // Add form using React Hook Form
+  const {
+    register: registerAdd,
+    handleSubmit: handleSubmitAdd,
+    formState: { errors: addErrors },
+    setValue: setAddValue,
+    watch: watchAdd,
+    reset: resetAddForm,
+  } = useForm({
+    resolver: zodResolver(teacherSchema),
+    defaultValues: {
       name: "",
       email: "",
       phone: "",
-      password: "",
       subjects: [],
       status: "ACTIVE",
       employmentType: "FULLTIME",
@@ -269,54 +224,80 @@ const TeachersManagementPage = () => {
       emergencyContact: "",
       joinDate: "",
       additionalNotes: "",
+    },
+  });
+
+  // Edit form using React Hook Form
+  const {
+    register: registerEdit,
+    handleSubmit: handleSubmitEdit,
+    formState: { errors: editErrors },
+    setValue: setEditValue,
+    watch: watchEdit,
+    reset: resetEditForm,
+  } = useForm({
+    resolver: zodResolver(teacherSchema),
+  });
+
+  // Watch for subject changes in both forms
+  const addSubjects = watchAdd("subjects") || [];
+  const editSubjects = watchEdit("subjects") || [];
+
+  // Initialize edit form when opening edit dialog
+  const openEditDialog = (teacher) => {
+    setCurrentTeacher(teacher);
+    setIsEditDialogOpen(true);
+
+    // Reset form with current teacher values
+    Object.keys(teacher).forEach((key) => {
+      setEditValue(key, teacher[key]);
     });
   };
 
-  // Handler for updating a teacher
-  const handleUpdateTeacher = () => {
-    // Validate the updated teacher data
-    const { valid, errors } = validateTeacher(currentTeacher);
+  // Submit handler for adding a new teacher
+  const onAddSubmit = (data) => {
+    const nextId = `T-${1000 + teachers.length + 1}`;
+    const teacherToAdd = { ...data, id: nextId };
+    setTeachers([...teachers, teacherToAdd]);
+    setIsAddDialogOpen(false);
+    resetAddForm();
+  };
 
-    if (!valid) {
-      setFormErrors(errors);
-      return;
-    }
-
+  // Submit handler for updating a teacher
+  const onEditSubmit = (data) => {
     setTeachers(
       teachers.map((teacher) =>
-        teacher.id === currentTeacher.id ? currentTeacher : teacher
+        teacher.id === currentTeacher.id
+          ? { ...data, id: currentTeacher.id }
+          : teacher
       )
     );
     setIsEditDialogOpen(false);
-    setFormErrors({});
   };
 
-  // Handler for subject checkbox in add/edit forms
-  const handleSubjectToggle = (subject, isAdd = true) => {
-    if (isAdd) {
-      if (newTeacher.subjects.includes(subject)) {
-        setNewTeacher({
-          ...newTeacher,
-          subjects: newTeacher.subjects.filter((s) => s !== subject),
-        });
-      } else {
-        setNewTeacher({
-          ...newTeacher,
-          subjects: [...newTeacher.subjects, subject],
-        });
-      }
+  // Handler for subject checkbox in add form
+  const handleAddSubjectToggle = (subject) => {
+    const currentSubjects = watchAdd("subjects") || [];
+    if (currentSubjects.includes(subject)) {
+      setAddValue(
+        "subjects",
+        currentSubjects.filter((s) => s !== subject)
+      );
     } else {
-      if (currentTeacher.subjects.includes(subject)) {
-        setCurrentTeacher({
-          ...currentTeacher,
-          subjects: currentTeacher.subjects.filter((s) => s !== subject),
-        });
-      } else {
-        setCurrentTeacher({
-          ...currentTeacher,
-          subjects: [...currentTeacher.subjects, subject],
-        });
-      }
+      setAddValue("subjects", [...currentSubjects, subject]);
+    }
+  };
+
+  // Handler for subject checkbox in edit form
+  const handleEditSubjectToggle = (subject) => {
+    const currentSubjects = watchEdit("subjects") || [];
+    if (currentSubjects.includes(subject)) {
+      setEditValue(
+        "subjects",
+        currentSubjects.filter((s) => s !== subject)
+      );
+    } else {
+      setEditValue("subjects", [...currentSubjects, subject]);
     }
   };
 
@@ -356,6 +337,17 @@ const TeachersManagementPage = () => {
   const partTimeCount = teachers.filter(
     (t) => t.employmentType === "PARTTIME"
   ).length;
+
+  // Reset forms when closing dialogs
+  const closeAddDialog = () => {
+    setIsAddDialogOpen(false);
+    resetAddForm();
+  };
+
+  const closeEditDialog = () => {
+    setIsEditDialogOpen(false);
+    setCurrentTeacher(null);
+  };
 
   return (
     <div className="space-y-6">
@@ -494,11 +486,7 @@ const TeachersManagementPage = () => {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => {
-                        setCurrentTeacher(teacher);
-                        setFormErrors({});
-                        setIsEditDialogOpen(true);
-                      }}
+                      onClick={() => openEditDialog(teacher)}
                     >
                       Edit
                     </Button>
@@ -554,13 +542,16 @@ const TeachersManagementPage = () => {
           <DialogHeader>
             <DialogTitle>Add New Teacher</DialogTitle>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
-            {Object.keys(formErrors).length > 0 && (
+          <form
+            onSubmit={handleSubmitAdd(onAddSubmit)}
+            className="grid gap-4 py-4"
+          >
+            {Object.keys(addErrors).length > 0 && (
               <Alert variant="destructive" className="bg-red-50 border-red-200">
                 <AlertDescription>
                   <ul className="list-disc pl-5">
-                    {Object.values(formErrors).map((error, index) => (
-                      <li key={index}>{error}</li>
+                    {Object.values(addErrors).map((error, index) => (
+                      <li key={index}>{error.message}</li>
                     ))}
                   </ul>
                 </AlertDescription>
@@ -574,15 +565,14 @@ const TeachersManagementPage = () => {
                 </Label>
                 <Input
                   id="name"
-                  value={newTeacher.name}
-                  onChange={(e) =>
-                    setNewTeacher({ ...newTeacher, name: e.target.value })
-                  }
+                  {...registerAdd("name")}
                   placeholder="John Doe"
-                  className={formErrors.name ? "border-red-500" : ""}
+                  className={addErrors.name ? "border-red-500" : ""}
                 />
-                {formErrors.name && (
-                  <p className="text-red-500 text-xs mt-1">{formErrors.name}</p>
+                {addErrors.name && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {addErrors.name.message}
+                  </p>
                 )}
               </div>
               <div>
@@ -592,36 +582,13 @@ const TeachersManagementPage = () => {
                 <Input
                   id="email"
                   type="email"
-                  value={newTeacher.email}
-                  onChange={(e) =>
-                    setNewTeacher({ ...newTeacher, email: e.target.value })
-                  }
+                  {...registerAdd("email")}
                   placeholder="john.doe@school.edu"
-                  className={formErrors.email ? "border-red-500" : ""}
+                  className={addErrors.email ? "border-red-500" : ""}
                 />
-                {formErrors.email && (
+                {addErrors.email && (
                   <p className="text-red-500 text-xs mt-1">
-                    {formErrors.email}
-                  </p>
-                )}
-              </div>
-              <div>
-                <Label htmlFor="password" className="text-right">
-                  Password*
-                </Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={newTeacher.password}
-                  onChange={(e) =>
-                    setNewTeacher({ ...newTeacher, password: e.target.value })
-                  }
-                  placeholder="******"
-                  className={formErrors.password ? "border-red-500" : ""}
-                />
-                {formErrors.password && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {formErrors.password}
+                    {addErrors.email.message}
                   </p>
                 )}
               </div>
@@ -631,10 +598,7 @@ const TeachersManagementPage = () => {
                 </Label>
                 <Input
                   id="phone"
-                  value={newTeacher.phone}
-                  onChange={(e) =>
-                    setNewTeacher({ ...newTeacher, phone: e.target.value })
-                  }
+                  {...registerAdd("phone")}
                   placeholder="123-456-7890"
                 />
               </div>
@@ -642,17 +606,7 @@ const TeachersManagementPage = () => {
                 <Label htmlFor="classes" className="text-right">
                   Number of Classes
                 </Label>
-                <Input
-                  id="classes"
-                  type="number"
-                  value={newTeacher.classes}
-                  onChange={(e) =>
-                    setNewTeacher({
-                      ...newTeacher,
-                      classes: parseInt(e.target.value) || 0,
-                    })
-                  }
-                />
+                <Input id="classes" type="number" {...registerAdd("classes")} />
               </div>
               <div>
                 <Label htmlFor="status" className="text-right">
@@ -661,10 +615,7 @@ const TeachersManagementPage = () => {
                 <select
                   id="status"
                   className="w-full p-2 border rounded-md"
-                  value={newTeacher.status}
-                  onChange={(e) =>
-                    setNewTeacher({ ...newTeacher, status: e.target.value })
-                  }
+                  {...registerAdd("status")}
                 >
                   <option value="ACTIVE">Active</option>
                   <option value="ONLEAVE">On Leave</option>
@@ -679,13 +630,7 @@ const TeachersManagementPage = () => {
                 <select
                   id="employmentType"
                   className="w-full p-2 border rounded-md"
-                  value={newTeacher.employmentType}
-                  onChange={(e) =>
-                    setNewTeacher({
-                      ...newTeacher,
-                      employmentType: e.target.value,
-                    })
-                  }
+                  {...registerAdd("employmentType")}
                 >
                   <option value="FULLTIME">Full-time</option>
                   <option value="PARTTIME">Part-time</option>
@@ -702,8 +647,8 @@ const TeachersManagementPage = () => {
                   <div key={subject} className="flex items-center space-x-2">
                     <Checkbox
                       id={`subject-${subject}`}
-                      checked={newTeacher.subjects.includes(subject)}
-                      onCheckedChange={() => handleSubjectToggle(subject)}
+                      checked={addSubjects.includes(subject)}
+                      onCheckedChange={() => handleAddSubjectToggle(subject)}
                     />
                     <Label htmlFor={`subject-${subject}`} className="text-sm">
                       {subject}
@@ -711,9 +656,9 @@ const TeachersManagementPage = () => {
                   </div>
                 ))}
               </div>
-              {formErrors.subjects && (
+              {addErrors.subjects && (
                 <p className="text-red-500 text-xs mt-1">
-                  {formErrors.subjects}
+                  {addErrors.subjects.message}
                 </p>
               )}
             </div>
@@ -734,13 +679,7 @@ const TeachersManagementPage = () => {
                     <Label htmlFor="address">Address</Label>
                     <Input
                       id="address"
-                      value={newTeacher.address}
-                      onChange={(e) =>
-                        setNewTeacher({
-                          ...newTeacher,
-                          address: e.target.value,
-                        })
-                      }
+                      {...registerAdd("address")}
                       placeholder="123 Main St"
                     />
                   </div>
@@ -748,10 +687,7 @@ const TeachersManagementPage = () => {
                     <Label htmlFor="city">City</Label>
                     <Input
                       id="city"
-                      value={newTeacher.city}
-                      onChange={(e) =>
-                        setNewTeacher({ ...newTeacher, city: e.target.value })
-                      }
+                      {...registerAdd("city")}
                       placeholder="Anytown"
                     />
                   </div>
@@ -759,10 +695,7 @@ const TeachersManagementPage = () => {
                     <Label htmlFor="state">State</Label>
                     <Input
                       id="state"
-                      value={newTeacher.state}
-                      onChange={(e) =>
-                        setNewTeacher({ ...newTeacher, state: e.target.value })
-                      }
+                      {...registerAdd("state")}
                       placeholder="CA"
                     />
                   </div>
@@ -770,13 +703,7 @@ const TeachersManagementPage = () => {
                     <Label htmlFor="zipCode">Zip Code</Label>
                     <Input
                       id="zipCode"
-                      value={newTeacher.zipCode}
-                      onChange={(e) =>
-                        setNewTeacher({
-                          ...newTeacher,
-                          zipCode: e.target.value,
-                        })
-                      }
+                      {...registerAdd("zipCode")}
                       placeholder="12345"
                     />
                   </div>
@@ -785,26 +712,14 @@ const TeachersManagementPage = () => {
                     <Input
                       id="dateOfBirth"
                       type="date"
-                      value={newTeacher.dateOfBirth}
-                      onChange={(e) =>
-                        setNewTeacher({
-                          ...newTeacher,
-                          dateOfBirth: e.target.value,
-                        })
-                      }
+                      {...registerAdd("dateOfBirth")}
                     />
                   </div>
                   <div>
                     <Label htmlFor="qualification">Qualification</Label>
                     <Input
                       id="qualification"
-                      value={newTeacher.qualification}
-                      onChange={(e) =>
-                        setNewTeacher({
-                          ...newTeacher,
-                          qualification: e.target.value,
-                        })
-                      }
+                      {...registerAdd("qualification")}
                       placeholder="PhD in Mathematics"
                     />
                   </div>
@@ -813,26 +728,14 @@ const TeachersManagementPage = () => {
                     <Input
                       id="experience"
                       type="number"
-                      value={newTeacher.experience}
-                      onChange={(e) =>
-                        setNewTeacher({
-                          ...newTeacher,
-                          experience: parseInt(e.target.value) || 0,
-                        })
-                      }
+                      {...registerAdd("experience")}
                     />
                   </div>
                   <div>
                     <Label htmlFor="specialization">Specialization</Label>
                     <Input
                       id="specialization"
-                      value={newTeacher.specialization}
-                      onChange={(e) =>
-                        setNewTeacher({
-                          ...newTeacher,
-                          specialization: e.target.value,
-                        })
-                      }
+                      {...registerAdd("specialization")}
                       placeholder="Advanced Calculus, Data Science"
                     />
                   </div>
@@ -840,13 +743,7 @@ const TeachersManagementPage = () => {
                     <Label htmlFor="emergencyContact">Emergency Contact</Label>
                     <Input
                       id="emergencyContact"
-                      value={newTeacher.emergencyContact}
-                      onChange={(e) =>
-                        setNewTeacher({
-                          ...newTeacher,
-                          emergencyContact: e.target.value,
-                        })
-                      }
+                      {...registerAdd("emergencyContact")}
                       placeholder="Jane Doe: 123-456-7890"
                     />
                   </div>
@@ -855,13 +752,7 @@ const TeachersManagementPage = () => {
                     <Input
                       id="joinDate"
                       type="date"
-                      value={newTeacher.joinDate}
-                      onChange={(e) =>
-                        setNewTeacher({
-                          ...newTeacher,
-                          joinDate: e.target.value,
-                        })
-                      }
+                      {...registerAdd("joinDate")}
                     />
                   </div>
                   <div className="md:col-span-2">
@@ -869,32 +760,20 @@ const TeachersManagementPage = () => {
                     <textarea
                       id="additionalNotes"
                       className="w-full p-2 border rounded-md h-24"
-                      value={newTeacher.additionalNotes}
-                      onChange={(e) =>
-                        setNewTeacher({
-                          ...newTeacher,
-                          additionalNotes: e.target.value,
-                        })
-                      }
+                      {...registerAdd("additionalNotes")}
                       placeholder="Additional information about the teacher"
                     />
                   </div>
                 </div>
               )}
             </div>
-          </div>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => {
-                setIsAddDialogOpen(false);
-                setFormErrors({});
-              }}
-            >
-              Cancel
-            </Button>
-            <Button onClick={handleAddTeacher}>Add Teacher</Button>
-          </DialogFooter>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={closeAddDialog}>
+                Cancel
+              </Button>
+              <Button type="submit">Add Teacher</Button>
+            </DialogFooter>
+          </form>
         </DialogContent>
       </Dialog>
 
@@ -1048,15 +927,15 @@ const TeachersManagementPage = () => {
               <DialogTitle>Edit Teacher</DialogTitle>
             </DialogHeader>
             <div className="grid gap-4 py-4">
-              {Object.keys(formErrors).length > 0 && (
+              {Object.keys(editErrors).length > 0 && (
                 <Alert
                   variant="destructive"
                   className="bg-red-50 border-red-200"
                 >
                   <AlertDescription>
                     <ul className="list-disc pl-5">
-                      {Object.values(formErrors).map((error, index) => (
-                        <li key={index}>{error}</li>
+                      {Object.values(editErrors).map((error, index) => (
+                        <li key={index}>{typeof error?.message === 'string' ? error.message : null}</li>
                       ))}
                     </ul>
                   </AlertDescription>
@@ -1070,18 +949,12 @@ const TeachersManagementPage = () => {
                   </Label>
                   <Input
                     id="edit-name"
-                    value={currentTeacher.name}
-                    onChange={(e) =>
-                      setCurrentTeacher({
-                        ...currentTeacher,
-                        name: e.target.value,
-                      })
-                    }
-                    className={formErrors.name ? "border-red-500" : ""}
+                    {...registerEdit("name")}
+                    className={editErrors.name ? "border-red-500" : ""}
                   />
-                  {formErrors.name && (
+                  {editErrors.name && (
                     <p className="text-red-500 text-xs mt-1">
-                      {formErrors.name}
+                      {typeof editErrors.name?.message === 'string' ? editErrors.name.message : null}
                     </p>
                   )}
                 </div>
@@ -1092,18 +965,12 @@ const TeachersManagementPage = () => {
                   <Input
                     id="edit-email"
                     type="email"
-                    value={currentTeacher.email}
-                    onChange={(e) =>
-                      setCurrentTeacher({
-                        ...currentTeacher,
-                        email: e.target.value,
-                      })
-                    }
-                    className={formErrors.email ? "border-red-500" : ""}
+                    {...registerEdit("email")}
+                    className={editErrors.email ? "border-red-500" : ""}
                   />
-                  {formErrors.email && (
+                  {editErrors.email && (
                     <p className="text-red-500 text-xs mt-1">
-                      {formErrors.email}
+                      {typeof editErrors.email?.message === 'string' ? editErrors.email.message : null}
                     </p>
                   )}
                 </div>
@@ -1111,16 +978,7 @@ const TeachersManagementPage = () => {
                   <Label htmlFor="edit-phone" className="text-right">
                     Phone
                   </Label>
-                  <Input
-                    id="edit-phone"
-                    value={currentTeacher.phone}
-                    onChange={(e) =>
-                      setCurrentTeacher({
-                        ...currentTeacher,
-                        phone: e.target.value,
-                      })
-                    }
-                  />
+                  <Input id="edit-phone" {...registerEdit("phone")} />  
                 </div>
                 <div>
                   <Label htmlFor="edit-classes" className="text-right">
@@ -1129,13 +987,7 @@ const TeachersManagementPage = () => {
                   <Input
                     id="edit-classes"
                     type="number"
-                    value={currentTeacher.classes}
-                    onChange={(e) =>
-                      setCurrentTeacher({
-                        ...currentTeacher,
-                        classes: parseInt(e.target.value) || 0,
-                      })
-                    }
+                    {...registerEdit("classes")}
                   />
                 </div>
                 <div>
@@ -1145,13 +997,7 @@ const TeachersManagementPage = () => {
                   <select
                     id="edit-status"
                     className="w-full p-2 border rounded-md"
-                    value={currentTeacher.status}
-                    onChange={(e) =>
-                      setCurrentTeacher({
-                        ...currentTeacher,
-                        status: e.target.value,
-                      })
-                    }
+                    {...registerEdit("status")}
                   >
                     <option value="ACTIVE">Active</option>
                     <option value="ONLEAVE">On Leave</option>
@@ -1166,13 +1012,7 @@ const TeachersManagementPage = () => {
                   <select
                     id="edit-employmentType"
                     className="w-full p-2 border rounded-md"
-                    value={currentTeacher.employmentType}
-                    onChange={(e) =>
-                      setCurrentTeacher({
-                        ...currentTeacher,
-                        employmentType: e.target.value,
-                      })
-                    }
+                    {...registerEdit("employmentType")}
                   >
                     <option value="FULLTIME">Full-time</option>
                     <option value="PARTTIME">Part-time</option>
@@ -1189,10 +1029,8 @@ const TeachersManagementPage = () => {
                     <div key={subject} className="flex items-center space-x-2">
                       <Checkbox
                         id={`edit-subject-${subject}`}
-                        checked={currentTeacher.subjects.includes(subject)}
-                        onCheckedChange={() =>
-                          handleSubjectToggle(subject, false)
-                        }
+                        checked={editSubjects.includes(subject)}
+                        onCheckedChange={() => handleEditSubjectToggle(subject)}
                       />
                       <Label
                         htmlFor={`edit-subject-${subject}`}
@@ -1203,9 +1041,9 @@ const TeachersManagementPage = () => {
                     </div>
                   ))}
                 </div>
-                {formErrors.subjects && (
+                {editErrors.subjects && (
                   <p className="text-red-500 text-xs mt-1">
-                    {formErrors.subjects}
+                    {typeof editErrors.subjects?.message === 'string' ? editErrors.subjects.message : null}
                   </p>
                 )}
               </div>
@@ -1224,81 +1062,33 @@ const TeachersManagementPage = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                     <div>
                       <Label htmlFor="edit-address">Address</Label>
-                      <Input
-                        id="edit-address"
-                        value={currentTeacher.address || ""}
-                        onChange={(e) =>
-                          setCurrentTeacher({
-                            ...currentTeacher,
-                            address: e.target.value,
-                          })
-                        }
-                      />
+                      <Input id="edit-address" {...registerEdit("address")} />
                     </div>
                     <div>
                       <Label htmlFor="edit-city">City</Label>
-                      <Input
-                        id="edit-city"
-                        value={currentTeacher.city || ""}
-                        onChange={(e) =>
-                          setCurrentTeacher({
-                            ...currentTeacher,
-                            city: e.target.value,
-                          })
-                        }
-                      />
+                      <Input id="edit-city" {...registerEdit("city")} />
                     </div>
                     <div>
                       <Label htmlFor="edit-state">State</Label>
-                      <Input
-                        id="edit-state"
-                        value={currentTeacher.state || ""}
-                        onChange={(e) =>
-                          setCurrentTeacher({
-                            ...currentTeacher,
-                            state: e.target.value,
-                          })
-                        }
-                      />
+                      <Input id="edit-state" {...registerEdit("state")} />
                     </div>
                     <div>
                       <Label htmlFor="edit-zipCode">Zip Code</Label>
-                      <Input
-                        id="edit-zipCode"
-                        value={currentTeacher.zipCode || ""}
-                        onChange={(e) =>
-                          setCurrentTeacher({
-                            ...currentTeacher,
-                            zipCode: e.target.value,
-                          })
-                        }
-                      />
+                      <Input id="edit-zipCode" {...registerEdit("zipCode")} />
                     </div>
                     <div>
                       <Label htmlFor="edit-dateOfBirth">Date of Birth</Label>
                       <Input
                         id="edit-dateOfBirth"
                         type="date"
-                        value={currentTeacher.dateOfBirth || ""}
-                        onChange={(e) =>
-                          setCurrentTeacher({
-                            ...currentTeacher,
-                            dateOfBirth: e.target.value,
-                          })
-                        }
+                        {...registerEdit("dateOfBirth")}
                       />
                     </div>
                     <div>
                       <Label htmlFor="edit-qualification">Qualification</Label>
                       <Input
                         id="edit-qualification"
-                        value={currentTeacher.qualification || ""}
-                        onChange={(e) =>
-                          setCurrentTeacher({
-                            ...currentTeacher,
-                            qualification: e.target.value,
-                          })
-                        }
+                        {...registerEdit("qualification")}
                       />
                     </div>
                     <div>
@@ -1308,13 +1098,7 @@ const TeachersManagementPage = () => {
                       <Input
                         id="edit-experience"
                         type="number"
-                        value={currentTeacher.experience || 0}
-                        onChange={(e) =>
-                          setCurrentTeacher({
-                            ...currentTeacher,
-                            experience: parseInt(e.target.value) || 0,
-                          })
-                        }
+                        {...registerEdit("experience")}
                       />
                     </div>
                     <div>
@@ -1323,13 +1107,7 @@ const TeachersManagementPage = () => {
                       </Label>
                       <Input
                         id="edit-specialization"
-                        value={currentTeacher.specialization || ""}
-                        onChange={(e) =>
-                          setCurrentTeacher({
-                            ...currentTeacher,
-                            specialization: e.target.value,
-                          })
-                        }
+                        {...registerEdit("specialization")}
                       />
                     </div>
                     <div>
@@ -1338,13 +1116,7 @@ const TeachersManagementPage = () => {
                       </Label>
                       <Input
                         id="edit-emergencyContact"
-                        value={currentTeacher.emergencyContact || ""}
-                        onChange={(e) =>
-                          setCurrentTeacher({
-                            ...currentTeacher,
-                            emergencyContact: e.target.value,
-                          })
-                        }
+                        {...registerEdit("emergencyContact")}
                       />
                     </div>
                     <div>
@@ -1352,13 +1124,7 @@ const TeachersManagementPage = () => {
                       <Input
                         id="edit-joinDate"
                         type="date"
-                        value={currentTeacher.joinDate || ""}
-                        onChange={(e) =>
-                          setCurrentTeacher({
-                            ...currentTeacher,
-                            joinDate: e.target.value,
-                          })
-                        }
+                        {...registerEdit("joinDate")}
                       />
                     </div>
                     <div className="md:col-span-2">
@@ -1368,13 +1134,7 @@ const TeachersManagementPage = () => {
                       <textarea
                         id="edit-additionalNotes"
                         className="w-full p-2 border rounded-md h-24"
-                        value={currentTeacher.additionalNotes || ""}
-                        onChange={(e) =>
-                          setCurrentTeacher({
-                            ...currentTeacher,
-                            additionalNotes: e.target.value,
-                          })
-                        }
+                        {...registerEdit("additionalNotes")}
                       />
                     </div>
                   </div>
@@ -1382,16 +1142,12 @@ const TeachersManagementPage = () => {
               </div>
             </div>
             <DialogFooter>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setIsEditDialogOpen(false);
-                  setFormErrors({});
-                }}
-              >
+              <Button variant="outline" onClick={closeEditDialog}>
                 Cancel
               </Button>
-              <Button onClick={handleUpdateTeacher}>Update Teacher</Button>
+              <Button onClick={handleSubmitEdit(onEditSubmit)}>
+                Update Teacher
+              </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>

@@ -11,9 +11,10 @@ import {
 
 import {
   createStudent,
-  getStudent,
+  getStudentById,
   updateStudent,
   deleteStudent,
+  getAllStudents
 } from "../controllers/adminControllers/studentControllers";
 
 import {
@@ -39,11 +40,12 @@ adminRouter.post("/reset-password", adminResetPassword);
 adminRouter.use(verifyAdmin);
 
 adminRouter.route("/student")
-.post(createStudent);
+.post(createStudent)
+.get(getAllStudents);
 
 adminRouter
   .route("/student/:id")
-  .get(getStudent)
+  .get(getStudentById)
   .put(updateStudent)
   .delete(deleteStudent);
 

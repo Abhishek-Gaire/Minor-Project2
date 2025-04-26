@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { SlideOverlay } from "./SlideOverlay";
 import { SlideNavigation } from "./SlideNavigation";
+import { useNavigate } from "react-router-dom";
 
-export function ImageSlider({slides}) {
+export function ImageSlider({slides}: {slides: {schoolName: string, description: string, schoolAddress: string, imageUrl: string, id: string}[]}) {
+  const navigate = useNavigate();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const touchStartX = useRef<number | null>(null);
@@ -19,6 +21,7 @@ export function ImageSlider({slides}) {
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
   };
+
   const handleTouchEnd = (e: React.TouchEvent) => {
     if (touchStartX.current === null) return;
     const touchEndX = e.changedTouches[0].clientX;
@@ -36,7 +39,7 @@ export function ImageSlider({slides}) {
 
   useEffect(() => {
     if (!isPaused) {
-      intervalRef.current = window.setInterval(nextSlide, 2000);
+      intervalRef.current = window.setInterval(nextSlide, 1000);
     }
     return () => {
       if (intervalRef.current) {
@@ -68,11 +71,7 @@ export function ImageSlider({slides}) {
               name={slide.schoolName}
               description={slide.description}
               location={slide.schoolAddress}
-              onLearnMore={() =>
-                console.log(
-                  `Learn more about ${slide.schoolName} and put university or school website link here`
-                )
-              }
+              onLearnMore={() => navigate(`/school/${slide.id}`)}
             />
           </div>
         ))}

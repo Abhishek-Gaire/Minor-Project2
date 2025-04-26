@@ -1,32 +1,84 @@
-import { TabsList, TabsTrigger } from "@/components/ui/tabs.tsx";
-import { Book, FileText, Phone, User, Users } from "lucide-react";
+import React from "react";
+import { TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  UserCircle,
+  GraduationCap,
+  Phone,
+  Users,
+  FileText,
+} from "lucide-react";
 
-const TabsListComponents = () => {
+interface TabsListComponentsProps {
+  tabsWithErrors?: Record<string, boolean>;
+}
+
+const TabsListComponents: React.FC<TabsListComponentsProps> = ({
+  tabsWithErrors = {},
+}) => {
   return (
-    <>
-      <TabsList className="grid grid-cols-5 mb-6">
-        <TabsTrigger value="personal" className="flex items-center">
-          <User className="h-4 w-4 mr-2" />
-          <span className="hidden sm:inline">Personal</span>
-        </TabsTrigger>
-        <TabsTrigger value="academic" className="flex items-center">
-          <Book className="h-4 w-4 mr-2" />
-          <span className="hidden sm:inline">Academic</span>
-        </TabsTrigger>
-        <TabsTrigger value="contact" className="flex items-center">
+    <TabsList className="grid grid-cols-2 md:grid-cols-5 gap-2 bg-white rounded-none border-b mb-4">
+      <TabsTrigger
+        value="personal"
+        className="relative font-medium text-sm py-2"
+      >
+        <div className="flex items-center">
+          <UserCircle className="h-4 w-4 mr-2" />
+          <span>Personal</span>
+          {tabsWithErrors.personal && (
+            <span className="absolute top-0 right-0 mt-1 mr-1 h-2 w-2 bg-red-500 rounded-full" />
+          )}
+        </div>
+      </TabsTrigger>
+
+      <TabsTrigger
+        value="academic"
+        className="relative font-medium text-sm py-2"
+      >
+        <div className="flex items-center">
+          <GraduationCap className="h-4 w-4 mr-2" />
+          <span>Academic</span>
+          {tabsWithErrors.academic && (
+            <span className="absolute top-0 right-0 mt-1 mr-1 h-2 w-2 bg-red-500 rounded-full" />
+          )}
+        </div>
+      </TabsTrigger>
+
+      <TabsTrigger
+        value="contact"
+        className="relative font-medium text-sm py-2"
+      >
+        <div className="flex items-center">
           <Phone className="h-4 w-4 mr-2" />
-          <span className="hidden sm:inline">Contact</span>
-        </TabsTrigger>
-        <TabsTrigger value="parent" className="flex items-center">
+          <span>Contact</span>
+          {tabsWithErrors.contact && (
+            <span className="absolute top-0 right-0 mt-1 mr-1 h-2 w-2 bg-red-500 rounded-full" />
+          )}
+        </div>
+      </TabsTrigger>
+
+      <TabsTrigger value="parent" className="relative font-medium text-sm py-2">
+        <div className="flex items-center">
           <Users className="h-4 w-4 mr-2" />
-          <span className="hidden sm:inline">Parent</span>
-        </TabsTrigger>
-        <TabsTrigger value="additional" className="flex items-center">
+          <span>Guardian</span>
+          {tabsWithErrors.parent && (
+            <span className="absolute top-0 right-0 mt-1 mr-1 h-2 w-2 bg-red-500 rounded-full" />
+          )}
+        </div>
+      </TabsTrigger>
+
+      <TabsTrigger
+        value="additional"
+        className="relative font-medium text-sm py-2"
+      >
+        <div className="flex items-center">
           <FileText className="h-4 w-4 mr-2" />
-          <span className="hidden sm:inline">Additional</span>
-        </TabsTrigger>
-      </TabsList>
-    </>
+          <span>Additional</span>
+          {tabsWithErrors.additional && (
+            <span className="absolute top-0 right-0 mt-1 mr-1 h-2 w-2 bg-red-500 rounded-full" />
+          )}
+        </div>
+      </TabsTrigger>
+    </TabsList>
   );
 };
 

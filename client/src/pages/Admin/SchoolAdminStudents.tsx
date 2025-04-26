@@ -6,82 +6,11 @@ import InputSection from "@/components/Admin/Students/StudentsPage/InputSection.
 import TableSelection from "@/components/Admin/Students/StudentsPage/TableSelection.tsx";
 import PaginatedControls from "@/components/Admin/Students/StudentsPage/PaginatedControls.tsx";
 
+const BACKEND_URI = import.meta.env.VITE_BACKEND_URI;
+
 const StudentsPage = () => {
-  const [originalStudents, setOriginalStudents] = useState([
-    {
-      id: 1,
-      name: "Alex Johnson",
-      grade: "10th",
-      status: "active",
-      attendance: "95%",
-      fees: "Paid",
-      enrolledCourses: 4,
-    },
-    {
-      id: 2,
-      name: "Samantha Lee",
-      grade: "11th",
-      status: "active",
-      attendance: "92%",
-      fees: "Paid",
-      enrolledCourses: 5,
-    },
-    {
-      id: 3,
-      name: "David Martinez",
-      grade: "9th",
-      status: "active",
-      attendance: "87%",
-      fees: "Pending",
-      enrolledCourses: 3,
-    },
-    {
-      id: 4,
-      name: "Emily Wilson",
-      grade: "12th",
-      status: "inactive",
-      attendance: "78%",
-      fees: "Overdue",
-      enrolledCourses: 2,
-    },
-    {
-      id: 5,
-      name: "Michael Brown",
-      grade: "10th",
-      status: "active",
-      attendance: "91%",
-      fees: "Paid",
-      enrolledCourses: 4,
-    },
-    {
-      id: 6,
-      name: "Olivia Davis",
-      grade: "11th",
-      status: "active",
-      attendance: "94%",
-      fees: "Paid",
-      enrolledCourses: 5,
-    },
-    {
-      id: 7,
-      name: "John Smith",
-      grade: "9th",
-      status: "inactive",
-      attendance: "65%",
-      fees: "Overdue",
-      enrolledCourses: 3,
-    },
-    {
-      id: 8,
-      name: "Emma Thomas",
-      grade: "10th",
-      status: "active",
-      attendance: "89%",
-      fees: "Pending",
-      enrolledCourses: 4,
-    },
-  ]);
-  const [filteredStudents, setFilteredStudents] = useState(originalStudents);
+  const [originalStudents, setOriginalStudents] = useState([]);
+  const [filteredStudents, setFilteredStudents] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [searchTerm, setSearchTerm] = useState("");
@@ -92,32 +21,30 @@ const StudentsPage = () => {
   });
 
   const navigate = useNavigate();
-  // Pagination calculations
-  const totalPages = Math.ceil(filteredStudents.length / itemsPerPage);
-  const paginatedData = filteredStudents.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
-  const handleStudentDeleted = (deletedId) => {
-    setOriginalStudents(
-      originalStudents.filter((student) => student.id !== deletedId)
-    );
-  };
 
-  // Function to handle edit navigation
-  const handleEditStudent = (student) => {
-    // Navigate to edit page or open edit modal
-    navigate(`/students/edit/${student.id}`);
-    // OR set state to show edit modal
-  };
+  // Fetch students from API
+  useEffect(() => {
+    const fetchStudents = async () => {
+      try {
+        const res = await fetch(`${BACKEND_URI}/api/v1/admin/student`, {
+          method: "GET",
+          credentials: "include",
+        });
 
-  // Debounced search handler
-  const handleSearch = debounce((term: string) => {
-    setSearchTerm(term);
-    setCurrentPage(1);
-  }, 300);
+        if (!res.ok) {
+          throw new Error("Failed to fetch students");
+        }
 
-  // Filter and search logic
+        const data = await res.json();
+        setOriginalStudents(data.data || []);
+      } catch (error) {
+        console.error("Error fetching students:", error);
+      }
+    };
+
+    fetchStudents();
+  }, []);
+
   useEffect(() => {
     const result = originalStudents.filter((student) => {
       const matchesSearch =
@@ -125,15 +52,36 @@ const StudentsPage = () => {
         student.grade.toLowerCase().includes(searchTerm.toLowerCase());
 
       const matchesFilters =
-        (!filters.status || student.status === filters.status) &&
+        (!filters.status || true) &&
         (!filters.grade || student.grade === filters.grade) &&
-        (!filters.fees || student.fees === filters.fees);
+        (!filters.fees || true);
 
       return matchesSearch && matchesFilters;
     });
 
     setFilteredStudents(result);
   }, [searchTerm, filters, originalStudents]);
+
+  const totalPages = Math.ceil(filteredStudents.length / itemsPerPage);
+  const paginatedData = filteredStudents.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const handleStudentDeleted = (deletedId: string) => {
+    setOriginalStudents((prev) =>
+      prev.filter((student) => student.id !== deletedId)
+    );
+  };
+
+  const handleEditStudent = (student: any) => {
+    navigate(`/students/edit/${student.id}`);
+  };
+
+  const handleSearch = debounce((term: string) => {
+    setSearchTerm(term);
+    setCurrentPage(1);
+  }, 300);
 
   const handleAddStudent = () => {
     navigate("/admin/students/addStudent");
@@ -146,18 +94,15 @@ const StudentsPage = () => {
         originalStudents={originalStudents}
       />
 
-      {/* Enhanced Filters */}
       <div className="bg-white rounded-lg shadow overflow-hidden">
         <InputSection handleSearch={handleSearch} setFilters={setFilters} />
 
-        {/* Enhanced Table with Selection */}
         <TableSelection
-          paginatedData={originalStudents}
+          paginatedData={paginatedData}
           onStudentDeleted={handleStudentDeleted}
           onEditStudent={handleEditStudent}
         />
 
-        {/* Pagination Controls */}
         <PaginatedControls
           currentPage={currentPage}
           itemsPerPage={itemsPerPage}

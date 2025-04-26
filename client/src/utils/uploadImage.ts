@@ -2,8 +2,8 @@ import { supabase } from "../lib/supabase";
 
 const uploadImage = async (file: File) => {
   const { data, error } = await supabase.storage
-    .from("schoolImages")
-    .upload(`${file.name}`, file, {
+    .from("minor2storage")
+    .upload(`schoolImages/${file.name}`, file, {
       cacheControl: "3600",
       upsert: false,
     });

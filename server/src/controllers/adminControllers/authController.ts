@@ -47,7 +47,7 @@ export const adminLogin: RequestHandler = async (
     }
 
     // Generate JWT token
-    const token = jwt.sign({ id: adminExists.id }, JWT_SECRET, {
+    const token = jwt.sign({ id: adminExists.id,schoolId:adminExists.schoolId }, JWT_SECRET, {
       expiresIn: "24h",
     });
 

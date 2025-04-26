@@ -7,7 +7,12 @@ import {
   CardTitle,
 } from "@/components/ui/card.tsx";
 
-const Header = ({ handleAddStudent, originalStudents }) => {
+interface HeaderProps {
+  handleAddStudent: () => void;
+  originalStudents: { id: string; name: string; grade: string }[]; // minimal typing
+}
+
+const Header = ({ handleAddStudent, originalStudents }: HeaderProps) => {
   return (
     <>
       <div className="flex justify-between items-center mb-6">
@@ -34,4 +39,5 @@ const Header = ({ handleAddStudent, originalStudents }) => {
     </>
   );
 };
+
 export default Header;

@@ -40,40 +40,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
-const getFeesColor = (fees) => {
-  switch (fees) {
-    case "Paid":
-      return "bg-green-100 text-green-800";
-    case "Pending":
-      return "bg-yellow-100 text-yellow-800";
-    case "Overdue":
-      return "bg-red-100 text-red-800";
-    default:
-      return "bg-gray-100 text-gray-800";
-  }
-};
-
-// Enhanced Attendance Visualization
-const AttendanceBar = ({ percentage }: { percentage: string }) => {
-  const numericValue = parseFloat(percentage);
-  return (
-    <div className="flex items-center gap-2">
-      <Progress value={numericValue} className="h-2 w-20" />
-      <span
-        className={`text-sm ${
-          numericValue < 75
-            ? "text-red-600"
-            : numericValue < 90
-            ? "text-yellow-600"
-            : "text-green-600"
-        }`}
-      >
-        {percentage}
-      </span>
-    </div>
-  );
-};
-
 // Contact form schema
 const contactFormSchema = z.object({
   subject: z.string().min(1, "Subject is required"),
@@ -83,7 +49,7 @@ const contactFormSchema = z.object({
 // Contact Form Component
 const ContactForm = ({ student, onClose }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   const form = useForm({
     resolver: zodResolver(contactFormSchema),
     defaultValues: {
@@ -91,27 +57,30 @@ const ContactForm = ({ student, onClose }) => {
       message: "",
     },
   });
-  
+
   const onSubmit = async (data) => {
     setIsSubmitting(true);
     try {
-      const response = await fetch(`http://localhost:3000/api/v1/communications/contact-student`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          studentId: student.id,
-          subject: data.subject,
-          message: data.message,
-        }),
-      });
-      
+      const response = await fetch(
+        `http://localhost:3000/api/v1/communications/contact-student`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            studentId: student.id,
+            subject: data.subject,
+            message: data.message,
+          }),
+        }
+      );
+
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to send message');
+        throw new Error(errorData.message || "Failed to send message");
       }
-      
+
       toast.success(`Message sent to ${student.name}`);
       onClose();
     } catch (error) {
@@ -121,7 +90,7 @@ const ContactForm = ({ student, onClose }) => {
       setIsSubmitting(false);
     }
   };
-  
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -138,7 +107,7 @@ const ContactForm = ({ student, onClose }) => {
             </FormItem>
           )}
         />
-        
+
         <FormField
           control={form.control}
           name="message"
@@ -146,17 +115,17 @@ const ContactForm = ({ student, onClose }) => {
             <FormItem>
               <FormLabel>Message</FormLabel>
               <FormControl>
-                <Textarea 
-                  placeholder="Enter your message" 
-                  className="min-h-32" 
-                  {...field} 
+                <Textarea
+                  placeholder="Enter your message"
+                  className="min-h-32"
+                  {...field}
                 />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-          
+
         <DialogFooter>
           <Button type="button" variant="outline" onClick={onClose}>
             Cancel
@@ -171,91 +140,53 @@ const ContactForm = ({ student, onClose }) => {
 };
 
 // Student Details Component
-const StudentDetails = ({ student }) => {
+const StudentDetails = ({ student }: { student: any }) => {
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <h3 className="font-medium text-sm text-gray-500">Personal Information</h3>
+          <h3 className="font-medium text-sm text-gray-500">
+            Personal Information
+          </h3>
           <div className="mt-2 space-y-2">
-            <p><span className="font-medium">Full Name:</span> {student.name}</p>
-            <p><span className="font-medium">Grade:</span> {student.grade}</p>
-            <p><span className="font-medium">ID:</span> {student.id}</p>
-            {student.dateOfBirth && (
-              <p><span className="font-medium">Date of Birth:</span> {student.dateOfBirth}</p>
-            )}
-            {student.gender && (
-              <p><span className="font-medium">Gender:</span> {student.gender}</p>
+            <p>
+              <span className="font-medium">Full Name:</span> {student.name}
+            </p>
+            <p>
+              <span className="font-medium">Grade:</span> {student.grade}
+            </p>
+            <p>
+              <span className="font-medium">ID:</span> {student.id}
+            </p>
+            {student.studentDetails?.gender && (
+              <p>
+                <span className="font-medium">Gender:</span> {student.studentDetails.gender}
+              </p>
             )}
           </div>
         </div>
-        
+
         <div>
-          <h3 className="font-medium text-sm text-gray-500">Academic Information</h3>
+          <h3 className="font-medium text-sm text-gray-500">
+            Academic Information
+          </h3>
           <div className="mt-2 space-y-2">
             <p>
-              <span className="font-medium">Attendance:</span> {student.attendance}
-              <AttendanceBar percentage={student.attendance} />
+              <span className="font-medium">Phone:</span> {student.studentDetails?.phone}
             </p>
             <p>
-              <span className="font-medium">Fees Status:</span> 
-              <Badge className={`ml-2 ${getFeesColor(student.fees)}`}>
-                {student.fees}
-              </Badge>
+              <span className="font-medium">Section:</span> {student.studentDetails?.section}
             </p>
-            <p><span className="font-medium">Enrolled Courses:</span> {student.enrolledCourses}</p>
+            <p>
+              <span className="font-medium">Academic Year:</span> {student.studentDetails?.academicYear}
+            </p>
           </div>
         </div>
       </div>
-      
-      {student.contactInfo && (
-        <div>
-          <h3 className="font-medium text-sm text-gray-500">Contact Information</h3>
-          <div className="mt-2 space-y-2">
-            {student.contactInfo.email && (
-              <p><span className="font-medium">Email:</span> {student.contactInfo.email}</p>
-            )}
-            {student.contactInfo.phone && (
-              <p><span className="font-medium">Phone:</span> {student.contactInfo.phone}</p>
-            )}
-            {student.contactInfo.address && (
-              <p><span className="font-medium">Address:</span> {student.contactInfo.address}</p>
-            )}
-          </div>
-        </div>
-      )}
-      
-      {student.guardianInfo && (
-        <div>
-          <h3 className="font-medium text-sm text-gray-500">Guardian Information</h3>
-          <div className="mt-2 space-y-2">
-            {student.guardianInfo.name && (
-              <p><span className="font-medium">Name:</span> {student.guardianInfo.name}</p>
-            )}
-            {student.guardianInfo.relationship && (
-              <p><span className="font-medium">Relationship:</span> {student.guardianInfo.relationship}</p>
-            )}
-            {student.guardianInfo.contact && (
-              <p><span className="font-medium">Contact:</span> {student.guardianInfo.contact}</p>
-            )}
-            {student.guardianInfo.email && (
-              <p><span className="font-medium">Email:</span> {student.guardianInfo.email}</p>
-            )}
-          </div>
-        </div>
-      )}
-      
-      {student.additionalInfo && (
-        <div>
-          <h3 className="font-medium text-sm text-gray-500">Additional Information</h3>
-          <div className="mt-2 space-y-2">
-            <p className="whitespace-pre-wrap">{student.additionalInfo}</p>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
+
 
 const TableSelection = ({ paginatedData, onStudentDeleted, onEditStudent }) => {
   const [isDeleting, setIsDeleting] = useState(false);
@@ -267,24 +198,27 @@ const TableSelection = ({ paginatedData, onStudentDeleted, onEditStudent }) => {
     setSelectedStudent(null);
   };
 
-  const handleDeleteStudent = async (studentId) => {
+  const handleDeleteStudent = async (studentId: string) => {
     if (window.confirm("Are you sure you want to delete this student?")) {
       setIsDeleting(true);
       try {
-        const response = await fetch(`http://localhost:3000/api/v1/students/${studentId}`, {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
+        const response = await fetch(
+          `http://localhost:3000/api/v1/admin/student/${studentId}`,
+          {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+            },
           }
-        });
+        );
 
         if (!response.ok) {
           const errorData = await response.json();
-          throw new Error(errorData.message || 'Failed to delete student');
+          throw new Error(errorData.message || "Failed to delete student");
         }
 
         toast.success("Student deleted successfully");
-        
+
         if (onStudentDeleted) {
           onStudentDeleted(studentId);
         }
@@ -296,17 +230,17 @@ const TableSelection = ({ paginatedData, onStudentDeleted, onEditStudent }) => {
       }
     }
   };
-  
+
   const handleViewDetails = (student) => {
     setSelectedStudent(student);
-    setDialogType('details');
+    setDialogType("details");
   };
-  
+
   const handleContactStudent = (student) => {
     setSelectedStudent(student);
-    setDialogType('contact');
+    setDialogType("contact");
   };
-  
+
   const handleEditStudent = (student) => {
     if (onEditStudent) {
       onEditStudent(student);
@@ -320,57 +254,47 @@ const TableSelection = ({ paginatedData, onStudentDeleted, onEditStudent }) => {
           <TableRow>
             <TableHead className="w-[250px]">Name</TableHead>
             <TableHead>Grade</TableHead>
-            <TableHead>Attendance</TableHead>
-            <TableHead>Fees</TableHead>
-            <TableHead>Courses</TableHead>
+            <TableHead>Phone</TableHead>
+            <TableHead>Section</TableHead>
+            <TableHead>Academic Year</TableHead>
+            <TableHead>Gender</TableHead>
             <TableHead className="text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {paginatedData.map((student) => (
-            <TableRow
-              key={student.id}
-              className="cursor-pointer hover:bg-gray-50"
-            >
+            <TableRow key={student.id}>
               <TableCell className="font-medium">{student.name}</TableCell>
               <TableCell>{student.grade}</TableCell>
-              
-              <TableCell>
-                <AttendanceBar percentage={student.attendance} />
-              </TableCell>
-              <TableCell>
-                <Badge className={getFeesColor(student.fees)}>
-                  {student.fees}
-                </Badge>
-              </TableCell>
-              <TableCell>{student.enrolledCourses}</TableCell>
+              <TableCell>{student.studentDetails.phone}</TableCell>
+              <TableCell>{student.studentDetails.section}</TableCell>
+              <TableCell>{student.studentDetails.academicYear}</TableCell>
+              <TableCell>{student.studentDetails.gender}</TableCell>
               <TableCell className="text-right">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="sm" disabled={isDeleting}>
+                    <Button variant="ghost" size="sm">
                       <MoreHorizontal className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => handleViewDetails(student)}>
+                    <DropdownMenuItem
+                      onClick={() => handleViewDetails(student)}
+                    >
                       <Eye className="mr-2 h-4 w-4" />
                       View Details
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleEditStudent(student)}>
+                    <DropdownMenuItem
+                      onClick={() => handleEditStudent(student)}
+                    >
                       <Pencil className="mr-2 h-4 w-4" />
                       Edit Student
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleContactStudent(student)}>
-                      <Mail className="mr-2 h-4 w-4" />
-                      Contact Student
-                    </DropdownMenuItem>
-                    <DropdownMenuItem 
+                    <DropdownMenuItem
                       onClick={() => handleDeleteStudent(student.id)}
-                      disabled={isDeleting}
-                      className="text-red-600 focus:text-red-600"
                     >
                       <Trash className="mr-2 h-4 w-4" />
-                      {isDeleting ? "Deleting..." : "Delete Student"}
+                      Delete Student
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -379,9 +303,8 @@ const TableSelection = ({ paginatedData, onStudentDeleted, onEditStudent }) => {
           ))}
         </TableBody>
       </Table>
-      
       {/* Student Details Dialog */}
-      <Dialog open={dialogType === 'details'} onOpenChange={handleCloseDialog}>
+      <Dialog open={dialogType === "details"} onOpenChange={handleCloseDialog}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>Student Details</DialogTitle>
@@ -389,31 +312,38 @@ const TableSelection = ({ paginatedData, onStudentDeleted, onEditStudent }) => {
               Comprehensive information about {selectedStudent?.name}
             </DialogDescription>
           </DialogHeader>
-          
+
           {selectedStudent && <StudentDetails student={selectedStudent} />}
-          
+
           <DialogFooter>
-            <Button variant="outline" onClick={handleCloseDialog}>Close</Button>
-            <Button variant="outline" onClick={() => {
-              handleCloseDialog();
-              handleContactStudent(selectedStudent);
-            }}>
+            <Button variant="outline" onClick={handleCloseDialog}>
+              Close
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => {
+                handleCloseDialog();
+                handleContactStudent(selectedStudent);
+              }}
+            >
               <Mail className="mr-2 h-4 w-4" />
               Contact
             </Button>
-            <Button onClick={() => {
-              handleCloseDialog();
-              handleEditStudent(selectedStudent);
-            }}>
+            <Button
+              onClick={() => {
+                handleCloseDialog();
+                handleEditStudent(selectedStudent);
+              }}
+            >
               <Pencil className="mr-2 h-4 w-4" />
               Edit
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      
+
       {/* Contact Student Dialog */}
-      <Dialog open={dialogType === 'contact'} onOpenChange={handleCloseDialog}>
+      <Dialog open={dialogType === "contact"} onOpenChange={handleCloseDialog}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>Contact {selectedStudent?.name}</DialogTitle>
@@ -421,10 +351,10 @@ const TableSelection = ({ paginatedData, onStudentDeleted, onEditStudent }) => {
               Send a message to the student or their guardian
             </DialogDescription>
           </DialogHeader>
-          
+
           {selectedStudent && (
-            <ContactForm 
-              student={selectedStudent} 
+            <ContactForm
+              student={selectedStudent}
               onClose={handleCloseDialog}
             />
           )}

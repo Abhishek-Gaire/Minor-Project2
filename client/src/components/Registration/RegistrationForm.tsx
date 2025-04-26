@@ -5,11 +5,13 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
 import { ImagePreview } from "./ImagePreview";
-import { RegistrationFormProps } from "../../constants/types";
-import uploadImage from "../../utils/uploadImage";
-import { institutionFormSchema } from "../../constants/types";
+import { RegistrationFormProps } from "@/constants/types";
+import uploadImage from "@/utils/uploadImage";
+import { institutionFormSchema } from "@/constants/types";
+import { z } from "zod";
 
-const BACKEND_URI = import.meta.env.VITE_BACKEND_URI as string;
+const BACKEND_URI = import.meta.env.VITE_BACKEND_URI!;
+type InstitutionFormType = z.infer<typeof institutionFormSchema>;
 
 export function RegistrationForm({
   loading,
@@ -25,14 +27,14 @@ export function RegistrationForm({
     setValue,
     watch,
     formState: { errors },
-  } = useForm({
+  } = useForm<InstitutionFormType>({
     resolver: zodResolver(institutionFormSchema),
   });
 
   // Watch for image state changes
   const mainImage = watch("mainImage");
 
-  const onSubmit = async (formData: any) => {
+  const onSubmit = async (formData: InstitutionFormType) => {
     setLoading(true);
     setError(null);
 
@@ -55,8 +57,8 @@ export function RegistrationForm({
         role: formData.role,
         contactPerson: formData.contactName,
         email: formData.email,
-        phone: formData.phone, // Fix: Use the correct phone field
-        imageUrl: imagePath, // Use the image path here
+        phone: formData.phone,
+        imageUrl: imagePath,
       };
 
       // Send the POST request
@@ -72,7 +74,8 @@ export function RegistrationForm({
       if (res.ok) {
         const responseData = await res.json();
         toast.success("School Added Successfully");
-        navigate(`/school/${responseData.data.id}`);
+        // Navigate to the success page instead of the school profile page
+        navigate(`/registration-success/${responseData.data.id}`);
       } else {
         toast.error("Failed to Add School");
       }
@@ -99,7 +102,7 @@ export function RegistrationForm({
           </label>
           <input {...register("institutionName")} className="input-field" />
           {errors.institutionName && (
-            <p className="text-red-500">{errors.institutionName.message}</p>
+            <p className="text-red-500">{errors.institutionName?.message}</p>
           )}
         </div>
 
@@ -110,7 +113,7 @@ export function RegistrationForm({
             </label>
             <input {...register("contactName")} className="input-field" />
             {errors.contactName && (
-              <p className="text-red-500">{errors.contactName.message}</p>
+              <p className="text-red-500">{errors.contactName?.message}</p>
             )}
           </div>
           <div>
@@ -119,7 +122,7 @@ export function RegistrationForm({
             </label>
             <input {...register("role")} className="input-field" />
             {errors.role && (
-              <p className="text-red-500">{errors.role.message}</p>
+              <p className="text-red-500">{errors.role?.message}</p>
             )}
           </div>
         </div>
@@ -135,7 +138,7 @@ export function RegistrationForm({
               className="input-field"
             />
             {errors.email && (
-              <p className="text-red-500">{errors.email.message}</p>
+              <p className="text-red-500">{errors.email?.message}</p>
             )}
           </div>
           <div>
@@ -144,7 +147,7 @@ export function RegistrationForm({
             </label>
             <input type="tel" {...register("phone")} className="input-field" />
             {errors.phone && (
-              <p className="text-red-500">{errors.phone.message}</p>
+              <p className="text-red-500">{errors.phone?.message}</p>
             )}
           </div>
         </div>
@@ -155,7 +158,7 @@ export function RegistrationForm({
           </label>
           <input {...register("address")} className="input-field" />
           {errors.address && (
-            <p className="text-red-500">{errors.address.message}</p>
+            <p className="text-red-500">{errors.address?.message}</p>
           )}
         </div>
 
@@ -166,7 +169,7 @@ export function RegistrationForm({
             </label>
             <input {...register("city")} className="input-field" />
             {errors.city && (
-              <p className="text-red-500">{errors.city.message}</p>
+              <p className="text-red-500">{errors.city?.message}</p>
             )}
           </div>
         </div>
@@ -187,7 +190,7 @@ export function RegistrationForm({
           </div>
           {mainImage && <ImagePreview images={[mainImage]} />}
           {errors.mainImage && (
-            <p className="text-red-500">{errors.mainImage.message}</p>
+            <p className="text-red-500">{errors.mainImage?.message}</p>
           )}
         </div>
 
