@@ -1,14 +1,14 @@
-import { Request, Response, RequestHandler } from "express";
+import { Request, Response, RequestHandler, NextFunction } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
-import { Prisma, PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
+import { CustomError } from "../exceptions/customError";
 dotenv.config();
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 const prisma = new PrismaClient();
 
-// **Login For Student and Teacher
 export const login: RequestHandler = async (req: Request, res: Response) => {
   const { email, bodyPassword, role } = req.body;
 
@@ -30,9 +30,8 @@ export const login: RequestHandler = async (req: Request, res: Response) => {
       });
       return;
     }
-    isMatch = bodyPassword === userExists.password;
 
-    // isMatch = await bcrypt.compare(password, userExists.password);
+    isMatch = await bcrypt.compare(bodyPassword, userExists.password);
     if (!isMatch) {
       res.status(401).json({
         success: false,
@@ -87,7 +86,6 @@ export const login: RequestHandler = async (req: Request, res: Response) => {
     });
   }
 
-  
   const { password, ...safeUser } = userExists;
 
   res.status(200).json({
@@ -98,7 +96,7 @@ export const login: RequestHandler = async (req: Request, res: Response) => {
       role: role.toLowerCase(),
     },
   });
-  
+
   return;
 };
 
@@ -231,16 +229,13 @@ export const changePassword: RequestHandler = async (
 
 export const verifyUser: RequestHandler = async (
   req: Request,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) => {
   try {
     const { user } = req as any;
     if (!user) {
-      res.status(404).json({
-        success: false,
-        message: "Authorization Failed",
-      });
-      return;
+      throw new CustomError("Authorization Failed", 401);
     }
 
     let userDetails;
@@ -257,11 +252,7 @@ export const verifyUser: RequestHandler = async (
     }
 
     if (!userDetails) {
-      res.status(404).json({
-        success: false,
-        message: "User Not Found",
-      });
-      return;
+      throw new CustomError("User Not Found", 404);
     }
     res.status(200).json({
       success: true,
@@ -272,20 +263,20 @@ export const verifyUser: RequestHandler = async (
       },
     });
     return;
-  } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      message: error.message || "Internal Server Error",
-    });
-    return;
+  } catch (error) {
+    next(error);
   }
 };
 
 // User Logout Controller (for students and teachers)
-export const userLogout: RequestHandler = async (req: Request, res: Response) => {
+export const userLogout: RequestHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const role = (req as any).role;
-    
+
     // Clear appropriate cookie based on role
     if (role === "student") {
       res.clearCookie("studentAccessToken", {
@@ -302,22 +293,14 @@ export const userLogout: RequestHandler = async (req: Request, res: Response) =>
         path: "/",
       });
     } else {
-      res.status(400).json({
-        success: false,
-        message: "Invalid user role",
-      });
-      return;
+      throw new CustomError("Role not supported", 400);
     }
 
     res.status(200).json({
       success: true,
       message: `${role} logged out successfully`,
     });
-  } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      message: error.message || "Internal server error",
-    });
-    return;
+  } catch (error) {
+    next(error);
   }
 };

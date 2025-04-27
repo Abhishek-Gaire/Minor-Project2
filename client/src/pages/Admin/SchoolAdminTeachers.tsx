@@ -1,21 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button.tsx";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card.tsx";
+
 import { Input } from "@/components/ui/input.tsx";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table.tsx";
+
 import {
   Dialog,
   DialogContent,
@@ -29,161 +16,20 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { teacherSchema } from "@/constants/types";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "react-toastify";
 
-// Status and employment type mappings for UI display and schema compatibility
-const statusMap = {
-  Active: "ACTIVE",
-  "On Leave": "ONLEAVE",
-  Inactive: "INACTIVE",
-  Terminated: "TERMINATED",
-  // Reverse mapping
-  ACTIVE: "Active",
-  ONLEAVE: "On Leave",
-  INACTIVE: "Inactive",
-  TERMINATED: "Terminated",
-};
+import TeacherHeader from "@/components/Admin/Teachers/TeacherHEader";
+import TeacherDetailsCard from "@/components/Admin/Teachers/TeacherDetailsCard";
+import {
+  allSubjects,
+  statusMap,
+  employmentTypeMap,
+} from "@/constants/constants";
 
-const employmentTypeMap = {
-  "Full-time": "FULLTIME",
-  "Part-time": "PARTTIME",
-  Contract: "CONTRACT",
-  Temporary: "TEMPORARY",
-  // Reverse mapping
-  FULLTIME: "Full-time",
-  PARTTIME: "Part-time",
-  CONTRACT: "Contract",
-  TEMPORARY: "Temporary",
-};
-
-const initialTeachers = [
-  {
-    name: "Sarah Johnson",
-    id: "T-1001",
-    subjects: ["Algebra", "Calculus", "Statistics"],
-    email: "sjohnson@school.edu",
-    phone: "123-456-7890",
-    classes: 5,
-    status: "ACTIVE",
-    employmentType: "FULLTIME",
-    password: "password123", // In a real app, we would never store plain text passwords
-  },
-  {
-    name: "Michael Chen",
-    id: "T-1002",
-    subjects: ["Physics", "Chemistry"],
-    email: "mchen@school.edu",
-    phone: "123-456-7891",
-    classes: 4,
-    status: "ACTIVE",
-    employmentType: "FULLTIME",
-    password: "password123",
-  },
-  {
-    name: "David Wilson",
-    id: "T-1003",
-    subjects: ["World History", "American History"],
-    email: "dwilson@school.edu",
-    phone: "123-456-7892",
-    classes: 3,
-    status: "ACTIVE",
-    employmentType: "FULLTIME",
-    password: "password123",
-  },
-  {
-    name: "Elena Rodriguez",
-    id: "T-1004",
-    subjects: ["Spanish", "French", "ESL"],
-    email: "erodriguez@school.edu",
-    phone: "123-456-7893",
-    classes: 6,
-    status: "ONLEAVE",
-    employmentType: "FULLTIME",
-    password: "password123",
-  },
-  {
-    name: "James Taylor",
-    id: "T-1005",
-    subjects: ["Physical Education", "Health"],
-    email: "jtaylor@school.edu",
-    phone: "123-456-7894",
-    classes: 8,
-    status: "ACTIVE",
-    employmentType: "PARTTIME",
-    password: "password123",
-  },
-  {
-    name: "Lisa Wong",
-    id: "T-1006",
-    subjects: ["Art", "Design"],
-    email: "lwong@school.edu",
-    phone: "123-456-7895",
-    classes: 4,
-    status: "ACTIVE",
-    employmentType: "PARTTIME",
-    password: "password123",
-  },
-  {
-    name: "Robert Smith",
-    id: "T-1007",
-    subjects: ["Music Theory", "Band"],
-    email: "rsmith@school.edu",
-    phone: "123-456-7896",
-    classes: 5,
-    status: "ACTIVE",
-    employmentType: "FULLTIME",
-    password: "password123",
-  },
-  {
-    name: "Emily Davis",
-    id: "T-1008",
-    subjects: ["Biology", "Environmental Science"],
-    email: "edavis@school.edu",
-    phone: "123-456-7897",
-    classes: 6,
-    status: "ACTIVE",
-    employmentType: "FULLTIME",
-    password: "password123",
-  },
-];
-
-// List of all available subjects
-const allSubjects = [
-  "Algebra",
-  "Calculus",
-  "Statistics",
-  "Geometry",
-  "Physics",
-  "Chemistry",
-  "Biology",
-  "Environmental Science",
-  "World History",
-  "American History",
-  "Geography",
-  "Civics",
-  "English Literature",
-  "Creative Writing",
-  "Grammar",
-  "Spanish",
-  "French",
-  "German",
-  "Japanese",
-  "ESL",
-  "Physical Education",
-  "Health",
-  "Art",
-  "Design",
-  "Music Theory",
-  "Band",
-  "Orchestra",
-  "Drama",
-  "Computer Science",
-  "Economics",
-  "Psychology",
-  "Sociology",
-];
+const BACKEND_URI = import.meta.env.VITE_BACKEND_URI!;
 
 const TeachersManagementPage = () => {
-  const [teachers, setTeachers] = useState(initialTeachers);
+  const [teachers, setTeachers] = useState([]);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -194,6 +40,22 @@ const TeachersManagementPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [showAdvancedFields, setShowAdvancedFields] = useState(false);
   const itemsPerPage = 5;
+
+  useEffect(() => {
+    const fetchTeachers = async () => {
+      const response = await fetch(`${BACKEND_URI}/api/v1/admin/teacher`, {
+        method: "GET",
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        toast.error("Error While Fetching the Teachers");
+      }
+      const resData = await response.json();
+      setTeachers(resData.data);
+    };
+    fetchTeachers();
+  }, []);
 
   // Add form using React Hook Form
   const {
@@ -211,6 +73,7 @@ const TeachersManagementPage = () => {
       phone: "",
       subjects: [],
       status: "ACTIVE",
+      grade: "",
       employmentType: "FULLTIME",
       classes: 0,
       address: "",
@@ -294,7 +157,7 @@ const TeachersManagementPage = () => {
     if (currentSubjects.includes(subject)) {
       setEditValue(
         "subjects",
-        currentSubjects.filter((s) => s !== subject)
+        currentSubjects.filter((s: string) => s !== subject)
       );
     } else {
       setEditValue("subjects", [...currentSubjects, subject]);
@@ -351,190 +214,30 @@ const TeachersManagementPage = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold tracking-tight">
-          Teachers Management
-        </h1>
-        <Button onClick={() => setIsAddDialogOpen(true)}>
-          + Add New Teacher
-        </Button>
-      </div>
+      <TeacherHeader
+        setIsAddDialogOpen={setIsAddDialogOpen}
+        totalTeachersCount={totalTeachersCount}
+        fullTimeCount={fullTimeCount}
+        partTimeCount={partTimeCount}
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        subjectFilter={subjectFilter}
+        setSubjectFilter={setSubjectFilter}
+        allSubjects={allSubjects}
+        statusFilter={statusFilter}
+        setStatusFilter={setStatusFilter}
+      />
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">
-              Total Teachers
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{totalTeachersCount}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Full-time</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{fullTimeCount}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Part-time</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{partTimeCount}</p>
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="flex gap-4 items-center flex-wrap">
-        <Input
-          placeholder="Search teachers..."
-          className="max-w-sm"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-        <select
-          className="p-2 border rounded-md"
-          value={subjectFilter}
-          onChange={(e) => setSubjectFilter(e.target.value)}
-        >
-          <option>All Subjects</option>
-          {allSubjects.map((subject) => (
-            <option key={subject}>{subject}</option>
-          ))}
-        </select>
-        <select
-          className="p-2 border rounded-md"
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-        >
-          <option>All Statuses</option>
-          <option>Active</option>
-          <option>On Leave</option>
-          <option>Inactive</option>
-          <option>Terminated</option>
-        </select>
-      </div>
-
-      <Card>
-        <CardContent className="pt-6">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>ID</TableHead>
-                <TableHead>Subjects</TableHead>
-                <TableHead>Contact</TableHead>
-                <TableHead>Classes</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {currentTeachers.map((teacher) => (
-                <TableRow key={teacher.id}>
-                  <TableCell className="font-medium">{teacher.name}</TableCell>
-                  <TableCell>{teacher.id}</TableCell>
-                  <TableCell>
-                    <div className="flex flex-wrap gap-1">
-                      {teacher.subjects.slice(0, 2).map((subject) => (
-                        <span
-                          key={subject}
-                          className="px-2 py-1 bg-gray-100 rounded-full text-xs"
-                        >
-                          {subject}
-                        </span>
-                      ))}
-                      {teacher.subjects.length > 2 && (
-                        <span className="px-2 py-1 bg-gray-100 rounded-full text-xs">
-                          +{teacher.subjects.length - 2}
-                        </span>
-                      )}
-                    </div>
-                  </TableCell>
-                  <TableCell>{teacher.email}</TableCell>
-                  <TableCell>{teacher.classes}</TableCell>
-                  <TableCell>
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs ${
-                        teacher.status === "ACTIVE"
-                          ? "bg-green-100 text-green-800"
-                          : teacher.status === "ONLEAVE"
-                          ? "bg-yellow-100 text-yellow-800"
-                          : teacher.status === "INACTIVE"
-                          ? "bg-gray-100 text-gray-800"
-                          : "bg-red-100 text-red-800"
-                      }`}
-                    >
-                      {statusMap[teacher.status] || teacher.status}
-                    </span>
-                  </TableCell>
-                  <TableCell className="space-x-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        setCurrentTeacher(teacher);
-                        setIsViewDialogOpen(true);
-                      }}
-                    >
-                      View
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => openEditDialog(teacher)}
-                    >
-                      Edit
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-              {currentTeachers.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={7} className="text-center py-4">
-                    No teachers found matching your filters
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </CardContent>
-        <CardFooter className="flex justify-between">
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={currentPage === 1}
-            onClick={() => setCurrentPage(currentPage - 1)}
-          >
-            Previous
-          </Button>
-          <div className="flex items-center gap-2">
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-              <Button
-                key={page}
-                variant={currentPage === page ? "default" : "outline"}
-                size="sm"
-                className="h-8 w-8 p-0"
-                onClick={() => setCurrentPage(page)}
-              >
-                {page}
-              </Button>
-            ))}
-          </div>
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={currentPage === totalPages || totalPages === 0}
-            onClick={() => setCurrentPage(currentPage + 1)}
-          >
-            Next
-          </Button>
-        </CardFooter>
-      </Card>
+      <TeacherDetailsCard
+        currentTeachers={currentTeachers}
+        statusMap={statusMap}
+        currentPage={currentPage}
+        totalPages={totalPages}
+        setCurrentPage={setCurrentPage}
+        setIsViewDialogOpen={setIsViewDialogOpen}
+        setCurrentTeacher={setCurrentTeacher}
+        openEditDialog={openEditDialog}
+      />
 
       {/* Add Teacher Dialog */}
       <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
@@ -935,7 +638,11 @@ const TeachersManagementPage = () => {
                   <AlertDescription>
                     <ul className="list-disc pl-5">
                       {Object.values(editErrors).map((error, index) => (
-                        <li key={index}>{typeof error?.message === 'string' ? error.message : null}</li>
+                        <li key={index}>
+                          {typeof error?.message === "string"
+                            ? error.message
+                            : null}
+                        </li>
                       ))}
                     </ul>
                   </AlertDescription>
@@ -954,7 +661,9 @@ const TeachersManagementPage = () => {
                   />
                   {editErrors.name && (
                     <p className="text-red-500 text-xs mt-1">
-                      {typeof editErrors.name?.message === 'string' ? editErrors.name.message : null}
+                      {typeof editErrors.name?.message === "string"
+                        ? editErrors.name.message
+                        : null}
                     </p>
                   )}
                 </div>
@@ -970,7 +679,9 @@ const TeachersManagementPage = () => {
                   />
                   {editErrors.email && (
                     <p className="text-red-500 text-xs mt-1">
-                      {typeof editErrors.email?.message === 'string' ? editErrors.email.message : null}
+                      {typeof editErrors.email?.message === "string"
+                        ? editErrors.email.message
+                        : null}
                     </p>
                   )}
                 </div>
@@ -978,7 +689,7 @@ const TeachersManagementPage = () => {
                   <Label htmlFor="edit-phone" className="text-right">
                     Phone
                   </Label>
-                  <Input id="edit-phone" {...registerEdit("phone")} />  
+                  <Input id="edit-phone" {...registerEdit("phone")} />
                 </div>
                 <div>
                   <Label htmlFor="edit-classes" className="text-right">
@@ -1043,7 +754,9 @@ const TeachersManagementPage = () => {
                 </div>
                 {editErrors.subjects && (
                   <p className="text-red-500 text-xs mt-1">
-                    {typeof editErrors.subjects?.message === 'string' ? editErrors.subjects.message : null}
+                    {typeof editErrors.subjects?.message === "string"
+                      ? editErrors.subjects.message
+                      : null}
                   </p>
                 )}
               </div>

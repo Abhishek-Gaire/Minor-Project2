@@ -123,12 +123,20 @@ export const getAllTeachers = async (
   next: NextFunction
 ) => {
   try {
+    const admin = (req as any).admin;
+    if(!admin){
+      throw new CustomError("Not Authorized",401)
+    }
     const teachers = await prisma.teacher.findMany({
+      where:{
+        schoolId:admin.schoolId
+      },
       select: {
         id: true,
         name: true,
         email: true,
         subjects: true,
+        grade:true,
         phone: true,
         classes: true,
         status: true,

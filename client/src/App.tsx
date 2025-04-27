@@ -4,11 +4,15 @@ import { AuthProvider } from "./contexts/AuthProvider.tsx";
 import { AdminProvider } from "./contexts/AdminProvider.tsx"; // Import your AdminProvider
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { Toaster } from "@/components/ui/toaster.tsx";
+import { Toaster as Sonner } from "@/components/ui/sonner.tsx";
 
 export default function App() {
   return (
     <AuthProvider>
       <AdminProvider>
+        <Toaster />
+        <Sonner />
         {/* Global Toast Container */}
         <ToastContainer
           position="top-right"

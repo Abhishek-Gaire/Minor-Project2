@@ -160,6 +160,7 @@ export const teacherSchema = z.object({
   password: z.string().min(8, "Password must be at least 8 characters"),
   subjects: z.array(z.string()).min(1, "At least one subject is required"),
   phone: z.string().optional(),
+  grade:z.string(),
   classes: z.number().int().min(0).optional(),
   status: z.enum(["ACTIVE", "INACTIVE", "ONLEAVE", "TERMINATED"]).optional(),
   employmentType: z

@@ -13,7 +13,6 @@ interface InputSectionProps {
     React.SetStateAction<{
       status: string;
       grade: string;
-      fees: string;
     }>
   >;
   handleSearch: (term: string) => void;

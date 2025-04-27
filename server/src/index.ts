@@ -7,10 +7,9 @@ import { errorHandler } from "./middleware/errorHandler";
 
 import authRoutes from "./routes/authRoutes";
 import schoolRoutes from "./routes/institutionalRoutes";
-import messageRoutes from "./routes/messageRoutes";
-import classChatRouter from "./routes/classChatRoutes";
 import adminRouter from "./routes/adminRoutes";
 import assignmentRoutes from "./routes/assignmentRoutes";
+
 import corsConfig, { socketCorsOptions } from "./config/corsConfig";
 import getLocalIP from "./exceptions/getLocalIP";
 
@@ -20,7 +19,7 @@ import {
   isUserInConversation,
   userJoin,
   userLeave,
-  userJoinClassChat
+  userJoinClassChat,
 } from "./utils/users";
 
 import * as classChatService from "./services/classChatServices";
@@ -49,8 +48,6 @@ app.use(cookieParser());
 // Routes
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/schools", schoolRoutes);
-app.use("/api/v1/messages", messageRoutes);
-app.use("/api/v1/classMessages", classChatRouter);
 app.use("/api/v1/assignments", assignmentRoutes);
 app.use("/api/v1/admin", adminRouter);
 
@@ -96,7 +93,11 @@ io.on("connection", (socket: Socket) => {
     }
     try {
       // Save message to database
-      const newMessage = await classChatService.addClassMessage(user.username, msg, className);
+      const newMessage = await classChatService.addClassMessage(
+        user.username,
+        msg,
+        className
+      );
 
       // Broadcast message to room
       io.to(className).emit("sendClassMessage", newMessage);
@@ -120,6 +121,7 @@ io.on("connection", (socket: Socket) => {
       socket.emit("error", { message: "Failed to retrieve class history" });
     }
   });
+  
   // Listen for Private Message
   socket.on(
     "sendPrivateMessage",
@@ -182,8 +184,18 @@ io.on("connection", (socket: Socket) => {
 
   // Check if a user is online
   socket.on("checkOnlineStatus", ({ username, conversationId }) => {
-    const isOnline = isUserInConversation(username, conversationId);
-    socket.emit("onlineStatus", { username, isOnline });
+    if (!username || !conversationId) {
+      socket.emit("error", { message: "Missing Username and conversationid" });
+    }
+    try {
+      const isOnline = isUserInConversation(username, conversationId);
+      socket.emit("onlineStatus", { username, isOnline });
+    } catch (error) {
+      console.error("Error retrieving private message history:", error);
+      socket.emit("error", {
+        message: `Failed to check the online status of ${username}`,
+      });
+    }
   });
 
   // Get private message history between two users

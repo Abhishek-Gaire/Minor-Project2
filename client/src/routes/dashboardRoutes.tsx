@@ -14,7 +14,7 @@ import AssignmentDetails from "@/pages/Dashboard/AssignmentDetails";
 
 const dashboardRoutes = [
   { index: true, element: <Dashboard /> },
-  { path: "students", element: <Students /> },
+  // { path: "students", element: <Students /> },
   { path: "courses", element: <Courses /> },
   { path: "assignments", children: [
     { index: true, element: <Assignments /> },
@@ -26,11 +26,10 @@ const dashboardRoutes = [
   { path: "messages", element: <MessagesPage /> },
   { path: "materials", element: <StudyMaterialsPage /> },
   { path: "calendar", element: <CalendarPage /> },
-  { path: "resources", element: <MessagesPage /> },
-  { path: "attendance", element: <TeacherAttendancePage /> },
+  { path: "resources", element: <StudyMaterialsPage /> },
+  // { path: "attendance", element: <TeacherAttendancePage /> },
   { path: "live-classes", element: <OnlineClassPage /> },
   { path: "profile", element: <ProfilePage /> },
-  { path: "settings", element: <ProfilePage /> },
 ];
 
 export default dashboardRoutes;

@@ -77,6 +77,7 @@ export const teacherSchema = z.object({
   password: z.string().min(8, "Password must be at least 8 characters"),
   subjects: z.array(z.string()).min(1, "At least one subject is required"),
   schoolId: z.string(),
+  grade:z.string(),
   phone: z.string().optional(),
   classes: z.number().int().min(0).optional(),
   status: z.enum(["ACTIVE", "INACTIVE", "ONLEAVE", "TERMINATED"]).optional(),
@@ -117,15 +118,4 @@ export const teacherPasswordSchema = z
     path: ["confirmPassword"],
   });
 
-// Teacher login schema
-export const teacherLoginSchema = z.object({
-  email: z.string().email("Invalid email format"),
-  password: z.string(),
-});
 
-export const assignmentSchema = {
-  id: z.string().min(1, "User ID is required"),
-  role: z.enum(["Student", "Teacher"]),
-  title: z.string().min(3, "Title must be at least 3 characters"),
-  fileUrl: z.string().url("Invalid file URL"),
-};

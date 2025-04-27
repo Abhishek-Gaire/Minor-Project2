@@ -7,7 +7,7 @@ import {
   verifyUser,
   userLogout
 } from "../controllers/authControllers";
-import { authenticate } from "../middleware/auth";
+import { authenticate } from "../middleware/dashboardAuth";
 
 const authRouter = express.Router();
 

@@ -1,4 +1,3 @@
-// src/controllers/student.controller.ts
 import { Request, Response, NextFunction } from "express";
 import { PrismaClient } from "@prisma/client";
 import { CustomError } from "../../exceptions/customError";
@@ -6,6 +5,7 @@ import bcrypt from "bcrypt";
 
 import { studentSchema } from "../../types/schema";
 import { generatePassword } from "../../utils/password";
+
 const prisma = new PrismaClient();
 
 // 1. CREATE - Add a new student
@@ -277,12 +277,6 @@ export const updateStudent = async (
       fullName = [firstName, middleName, lastName].filter(Boolean).join(" ");
     }
 
-    // Hash password if provided
-    let hashedPassword = undefined;
-    if (validatedData.password) {
-      hashedPassword = await bcrypt.hash(validatedData.password, 10);
-    }
-
     // Update student and details in a transaction
     await prisma.$transaction(async (tx) => {
       // Update student record
@@ -291,7 +285,6 @@ export const updateStudent = async (
         data: {
           name: fullName,
           email: validatedData.email,
-          password: hashedPassword,
           grade: validatedData.grade as any,
           rollNumber: validatedData.rollNumber,
           schoolId: validatedData.schoolId,

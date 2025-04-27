@@ -7,6 +7,7 @@ import path from "path";
 
 import supabase from "../config/supabase";
 import prisma from "../config/dbConfig";
+
 // Configure multer for temporary file storage in memory
 const storage = multer.memoryStorage();
 const upload = multer({ 
@@ -299,11 +300,11 @@ export const deleteAssignment: RequestHandler = async (
       success: true,
       message: "Assignment deleted successfully"
     });
+    return;
   } catch (error) {
     next(error);
   }
 };
-
 
 export const submitAssignment: RequestHandler = async (
   req: Request,

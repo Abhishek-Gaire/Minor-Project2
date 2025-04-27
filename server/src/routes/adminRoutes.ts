@@ -27,7 +27,7 @@ import {
   updateStatus,
 } from "../controllers/adminControllers/teacherController";
 
-import { verifyAdmin } from "../middleware/authMiddleware";
+import { verifyAdmin } from "../middleware/adminAuth";
 
 const adminRouter: Router = express.Router();
 
@@ -65,4 +65,5 @@ adminRouter.patch("/teacher/:id/status", updateStatus);
 adminRouter.post("/change-password", adminChangePassword);
 adminRouter.get("/verify", adminVerify);
 adminRouter.post("/logout", adminLogout);
+
 export default adminRouter;

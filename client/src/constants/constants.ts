@@ -29,49 +29,6 @@ import {
 } from "lucide-react";
 import { NavItem } from "./types";
 
-export const slides = [
-  {
-    id: 1,
-    image: "https://images.unsplash.com/photo-1607237138185-eedd9c632b0b",
-    name: "GCES",
-    description:
-      "A world-renowned institution with centuries of academic excellence and groundbreaking research.",
-    location: "Cambridge, United Kingdom",
-  },
-  {
-    id: 2,
-    image: "https://images.unsplash.com/photo-1562774053-701939374585",
-    name: "Stanford University",
-    description:
-      "Leading innovation and entrepreneurship in the heart of Silicon Valley.",
-    location: "Stanford, California",
-  },
-  {
-    id: 3,
-    image: "https://images.unsplash.com/photo-1700989101224-c4d286d8279a",
-    name: "University of Tokyo",
-    description:
-      "Japan's premier educational institution, blending tradition with cutting-edge research.",
-    location: "Tokyo, Japan",
-  },
-  {
-    id: 4,
-    image: "https://images.unsplash.com/photo-1592280771190-3e2e4d571952",
-    name: "ETH Zürich",
-    description:
-      "Excellence in science, technology, and innovation in the heart of Europe.",
-    location: "Zürich, Switzerland",
-  },
-  {
-    id: 5,
-    image: "https://images.unsplash.com/photo-1574958269340-fa927503f3dd",
-    name: "University of Cape Town",
-    description:
-      "Africa's leading research university, inspiring minds and transforming lives.",
-    location: "Cape Town, South Africa",
-  },
-];
-
 export const features = [
   {
     icon: BookOpen,
@@ -158,7 +115,6 @@ export const teacherNavigation: NavItem[] = [
     to: "/dashboard/teacher",
     icon: LayoutDashboard,
   },
-  // { name: "My Courses", to: "/dashboard/teacher/courses", icon: BookOpen },
   {
     name: "Gradebook",
     to: "/dashboard/teacher/gradebook",
@@ -169,11 +125,11 @@ export const teacherNavigation: NavItem[] = [
     to: "/dashboard/teacher/assignments",
     icon: ClipboardList,
   },
-  {
-    name: "Attendance",
-    to: "/dashboard/teacher/attendance",
-    icon: CalendarCheck,
-  },
+  // {
+  //   name: "Attendance",
+  //   to: "/dashboard/teacher/attendance",
+  //   icon: CalendarCheck,
+  // },
   { name: "Class Chat", to: "/dashboard/teacher/chat", icon: MessageCircle },
   { name: "Live Classes", to: "/dashboard/teacher/live-classes", icon: Video },
   { name: "Calendar", to: "/dashboard/teacher/calendar", icon: Calendar },
@@ -187,7 +143,6 @@ export const studentNavigation: NavItem[] = [
     to: "/dashboard/student",
     icon: LayoutDashboard,
   },
-  // { name: "My Courses", to: "/dashboard/student/courses", icon: BookOpen },
   { name: "Grades", to: "/dashboard/student/grades", icon: GraduationCap },
   {
     name: "Assignments",
@@ -317,4 +272,64 @@ export const adminSidebarItems: NavItem[] = [
     to: `/admin/settings`,
     icon: Settings,
   },
+];
+
+// Status and employment type mappings for UI display and schema compatibility
+export const statusMap = {
+  Active: "ACTIVE",
+  "On Leave": "ONLEAVE",
+  Inactive: "INACTIVE",
+  Terminated: "TERMINATED",
+  // Reverse mapping
+  ACTIVE: "Active",
+  ONLEAVE: "On Leave",
+  INACTIVE: "Inactive",
+  TERMINATED: "Terminated",
+};
+
+export const employmentTypeMap = {
+  "Full-time": "FULLTIME",
+  "Part-time": "PARTTIME",
+  Contract: "CONTRACT",
+  Temporary: "TEMPORARY",
+  // Reverse mapping
+  FULLTIME: "Full-time",
+  PARTTIME: "Part-time",
+  CONTRACT: "Contract",
+  TEMPORARY: "Temporary",
+};
+// List of all available subjects
+export const allSubjects = [
+  "Algebra",
+  "Calculus",
+  "Statistics",
+  "Geometry",
+  "Physics",
+  "Chemistry",
+  "Biology",
+  "Environmental Science",
+  "World History",
+  "American History",
+  "Geography",
+  "Civics",
+  "English Literature",
+  "Creative Writing",
+  "Grammar",
+  "Spanish",
+  "French",
+  "German",
+  "Japanese",
+  "ESL",
+  "Physical Education",
+  "Health",
+  "Art",
+  "Design",
+  "Music Theory",
+  "Band",
+  "Orchestra",
+  "Drama",
+  "Computer Science",
+  "Economics",
+  "Psychology",
+  "Sociology",
 ];
