@@ -1,28 +1,18 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
-  Calendar as CalendarIcon,
-  Clock,
   ArrowLeft,
   ArrowRight,
   Plus,
-  Info,
 } from "lucide-react";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import {
   Select,
   SelectContent,

@@ -120,7 +120,7 @@ const AssignmentDetails: React.FC = () => {
       setIsLoading(true);
       await assignmentService.deleteAssignment(assignment.id);
       toast.success("Assignment deleted successfully");
-      navigate("/assignments");
+      navigate("/dashboard/teacher/assignments");
     } catch (err) {
       toast.error("Failed to delete assignment");
       console.error("Error deleting assignment:", err);
@@ -139,7 +139,6 @@ const AssignmentDetails: React.FC = () => {
     if (!assignment || !selectedSubmission) return;
     
     try {
-      setIsLoading(true);
       await assignmentService.gradeSubmission(
         assignment.id,
         selectedSubmission.studentId,
@@ -157,8 +156,6 @@ const AssignmentDetails: React.FC = () => {
     } catch (err) {
       toast.error("Failed to grade submission");
       console.error("Error grading submission:", err);
-    } finally {
-      setIsLoading(false);
     }
   };
 

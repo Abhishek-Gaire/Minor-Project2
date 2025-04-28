@@ -3,7 +3,6 @@ import { ArrowUpDown, Eye, MessageSquare } from "lucide-react";
 const GradesTable = ({
   isTeacher,
   filteredGrades,
-  isDarkMode,
   setFeedbackModal,
   getGradeColor,
   getStatusColor,
@@ -29,7 +28,7 @@ const GradesTable = ({
               className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider"
             >
               <div className="flex items-center">
-                Course
+                Subject
                 <ArrowUpDown size={14} className="ml-1" />
               </div>
             </th>
@@ -77,9 +76,7 @@ const GradesTable = ({
                     <div className="flex items-center">
                       <div className="flex-shrink-0 h-10 w-10 rounded-full bg-primary-foreground bg-opacity-10 flex items-center justify-center">
                         <span
-                          className={`${
-                            isDarkMode ? "text-blue-300" : "text-blue-800"
-                          } font-medium`}
+                          className={`text-blue-800 font-medium`}
                         >
                           {entry.studentName
                             .split(" ")
@@ -137,22 +134,14 @@ const GradesTable = ({
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-center">
                   <button
-                    className={`${
-                      isDarkMode
-                        ? "text-blue-400 hover:text-blue-300"
-                        : "text-blue-600 hover:text-blue-800"
-                    } mr-3`}
+                    className={`text-blue-600 hover:text-blue-800 mr-3`}
                     onClick={() => setFeedbackModal(entry)}
                   >
                     <Eye size={18} />
                   </button>
                   {isTeacher && (
                     <button
-                      className={`${
-                        isDarkMode
-                          ? "text-blue-400 hover:text-blue-300"
-                          : "text-blue-600 hover:text-blue-800"
-                      }`}
+                      className={`text-blue-600 hover:text-blue-800`}
                     >
                       <MessageSquare size={18} />
                     </button>

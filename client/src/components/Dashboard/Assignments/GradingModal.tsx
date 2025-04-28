@@ -1,4 +1,3 @@
-// src/components/Dashboard/Assignments/GradingModal.tsx
 import React, { useState } from "react";
 import { X } from "lucide-react";
 
@@ -15,7 +14,7 @@ const GradingModal: React.FC<GradingModalProps> = ({
   onSubmit,
   assignmentPoints 
 }) => {
-  const [grade, setGrade] = useState<number>(0);
+  const [grade, setGrade] = useState<number>(null);
   const [feedback, setFeedback] = useState<string>("");
   
   const handleSubmit = (e: React.FormEvent) => {

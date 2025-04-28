@@ -99,10 +99,10 @@ const Assignments: React.FC = () => {
 
     try {
       setIsLoading(true);
-      const teacherId = user.id as unknown as number;
+      const teacherName = user.name as unknown as string;
       const newAssignment = await assignmentService.createAssignment(
         newAssignmentForm,
-        teacherId
+        teacherName
       );
 
       // Add to local state to avoid refetching

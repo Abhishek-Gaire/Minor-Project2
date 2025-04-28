@@ -12,7 +12,7 @@ const storage = multer.memoryStorage();
 const upload = multer({
   storage,
   limits: {
-    fileSize: 10 * 1024 * 1024, // 10MB limit
+    fileSize: 30 * 1024 * 1024, // 30MB limit
   },
 });
 
@@ -126,76 +126,6 @@ export const getMaterials: RequestHandler = async (
   }
 };
 
-export const downloadMaterial: RequestHandler = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const { id } = req.params;
-    const user = (req as any).user;
-
-    if (!user) {
-      throw new CustomError("Not Authorized", 401);
-    }
-
-    // Fetch the material from database
-    const material = await prisma.material.findUnique({
-      where: {
-        id: Number(id),
-      },
-    });
-
-    if (!material) {
-      throw new CustomError("Material not found", 404);
-    }
-
-    // Return the publicURL for direct download
-    res.status(200).json({
-      message: "Download URL generated successfully",
-      publicURL: material.fileUrl,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
-export const viewMaterial: RequestHandler = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const { id } = req.params;
-    const user = (req as any).user;
-
-    if (!user) {
-      throw new CustomError("Not Authorized", 401);
-    }
-
-    // Fetch the material from database
-    const material = await prisma.material.findUnique({
-      where: {
-        id: Number(id),
-      },
-    });
-
-    if (!material) {
-      throw new CustomError("Material not found", 404);
-    }
-
-    // For viewing, we can return the same public URL
-    // The frontend can decide how to display it based on file type
-    res.status(200).json({
-      message: "View URL generated successfully",
-      publicURL: material.fileUrl,
-      fileType: material.fileType,
-      fileName: material.fileName,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
 
 export const deleteMaterial: RequestHandler = async (
   req: Request,

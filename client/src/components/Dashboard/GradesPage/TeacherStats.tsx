@@ -9,13 +9,11 @@ interface Stats {
 
 interface TeacherStatsProps {
   stats: Stats;
-  isDarkMode: boolean;
   getGradeColor: (grade: number) => void;
 }
 
 const TeacherStats = ({
   stats,
-  isDarkMode,
   getGradeColor,
 }: TeacherStatsProps) => {
   return (
@@ -39,9 +37,7 @@ const TeacherStats = ({
       <div className="bg-card rounded-lg shadow p-4 border border-border">
         <p className="text-muted-foreground text-sm">Excellent Performance</p>
         <p
-          className={`text-2xl font-bold ${
-            isDarkMode ? "text-green-400" : "text-green-600"
-          }`}
+          className={`text-2xl font-bold text-green-600`}
         >
           {stats.excellent}{" "}
           <span className="text-sm">({stats.excellentPercent}%)</span>
@@ -50,9 +46,7 @@ const TeacherStats = ({
       <div className="bg-card rounded-lg shadow p-4 border border-border">
         <p className="text-muted-foreground text-sm">Need Support</p>
         <p
-          className={`text-2xl font-bold ${
-            isDarkMode ? "text-red-400" : "text-red-600"
-          }`}
+          className={`text-2xl font-bold text-red-600`}
         >
           {stats.failed}{" "}
           <span className="text-sm">({stats.failedPercent}%)</span>

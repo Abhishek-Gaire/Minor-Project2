@@ -63,6 +63,8 @@ model Submission {
   submissionFile  String?   // optional
   submissionUrl   String?   // optional
   assignmentId    Int       // foreign key to Assignment
+  gradedAt        DateTime  @default(now())
+  feedback        String?   // optional
 
   // Relations
   assignment      Assignment @relation(fields: [assignmentId], references: [id])
@@ -85,11 +87,11 @@ model Assignment {
   pointsPossible Int
   status         AssignmentStatus
   updatedAt     DateTime @default(now())
-  teacherId      String
+  teacherName    String
   totalStudents  Int?
 
   // Relations
-  teacher        Teacher          @relation(fields: [teacherId], references: [id])
+  teacher        Teacher          @relation(fields: [teacherName], references: [name])
   submissions    Submission[]     // assuming a Submission model exists
 }
 

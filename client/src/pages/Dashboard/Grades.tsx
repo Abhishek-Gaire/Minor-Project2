@@ -1,5 +1,4 @@
-// pages/Grades.tsx
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 
 import { useAuth } from "@/contexts/useAuth";
 import Header from "@/components/Dashboard/GradesPage/Header";
@@ -8,6 +7,7 @@ import Filters from "@/components/Dashboard/GradesPage/Filters";
 import GradesTable from "@/components/Dashboard/GradesPage/GradesTable";
 import Pagination from "@/components/Dashboard/GradesPage/Pagination";
 import FeedbackModal from "@/components/Dashboard/GradesPage/FeedbackModal";
+import axios from "axios";
 
 interface GradeEntry {
   id: number;
@@ -20,7 +20,7 @@ interface GradeEntry {
   maxGrade: number;
   submissionDate: string;
   gradedBy: string;
-  feedback: string;
+  feedback?: string;
   status: "Excellent" | "Good" | "Average" | "Needs Improvement" | "Failed";
 }
 
@@ -161,10 +161,7 @@ const studentGradesData: GradeEntry[] = [
 const Grades: React.FC = () => {
   const { user } = useAuth();
   const isTeacher = user.role === "teacher";
-  const [isDarkMode] = useState(
-    document.documentElement.classList.contains("dark")
-  );
-
+  const [grades, setGrades] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCourse, setSelectedCourse] = useState<string | null>(null);
   const [selectedAssignment, setSelectedAssignment] = useState<string | null>(
@@ -181,6 +178,18 @@ const Grades: React.FC = () => {
     [allGrades]
   );
 
+  useEffect(() => {
+    const fetchGrades = async () => {
+      try {
+        const response = await axios.get(`http://localhost:3000/api/v1/assignments/grades/${user.id}`);
+        setGrades(response.data);
+      } catch (error) {
+        console.error('Error fetching grades:', error);
+      }
+    };
+    fetchGrades();
+  }, []);
+  console.log(grades);
   // Get a list of assignments based on selected course
   const assignments = useMemo(() => {
     const filtered = allGrades.filter(
@@ -228,53 +237,28 @@ const Grades: React.FC = () => {
   }, [filteredGrades, isTeacher, selectedCourse, selectedAssignment]);
 
   const getStatusColor = (status: GradeEntry["status"]) => {
-    if (isDarkMode) {
-      switch (status) {
-        case "Excellent":
-          return "bg-green-900 text-green-100";
-        case "Good":
-          return "bg-blue-900 text-blue-100";
-        case "Average":
-          return "bg-yellow-900 text-yellow-100";
-        case "Needs Improvement":
-          return "bg-orange-900 text-orange-100";
-        case "Failed":
-          return "bg-red-900 text-red-100";
-        default:
-          return "bg-gray-800 text-gray-100";
-      }
-    } else {
-      switch (status) {
-        case "Excellent":
-          return "bg-green-100 text-green-800";
-        case "Good":
-          return "bg-blue-100 text-blue-800";
-        case "Average":
-          return "bg-yellow-100 text-yellow-800";
-        case "Needs Improvement":
-          return "bg-orange-100 text-orange-800";
-        case "Failed":
-          return "bg-red-100 text-red-800";
-        default:
-          return "bg-gray-100 text-gray-800";
-      }
+    switch (status) {
+      case "Excellent":
+        return "bg-green-100 text-green-800";
+      case "Good":
+        return "bg-blue-100 text-blue-800";
+      case "Average":
+        return "bg-yellow-100 text-yellow-800";
+      case "Needs Improvement":
+        return "bg-orange-100 text-orange-800";
+      case "Failed":
+        return "bg-red-100 text-red-800";
+      default:
+        return "bg-gray-100 text-gray-800";
     }
   };
 
   const getGradeColor = (grade: number) => {
-    if (isDarkMode) {
-      if (grade >= 90) return "text-green-400";
-      if (grade >= 80) return "text-blue-400";
-      if (grade >= 70) return "text-yellow-400";
-      if (grade >= 60) return "text-orange-400";
-      return "text-red-400";
-    } else {
-      if (grade >= 90) return "text-green-600";
-      if (grade >= 80) return "text-blue-600";
-      if (grade >= 70) return "text-yellow-600";
-      if (grade >= 60) return "text-orange-600";
-      return "text-red-600";
-    }
+    if (grade >= 90) return "text-green-600";
+    if (grade >= 80) return "text-blue-600";
+    if (grade >= 70) return "text-yellow-600";
+    if (grade >= 60) return "text-orange-600";
+    return "text-red-600";
   };
 
   // Calculate the user's average grade (for student view)
@@ -295,11 +279,7 @@ const Grades: React.FC = () => {
         <Header isTeacher={isTeacher} averageGrade={averageGrade} />
 
         {isTeacher && stats && (
-          <TeacherStats
-            stats={stats}
-            isDarkMode={isDarkMode}
-            getGradeColor={getGradeColor}
-          />
+          <TeacherStats stats={stats} getGradeColor={getGradeColor} />
         )}
 
         <div className="bg-card rounded-lg shadow mb-6 border border-border">
@@ -316,11 +296,10 @@ const Grades: React.FC = () => {
           />
         </div>
 
-        <div className="bg-[hsl(var(--card))] rounded-lg shadow overflow-hidden border border-[hsl(var(--border))]">
+        <div className="bg-card rounded-lg shadow overflow-hidden border border-border mb-6">
           <GradesTable
             isTeacher={isTeacher}
             filteredGrades={filteredGrades}
-            isDarkMode={isDarkMode}
             setFeedbackModal={setFeedbackModal}
             getGradeColor={getGradeColor}
             getStatusColor={getStatusColor}

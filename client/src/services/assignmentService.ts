@@ -71,11 +71,11 @@ export const assignmentService = {
   },
 
   // Create a new assignment (teachers only)
-  async createAssignment(assignmentData: CreateAssignmentForm, teacherId: number) {
+  async createAssignment(assignmentData: CreateAssignmentForm, teacherName: string) {
     try {
       const response = await axios.post(`${API_BASE_URL}/api/v1/assignments/create`, {
         ...assignmentData,
-        teacherId,
+        teacherName,
         status: 'Upcoming',
       }, {
         headers: {
@@ -154,7 +154,7 @@ export const assignmentService = {
   // Grade a submission (teachers only)
   async gradeSubmission(assignmentId: number, studentId: number, grade: number, feedback?: string) {
     try {
-      const response = await axios.post(`${API_BASE_URL}/assignments/${assignmentId}/grade`, {
+      const response = await axios.post(`${API_BASE_URL}/api/v1/assignments/grade/${assignmentId}`, {
         studentId,
         grade,
         feedback,

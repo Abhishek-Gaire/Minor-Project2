@@ -132,7 +132,7 @@ export const teacherNavigation: NavItem[] = [
   // },
   { name: "Class Chat", to: "/dashboard/teacher/chat", icon: MessageCircle },
   { name: "Live Classes", to: "/dashboard/teacher/live-classes", icon: Video },
-  { name: "Calendar", to: "/dashboard/teacher/calendar", icon: Calendar },
+  // { name: "Calendar", to: "/dashboard/teacher/calendar", icon: Calendar },
   { name: "Resources", to: "/dashboard/teacher/resources", icon: Folder },
   { name: "Profile", to: "/dashboard/teacher/profile", icon: User },
 ];
@@ -153,7 +153,7 @@ export const studentNavigation: NavItem[] = [
   { name: "Class Chat", to: "/dashboard/student/chat", icon: MessageCircle },
   { name: "Live Classes", to: "/dashboard/student/live-classes", icon: Video },
   { name: "Study Materials", to: "/dashboard/student/materials", icon: Folder },
-  { name: "Calendar", to: "/dashboard/student/calendar", icon: Calendar },
+  // { name: "Calendar", to: "/dashboard/student/calendar", icon: Calendar },
   { name: "Profile", to: "/dashboard/student/profile", icon: User },
 ];
 // Mock notifications

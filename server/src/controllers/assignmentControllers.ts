@@ -8,11 +8,11 @@ import uploadToSupabase from "../utils/supabaseFileUpload";
 
 // Configure multer for temporary file storage in memory
 const storage = multer.memoryStorage();
-const upload = multer({ 
+const upload = multer({
   storage,
   limits: {
     fileSize: 10 * 1024 * 1024, // 10MB limit
-  }
+  },
 });
 
 export const createAssignMent: RequestHandler = async (
@@ -33,7 +33,9 @@ export const createAssignMent: RequestHandler = async (
     } = req.body;
 
     // Verify if teacher exists
-    const teacher = await prisma.teacher.findUnique({ where: { id: teacherId } });
+    const teacher = await prisma.teacher.findUnique({
+      where: { id: teacherId },
+    });
     if (!teacher) {
       throw new CustomError("Teacher not found", 404);
     }
@@ -45,14 +47,14 @@ export const createAssignMent: RequestHandler = async (
         subject,
         grade,
         description,
-        dueDate:new Date(dueDate),
+        dueDate: new Date(dueDate),
         pointsPossible,
-        status,        
+        status,
         teacherId,
       },
     });
 
-    if(!assignment){
+    if (!assignment) {
       throw new CustomError("Assignment not created", 500);
     }
     res.status(201).json({
@@ -73,19 +75,21 @@ export const getAssignments: RequestHandler = async (
 ) => {
   try {
     const { status, searchTerm } = req.query;
-    
+
     // Build filter conditions
     const filters: any = {};
-    
+
     if (status) {
       filters.status = status;
     }
-    
+
     if (searchTerm) {
       filters.OR = [
-        { title: { contains: searchTerm as string, mode: 'insensitive' } },
-        { subject: { contains: searchTerm as string, mode: 'insensitive' } },
-        { description: { contains: searchTerm as string, mode: 'insensitive' } }
+        { title: { contains: searchTerm as string, mode: "insensitive" } },
+        { subject: { contains: searchTerm as string, mode: "insensitive" } },
+        {
+          description: { contains: searchTerm as string, mode: "insensitive" },
+        },
       ];
     }
     // Fetch assignments with filters
@@ -98,44 +102,43 @@ export const getAssignments: RequestHandler = async (
             studentName: true,
             submissionDate: true,
             grade: true,
-            submissionUrl: true
-          }
+            submissionUrl: true,
+          },
         },
         teacher: {
           select: {
             id: true,
-            name: true
-          }
-        }
-      }
+            name: true,
+          },
+        },
+      },
     });
-    
+
     // Format assignments to match expected API response
-    const formattedAssignments = assignments.map(assignment => {
+    const formattedAssignments = assignments.map((assignment) => {
       return {
         ...assignment,
         totalStudents: assignment.submissions.length,
-        submissions: assignment.submissions.map(sub => ({
+        submissions: assignment.submissions.map((sub) => ({
           studentId: sub.studentId,
           studentName: sub.studentName,
           submissionDate: sub.submissionDate,
           grade: sub.grade,
-          submissionUrl: sub.submissionUrl
-        }))
+          submissionUrl: sub.submissionUrl,
+        })),
       };
     });
-    
+
     res.status(200).json({
       success: true,
       message: "Assignments fetched successfully",
-      data: formattedAssignments
+      data: formattedAssignments,
     });
     return;
   } catch (error) {
     next(error);
   }
 };
-
 
 export const getAssignmentById: RequestHandler = async (
   req: Request,
@@ -144,7 +147,7 @@ export const getAssignmentById: RequestHandler = async (
 ) => {
   try {
     const { id } = req.params;
-    
+
     // Fetch assignment by ID
     const assignment = await prisma.assignment.findUnique({
       where: { id: Number(id) },
@@ -155,46 +158,45 @@ export const getAssignmentById: RequestHandler = async (
             studentName: true,
             submissionDate: true,
             grade: true,
-            submissionUrl: true
-          }
+            submissionUrl: true,
+          },
         },
         teacher: {
           select: {
             id: true,
-            name: true
-          }
-        }
-      }
+            name: true,
+          },
+        },
+      },
     });
-    
+
     if (!assignment) {
       throw new CustomError("Assignment not found", 404);
     }
-    
+
     // Format assignment to match expected API response
     const formattedAssignment = {
       ...assignment,
       totalStudents: assignment.submissions.length,
-      submissions: assignment.submissions.map(sub => ({
+      submissions: assignment.submissions.map((sub) => ({
         studentId: sub.studentId,
         studentName: sub.studentName,
         submissionDate: sub.submissionDate,
         grade: sub.grade,
-        submissionUrl: sub.submissionUrl
-      }))
+        submissionUrl: sub.submissionUrl,
+      })),
     };
-    
+
     res.status(200).json({
       success: true,
       message: "Assignment fetched successfully",
-      data: formattedAssignment
+      data: formattedAssignment,
     });
     return;
   } catch (error) {
     next(error);
   }
 };
-
 
 export const updateAssignment: RequestHandler = async (
   req: Request,
@@ -210,18 +212,18 @@ export const updateAssignment: RequestHandler = async (
       description,
       dueDate,
       pointsPossible,
-      status
+      status,
     } = req.body;
-    
+
     // Check if assignment exists
     const existingAssignment = await prisma.assignment.findUnique({
-      where: { id: Number(id) }
+      where: { id: Number(id) },
     });
-    
+
     if (!existingAssignment) {
       throw new CustomError("Assignment not found", 404);
     }
-    
+
     // Update assignment
     const updatedAssignment = await prisma.assignment.update({
       where: { id: Number(id) },
@@ -232,14 +234,14 @@ export const updateAssignment: RequestHandler = async (
         description,
         dueDate,
         pointsPossible,
-        status
-      }
+        status,
+      },
     });
-    
+
     res.status(200).json({
       success: true,
       message: "Assignment updated successfully",
-      data: updatedAssignment
+      data: updatedAssignment,
     });
   } catch (error) {
     next(error);
@@ -253,50 +255,50 @@ export const deleteAssignment: RequestHandler = async (
 ) => {
   try {
     const { id } = req.params;
-    
+
     // Check if assignment exists
     const existingAssignment = await prisma.assignment.findUnique({
       where: { id: Number(id) },
       include: {
-        submissions: true
-      }
+        submissions: true,
+      },
     });
-    
+
     if (!existingAssignment) {
       throw new CustomError("Assignment not found", 404);
     }
-    
+
     // Delete files from Supabase storage if submissions exist
     for (const submission of existingAssignment.submissions) {
       if (submission.submissionUrl) {
         // Extract the file path from the URL
-        const filePath = submission.submissionUrl.split('/').pop();
+        const filePath = submission.submissionUrl.split("/").pop();
         if (filePath) {
           // Remove file from Supabase storage
           const { error } = await supabase.storage
-            .from('assignments')
+            .from("assignments")
             .remove([`submissions/${filePath}`]);
-            
+
           if (error) {
             console.error("Error deleting file from storage:", error);
           }
         }
       }
     }
-    
+
     // Delete all submissions related to this assignment
     await prisma.submission.deleteMany({
-      where: { assignmentId: Number(id) }
+      where: { assignmentId: Number(id) },
     });
-    
+
     // Then delete the assignment
     await prisma.assignment.delete({
-      where: { id: Number(id) }
+      where: { id: Number(id) },
     });
-    
+
     res.status(200).json({
       success: true,
-      message: "Assignment deleted successfully"
+      message: "Assignment deleted successfully",
     });
     return;
   } catch (error) {
@@ -310,56 +312,59 @@ export const submitAssignment: RequestHandler = async (
   next: NextFunction
 ) => {
   // Use multer to handle file uploads
-  const uploadMiddleware = upload.single('file');
-  
+  const uploadMiddleware = upload.single("file");
+
   uploadMiddleware(req, res, async (err) => {
     if (err) {
       return next(new CustomError("File upload error: " + err.message, 400));
     }
-    
+
     try {
       const { assignmentId, studentId } = req.body;
       const file = req.file;
-      
+
       if (!file) {
         throw new CustomError("No file uploaded", 400);
       }
-      
+
       // Check if assignment exists
       const assignment = await prisma.assignment.findUnique({
-        where: { id: Number(assignmentId) }
+        where: { id: Number(assignmentId) },
       });
-      
+
       if (!assignment) {
         throw new CustomError("Assignment not found", 404);
       }
-      
+
       // Check if student exists
       const student = await prisma.student.findUnique({
-        where: { id: studentId }
+        where: { id: studentId },
       });
-      
+
       if (!student) {
         throw new CustomError("Student not found", 404);
       }
-      
+
       // Check if student has already submitted this assignment
       const existingSubmission = await prisma.submission.findFirst({
         where: {
           assignmentId: Number(assignmentId),
-          studentId: studentId
-        }
+          studentId: studentId,
+        },
       });
-      
+
       if (existingSubmission) {
-        throw new CustomError("You have already submitted this assignment", 400);
+        throw new CustomError(
+          "You have already submitted this assignment",
+          400
+        );
       }
-      
-      const {publicUrl,error} = await uploadToSupabase(file,"assignments");
-      if(error){
-        throw new CustomError("Supabase Upload Failed",400)
+
+      const { publicUrl, error } = await uploadToSupabase(file, "assignments");
+      if (error) {
+        throw new CustomError("Supabase Upload Failed", 400);
       }
-      
+
       // Create submission with public URL
       const submission = await prisma.submission.create({
         data: {
@@ -367,14 +372,14 @@ export const submitAssignment: RequestHandler = async (
           studentId: studentId,
           studentName: student.name,
           submissionDate: new Date().toISOString(),
-          submissionUrl: publicUrl
-        }
+          submissionUrl: publicUrl,
+        },
       });
-      
+
       res.status(201).json({
         success: true,
         message: "Assignment submitted successfully",
-        data: submission
+        data: submission,
       });
       return;
     } catch (error) {
@@ -391,34 +396,34 @@ export const getSubmissions: RequestHandler = async (
 ) => {
   try {
     const { assignmentId } = req.params;
-    
+
     // Check if assignment exists
     const assignment = await prisma.assignment.findUnique({
-      where: { id: Number(assignmentId) }
+      where: { id: Number(assignmentId) },
     });
-    
+
     if (!assignment) {
       throw new CustomError("Assignment not found", 404);
     }
-    
+
     // Fetch all submissions for this assignment
     const submissions = await prisma.submission.findMany({
       where: { assignmentId: Number(assignmentId) },
     });
-    
+
     // Format submissions to match expected API response
-    const formattedSubmissions = submissions.map(sub => ({
+    const formattedSubmissions = submissions.map((sub) => ({
       studentId: sub.studentId,
       studentName: sub.studentName,
       submissionDate: sub.submissionDate,
       grade: sub.grade,
-      submissionUrl: sub.submissionUrl
+      submissionUrl: sub.submissionUrl,
     }));
-    
+
     res.status(200).json({
       success: true,
       message: "Submissions fetched successfully",
-      data: formattedSubmissions
+      data: formattedSubmissions,
     });
   } catch (error) {
     next(error);
@@ -432,49 +437,86 @@ export const gradeSubmission: RequestHandler = async (
 ) => {
   try {
     const { assignmentId } = req.params;
-    const { studentId, grade, feedback, gradedAt } = req.body;
-    
+    const { studentId, grade, feedback } = req.body;
+
     // Check if assignment exists
     const assignment = await prisma.assignment.findUnique({
-      where: { id: Number(assignmentId) }
+      where: { id: Number(assignmentId) },
     });
-    
+
     if (!assignment) {
       throw new CustomError("Assignment not found", 404);
     }
-    
+
     // Check if submission exists
     const submission = await prisma.submission.findFirst({
       where: {
         assignmentId: Number(assignmentId),
-        studentId: studentId
-      }
+        studentId: studentId,
+      },
     });
-    
+
     if (!submission) {
       throw new CustomError("Submission not found", 404);
     }
-    
+
     // Validate grade
     if (grade < 0 || grade > assignment.pointsPossible) {
-      throw new CustomError(`Grade must be between 0 and ${assignment.pointsPossible}`, 400);
+      throw new CustomError(
+        `Grade must be between 0 and ${assignment.pointsPossible}`,
+        400
+      );
     }
-    
+
     // Update submission with grade and feedback
     const updatedSubmission = await prisma.submission.update({
       where: { id: submission.id },
       data: {
         grade,
-        // gradedAt: gradedAt || new Date().toISOString()
-      }
+        feedback: feedback || null,
+      },
     });
-    
+
     res.status(200).json({
       success: true,
       message: "Submission graded successfully",
-      data: updatedSubmission
+      data: updatedSubmission,
     });
     return;
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getSubmissionsByStudentsId: RequestHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { studentId } = req.params;
+
+    const submissions = await prisma.submission.findMany({
+      where: {
+        studentId: studentId,
+        grade: {
+          not: null,
+        },
+      },
+      include: {
+        assignment: true,
+      },
+    });
+    
+    if (!submissions) {
+      throw new CustomError("Submissions not found", 404);
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Submissions fetched successfully",
+      data: submissions,
+    });
   } catch (error) {
     next(error);
   }

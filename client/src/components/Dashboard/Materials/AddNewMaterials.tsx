@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { FileText } from "lucide-react";
+import { useState } from "react";
 
 const AddNewMaterials = ({
   newMaterial,
@@ -25,9 +26,16 @@ const AddNewMaterials = ({
   isLoading,
   user,
 }) => {
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const onAddMaterial = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    await handleAddMaterial();
+    setIsOpen(false);
+  };
+  
   return (
     <>
-      <Dialog>
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
           <Button>
             <FileText className="h-4 w-4 mr-2" />
@@ -38,7 +46,7 @@ const AddNewMaterials = ({
           <DialogHeader>
             <DialogTitle>Add Study Material</DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleAddMaterial}>
+          <form onSubmit={onAddMaterial}>
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="title" className="text-right">
@@ -70,6 +78,29 @@ const AddNewMaterials = ({
                     {user?.subjects?.map((subject) => (
                       <SelectItem key={subject} value={subject}>
                         {subject}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="grade" className="text-right">
+                  Grade
+                </Label>
+                <Select
+                  name="grade"
+                  value={newMaterial.grade}
+                  onValueChange={(value) =>
+                    setNewMaterial((prev) => ({ ...prev, grade: value }))
+                  }
+                >
+                  <SelectTrigger className="col-span-3">
+                    <SelectValue placeholder="Select a grade" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {user?.grade?.map((g) => (
+                      <SelectItem key={g} value={g}>
+                        {g}
                       </SelectItem>
                     ))}
                   </SelectContent>

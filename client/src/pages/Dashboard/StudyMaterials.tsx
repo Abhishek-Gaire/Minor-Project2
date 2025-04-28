@@ -15,8 +15,8 @@ import { useAuth } from "@/contexts/useAuth";
 import AddNewMaterials from "@/components/Dashboard/Materials/AddNewMaterials";
 import MaterialFilters from "@/components/Dashboard/Materials/MaterialFilters";
 import FilteredMaterialsCard from "@/components/Dashboard/Materials/FilteredMaterialsCard";
+import materialService from "@/services/studyMaterials";
 
-const BACKEND_URI = import.meta.env.VITE_BACKEND_URI!;
 const StudyMaterialsPage = () => {
   const { user } = useAuth();
   const userRole = user?.role;
@@ -24,191 +24,21 @@ const StudyMaterialsPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const { toast } = useToast();
+  const [editingMaterial, setEditingMaterial] = useState(null);
 
   // Form state for adding new material
   const [newMaterial, setNewMaterial] = useState({
     title: "",
-    course: "",
+    description: "",
+    subject: "",
     type: "reading",
     file: null,
   });
 
-  // API functions
-  const api = {
-    // Fetch study materials
-    fetchMaterials: async () => {
-      setIsLoading(true);
-      try {
-        const response = await fetch(
-          `${BACKEND_URI}/api/v1/teacher/materials`,
-          {
-            credentials: "include",
-          }
-        );
-        if (!response.ok) {
-          throw new Error("Failed to fetch materials");
-        }
-        const data = await response.json();
-        setMaterials(data.data);
-        setIsLoading(false);
-      } catch (err) {
-        setError("Failed to load study materials");
-        setIsLoading(false);
-      }
-    },
-    // Add new material (teachers only)
-    addMaterial: async (materialData) => {
-      if (userRole !== "teacher") {
-        throw new Error("Unauthorized: Only teachers can add materials");
-      }
-
-      if (!materialData.file) {
-        throw new Error("File is required for adding materials");
-      }
-
-      setIsLoading(true);
-      try {
-        // Create FormData for the file upload
-        const formData = new FormData();
-
-        // Add the file
-        formData.append("file", materialData.file);
-
-        // Add other material data as separate fields or as JSON
-        const metadataFields = { ...materialData };
-        delete metadataFields.file; // Remove file from metadata
-        console.log(materialData);
-        // You can either append each field individually:
-        Object.keys(metadataFields).forEach((key) => {
-          formData.append(key, metadataFields[key]);
-        });
-
-        // Make actual API call
-        const response = await fetch(
-          `${BACKEND_URI}/api/v1/teacher/materials`,
-          {
-            method: "POST",
-            body: formData,
-            // No Content-Type header - browser will set it with boundary parameter
-            credentials: "include",
-          }
-        );
-
-        if (!response.ok) {
-          const errorData = await response.json().catch(() => ({}));
-          throw new Error(errorData.message || "Failed to add material");
-        }
-
-        // Get the newly created material with server-generated ID
-        const resData = await response.json();
-
-        // Update local state with the new material
-        setMaterials((prev) => [
-          ...prev,
-          {
-            ...resData.data,
-            icon: getIconForType(resData.data.type),
-          },
-        ]);
-
-        toast({
-          title: "Material Added",
-          description: `"${materialData.title}" has been added successfully.`,
-        });
-
-        return resData.data;
-      } catch (err) {
-        setError(err.message || "Failed to add material");
-        toast({
-          title: "Error",
-          description: err.message || "Failed to add material",
-          variant: "destructive",
-        });
-        throw err;
-      } finally {
-        setIsLoading(false);
-      }
-    },
-
-    // Download material
-    downloadMaterial: async (data) => {
-      try {
-        if (data.fileUrl) {
-          // Open the Supabase public URL in a new tab
-          window.open(data.fileUrl, "_blank");
-        } else {
-          throw new Error("No publicURL returned from server");
-        }
-
-        toast({
-          title: "Download Started",
-          description: "Your download has started.",
-        });
-      } catch (err) {
-        toast({
-          title: "Download Failed",
-          description: err.message || "Unable to download the material.",
-          variant: "destructive",
-        });
-      }
-    },
-
-    viewMaterial: async (data) => {
-      try {
-        // Check the file type and use appropriate viewer
-        if (data.fileUrl) {
-          if (data.fileType === "application/pdf") {
-            // For PDFs - browser can handle these natively
-            const viewerUrl = data.fileUrl;
-            window.open(viewerUrl, "_blank");
-          } else if (data.fileType.includes("video/")) {
-            // For videos - create a modal with video player
-            const modal = document.createElement("div");
-            modal.className = "file-viewer-modal";
-            modal.innerHTML = `
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h2>${data.fileName}</h2>
-                  <button class="close-btn">&times;</button>
-                </div>
-                <div class="modal-body">
-                  <video controls width="100%" height="auto">
-                    <source src="${data.fileUrl}" type="${data.fileType}">
-                    Your browser does not support the video tag.
-                  </video>
-                </div>
-              </div>
-            `;
-
-            document.body.appendChild(modal);
-            setupModalListeners(modal);
-          } else if (data.fileType.includes("word")) {
-            // For Word documents - use Office Online viewer
-            const viewerUrl = `https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(
-              data.fileUrl
-            )}`;
-            window.open(viewerUrl, "_blank");
-          } else {
-            // Default case - try to open in new tab, may download if not viewable
-            window.open(data.fileUrl, "_blank");
-          }
-
-          toast({
-            title: "Viewing Material",
-            description: "Opening material viewer...",
-          });
-        }
-      } catch (err) {
-        toast({
-          title: "Error",
-          description: "Unable to view this material.",
-          variant: "destructive",
-        });
-        console.error(err);
-      }
-    },
-  };
-  // Helper function to set up modal event listeners
+  // Filter state for materials
+  const [materialFilter, setMaterialFilter] = useState("all");
+  
+  // Setup view modal functions
   function setupModalListeners(modal) {
     // Add event listener to close button
     modal.querySelector(".close-btn").addEventListener("click", () => {
@@ -272,7 +102,8 @@ const StudyMaterialsPage = () => {
       document.head.appendChild(style);
     }
   }
-  // // Helper function to get icon based on material type
+
+  // Helper function to get icon based on material type
   const getIconForType = (type) => {
     switch (type) {
       case "reading":
@@ -291,12 +122,27 @@ const StudyMaterialsPage = () => {
 
   // Load data on component mount
   useEffect(() => {
-    const loadData = async () => {
-      await Promise.all([api.fetchMaterials()]);
-    };
-
-    loadData();
+    fetchMaterials();
   }, []);
+
+  // Fetch materials from the API
+  const fetchMaterials = async () => {
+    setIsLoading(true);
+    try {
+      const response = await materialService.getMaterials();
+      setMaterials(response.data || []);
+      setError(null);
+    } catch (err) {
+      setError("Failed to load study materials");
+      toast({
+        title: "Error",
+        description: "Failed to load study materials",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   // Handle form input changes
   const handleInputChange = (e) => {
@@ -309,11 +155,15 @@ const StudyMaterialsPage = () => {
     setNewMaterial((prev) => ({ ...prev, file: e.target.files[0] }));
   };
 
-  // Handle form submission
-  const handleAddMaterial = async (e) => {
-    e.preventDefault();
+  // Handle form submission for adding a new material
+  const handleAddMaterial = async () => {
 
-    if (!newMaterial.title || !newMaterial.course || !newMaterial.file) {
+    if (
+      !newMaterial.title ||
+      !newMaterial.subject ||
+      !newMaterial.type ||
+      !newMaterial.file
+    ) {
       toast({
         title: "Missing Information",
         description: "Please fill in all required fields.",
@@ -322,33 +172,144 @@ const StudyMaterialsPage = () => {
       return;
     }
 
+    setIsLoading(true);
     try {
-      await api.addMaterial({
+      await materialService.createMaterial({
         ...newMaterial,
-        uploadedBy: user?.name || `Teacher Of Grade ${user.grade}`,
+        uploadedBy: user?.name || "Unknown User"
       });
+
+      toast({
+        title: "Material Added",
+        description: `"${newMaterial.title}" has been added successfully.`,
+      });
+
+      // Refresh the materials list
+      fetchMaterials();
 
       // Reset form
       setNewMaterial({
         title: "",
-        course: "",
+        description: "",
+        subject: "",
         type: "reading",
         file: null,
       });
 
-      // Close dialog (you would need to handle this through a ref or state)
     } catch (err) {
       toast({
         title: "Error",
         description: err.message || "Failed to add material",
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  // Filter state for materials
-  const [materialFilter, setMaterialFilter] = useState("all");
+  // Handle material deletion
+  const handleDeleteMaterial = async (id) => {
+    try {
+      await materialService.deleteMaterial(id);
+      
+      // Update the local state to remove the deleted material
+      setMaterials(materials.filter(material => material.id !== id));
+      
+      toast({
+        title: "Material Deleted",
+        description: "The study material has been deleted successfully.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete the material. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
 
+  // Handle viewing material
+  const handleViewMaterial = async (material) => {
+    try {
+      const viewInfo = await materialService.viewMaterial(material);
+      
+      if (viewInfo.viewType === 'pdf' || viewInfo.viewType === 'video') {
+        // Create modal for PDF or video
+        const modal = document.createElement("div");
+        modal.className = "file-viewer-modal";
+        
+        let contentHtml = '';
+        if (viewInfo.viewType === 'pdf') {
+          contentHtml = `<iframe src="${viewInfo.url}" width="100%" height="100%" frameborder="0"></iframe>`;
+        } else if (viewInfo.viewType === 'video') {
+          contentHtml = `
+            <video controls width="100%" height="auto">
+              <source src="${viewInfo.url}" type="${material.fileType}">
+              Your browser does not support the video tag.
+            </video>
+          `;
+        }
+        
+        modal.innerHTML = `
+          <div class="modal-content">
+            <div class="modal-header">
+              <h2>${viewInfo.title}</h2>
+              <button class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+              ${contentHtml}
+            </div>
+          </div>
+        `;
+
+        document.body.appendChild(modal);
+        setupModalListeners(modal);
+      } else {
+        // For other types, open in new tab
+        window.open(viewInfo.url, "_blank");
+      }
+      
+      toast({
+        title: "Viewing Material",
+        description: "Opening material viewer...",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Unable to view this material.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Handle downloading material
+  const handleDownloadMaterial = async (material) => {
+    try {
+      await materialService.downloadMaterial(material);
+      
+      toast({
+        title: "Download Started",
+        description: "Your download has started.",
+      });
+    } catch (error) {
+      toast({
+        title: "Download Failed",
+        description: "Unable to download the material.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Handle editing material
+  const handleEditMaterial = (material) => {
+    setEditingMaterial(material);
+    // You would typically open a modal or navigate to an edit page here
+    // For now, we'll just log
+    console.log("Editing material:", material);
+    // This would be implemented with a modal similar to AddNewMaterials
+  };
+
+  // Filter materials based on selected type
   const filteredMaterials = materials.filter((material) => {
     if (materialFilter === "all") return true;
     return material.type === materialFilter;
@@ -405,7 +366,13 @@ const StudyMaterialsPage = () => {
                     <FilteredMaterialsCard
                       key={material.id}
                       material={material}
-                      api={api}
+                      api={{
+                        downloadMaterial: handleDownloadMaterial,
+                        viewMaterial: handleViewMaterial,
+                        deleteMaterial: handleDeleteMaterial,
+                      }}
+                      onEdit={handleEditMaterial}
+                      userRole={user.role}
                     />
                   ))}
                 </div>
