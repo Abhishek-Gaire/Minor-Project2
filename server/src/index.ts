@@ -9,6 +9,7 @@ import authRoutes from "./routes/authRoutes";
 import schoolRoutes from "./routes/institutionalRoutes";
 import adminRouter from "./routes/AdminRoutes";
 import assignmentRoutes from "./routes/assignmentRoutes";
+import { materialsRouter } from "./routes/materialRoutes";
 
 import corsConfig, { socketCorsOptions } from "./config/corsConfig";
 import getLocalIP from "./exceptions/getLocalIP";
@@ -26,6 +27,7 @@ import * as classChatService from "./services/classChatServices";
 import * as privateMessageService from "./services/privateMessageServices";
 
 import prisma from "./config/dbConfig";
+
 
 // Store sockets by username for private messaging
 const userSockets = new Map<string, Socket>();
@@ -50,6 +52,7 @@ app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/schools", schoolRoutes);
 app.use("/api/v1/assignments", assignmentRoutes);
 app.use("/api/v1/admin", adminRouter);
+app.use("/api/v1/teacher",materialsRouter)
 
 app.use(errorHandler);
 

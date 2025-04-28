@@ -22,4 +22,4 @@ router.get('/materials', getMaterials);
 router.get('/materials/:id/download', downloadMaterial);
 router.get('/materials/:id/view', viewMaterial);
 
-export default router;
+export  {router as materialsRouter};

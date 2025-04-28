@@ -18,7 +18,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-toastify";
 
-import TeacherHeader from "@/components/Admin/Teachers/TeacherHEader";
+import TeacherHeader from "@/components/Admin/Teachers/TeacherHeader";
 import TeacherDetailsCard from "@/components/Admin/Teachers/TeacherDetailsCard";
 import {
   allSubjects,
