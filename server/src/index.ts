@@ -7,7 +7,7 @@ import { errorHandler } from "./middleware/errorHandler";
 
 import authRoutes from "./routes/authRoutes";
 import schoolRoutes from "./routes/institutionalRoutes";
-import adminRouter from "./routes/adminRoutes";
+import adminRouter from "./routes/AdminRoutes";
 import assignmentRoutes from "./routes/assignmentRoutes";
 
 import corsConfig, { socketCorsOptions } from "./config/corsConfig";

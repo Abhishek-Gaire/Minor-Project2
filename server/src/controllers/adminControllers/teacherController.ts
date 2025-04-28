@@ -124,19 +124,19 @@ export const getAllTeachers = async (
 ) => {
   try {
     const admin = (req as any).admin;
-    if(!admin){
-      throw new CustomError("Not Authorized",401)
+    if (!admin) {
+      throw new CustomError("Not Authorized", 401);
     }
     const teachers = await prisma.teacher.findMany({
-      where:{
-        schoolId:admin.schoolId
+      where: {
+        schoolId: admin.schoolId,
       },
       select: {
         id: true,
         name: true,
         email: true,
         subjects: true,
-        grade:true,
+        grade: true,
         phone: true,
         classes: true,
         status: true,
@@ -224,13 +224,17 @@ export const updateTeacher = async (
       ...teacherData
     } = validatedData;
 
+    const cleanedTeacherData = Object.fromEntries(
+      Object.entries(teacherData).filter(([_, v]) => v !== undefined)
+    );
+
     // Update teacher and details in a transaction
     await prisma.$transaction(async (tx) => {
       // Update teacher record if there are teacher fields to update
       if (Object.keys(teacherData).length > 0) {
         await tx.teacher.update({
           where: { id },
-          data: teacherData,
+          data: cleanedTeacherData,
         });
       }
 

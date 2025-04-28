@@ -9,222 +9,214 @@ dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET!;
 const prisma = new PrismaClient();
 
-export const login: RequestHandler = async (req: Request, res: Response) => {
-  const { email, bodyPassword, role } = req.body;
+export const login: RequestHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { email, bodyPassword, role } = req.body;
 
-  if (!email || !bodyPassword || !role) {
-    res.status(401).json({
-      success: false,
-      message: "Provide all the fields",
-    });
-    return;
-  }
-  let userExists, isMatch, token;
+    if (!email || !bodyPassword || !role) {
+      throw new CustomError("Provide All Fields", 400);
+    }
+    let userExists, isMatch, token;
 
-  if (role === "Student") {
-    userExists = await prisma.student.findFirst({ where: { email } });
-    if (!userExists) {
-      res.status(404).json({
-        success: false,
-        message: "Student Not Found",
+    if (role === "Student") {
+      userExists = await prisma.student.findFirst({ where: { email } });
+      if (!userExists) {
+        throw new CustomError("Student Not Found", 404);
+      }
+
+      isMatch = await bcrypt.compare(bodyPassword, userExists.password);
+      if (!isMatch) {
+        throw new CustomError("Invalid Credentials", 401);
+      }
+
+      token = jwt.sign({ id: userExists.id }, JWT_SECRET, { expiresIn: "24h" });
+
+      res.cookie("studentAccessToken", token, {
+        httpOnly: true,
+        secure: false,
+        sameSite: "lax",
+        path: "/",
       });
-      return;
+    } else {
+      userExists = await prisma.teacher.findFirst({
+        where: { email },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          grade: true,
+          password: true,
+        },
+      });
+      if (!userExists) {
+        throw new CustomError("Teacher Not Found", 404);
+      }
+
+      isMatch = await bcrypt.compare(bodyPassword, userExists.password);
+      if (!isMatch) {
+        throw new CustomError("Invalid Credentials", 401);
+      }
+
+      token = jwt.sign({ id: userExists.id }, JWT_SECRET, { expiresIn: "24h" });
+
+      res.cookie("teacherAccessToken", token, {
+        httpOnly: true,
+        secure: false,
+        sameSite: "lax",
+        path: "/",
+      });
     }
 
-    isMatch = await bcrypt.compare(bodyPassword, userExists.password);
-    if (!isMatch) {
-      res.status(401).json({
-        success: false,
-        message: "Invalid Credentials",
-      });
-      return;
-    }
+    const { password, ...safeUser } = userExists;
 
-    token = jwt.sign({ id: userExists.id }, JWT_SECRET, { expiresIn: "24h" });
-
-    res.cookie("studentAccessToken", token, {
-      httpOnly: true,
-      secure: false,
-      sameSite: "lax",
-      path: "/",
-    });
-  } else {
-    userExists = await prisma.teacher.findFirst({
-      where: { email },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        grade: true,
-        password: true,
+    res.status(200).json({
+      message: "Login successful",
+      accessToken: token,
+      data: {
+        ...safeUser,
+        role: role.toLowerCase(),
       },
     });
-    if (!userExists) {
-      res.status(404).json({
-        success: false,
-        message: "Teacher Not Found",
-      });
-      return;
-    }
-    isMatch = bodyPassword === userExists.password;
-    // isMatch = await bcrypt.compare(password, userExists.password);
-    if (!isMatch) {
-      res.status(401).json({
-        success: false,
-        message: "Invalid Credentials",
-      });
-      return;
-    }
-
-    token = jwt.sign({ id: userExists.id }, JWT_SECRET, { expiresIn: "24h" });
-
-    res.cookie("teacherAccessToken", token, {
-      httpOnly: true,
-      secure: false,
-      sameSite: "lax",
-      path: "/",
-    });
+  } catch (error) {
+    next(error);
   }
-
-  const { password, ...safeUser } = userExists;
-
-  res.status(200).json({
-    message: "Login successful",
-    accessToken: token,
-    data: {
-      ...safeUser,
-      role: role.toLowerCase(),
-    },
-  });
-
-  return;
 };
 
 export const forgotPassword: RequestHandler = async (
   req: Request,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) => {
-  const { email, role } = req.body;
+  try {
+    const { email, role } = req.body;
 
-  if (!email || !role) {
-    res.status(400).json({ success: false, message: "Provide email and role" });
-    return;
-  }
+    if (!email || !role) {
+      throw new CustomError("Provide Both Email and Role", 400);
+    }
 
-  let userExists;
+    let userExists;
 
-  if (role === "Student") {
-    userExists = await prisma.student.findFirst({ where: { email } });
-  } else {
-    userExists = await prisma.teacher.findFirst({
-      where: { email },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        grade: true,
-      },
+    if (role === "Student") {
+      userExists = await prisma.student.findFirst({ where: { email } });
+    } else {
+      userExists = await prisma.teacher.findFirst({
+        where: { email },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          grade: true,
+        },
+      });
+    }
+
+    if (!userExists) {
+      throw new CustomError(`${role} not found`, 404);
+    }
+
+    const resetToken = jwt.sign({ id: userExists.id }, JWT_SECRET, {
+      expiresIn: "15m",
     });
+
+    // Send email logic (replace with your email service)
+    console.log(`Reset token for ${email}: ${resetToken}`);
+
+    res
+      .status(200)
+      .json({ success: true, message: "Reset link sent", resetToken });
+  } catch (error) {
+    next(error);
   }
-
-  if (!userExists) {
-    res.status(404).json({ success: false, message: `${role} not found` });
-    return;
-  }
-
-  const resetToken = jwt.sign({ id: userExists.id }, JWT_SECRET, {
-    expiresIn: "15m",
-  });
-
-  // Send email logic (replace with your email service)
-  console.log(`Reset token for ${email}: ${resetToken}`);
-
-  res
-    .status(200)
-    .json({ success: true, message: "Reset link sent", resetToken });
-  return;
 };
 
 export const resetPassword: RequestHandler = async (
   req: Request,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) => {
   const { token, newPassword, role } = req.body;
 
   if (!token || !newPassword || !role) {
-    res.status(400).json({ success: false, message: "Provide all fields" });
-    return;
+    throw new CustomError("Provide All Fields", 400);
   }
 
   try {
     const decoded: any = jwt.verify(token, JWT_SECRET);
     let user;
 
+    const hashedPassword = await bcrypt.hash(newPassword, 12);
+
     if (role === "Student") {
       user = await prisma.student.update({
         where: { id: decoded.id },
-        data: { password: newPassword }, // Hash password in production
+        data: { password: hashedPassword }, // Hash password in production
       });
     } else {
       user = await prisma.teacher.update({
         where: { id: decoded.id },
-        data: { password: newPassword },
+        data: { password: hashedPassword },
       });
+    }
+
+    if (!user) {
+      throw new CustomError("Password Reset Unsuccessfull", 400);
     }
 
     res
       .status(200)
       .json({ success: true, message: "Password reset successful" });
-    return;
   } catch (error) {
-    res
-      .status(400)
-      .json({ success: false, message: "Invalid or expired token" });
-    return;
+    next(error);
   }
 };
 
 export const changePassword: RequestHandler = async (
   req: Request,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) => {
-  const { oldPassword, newPassword, role } = req.body;
-  const userId = (req as any).user.id; // Extracted from middleware after authentication
+  try {
+    const { oldPassword, newPassword, role } = req.body;
+    const userId = (req as any).user.id; // Extracted from middleware after authentication
 
-  if (!oldPassword || !newPassword || !role) {
-    res.status(400).json({ success: false, message: "Provide all fields" });
+    if (!oldPassword || !newPassword || !role) {
+      throw new CustomError("Provede All Fields", 400);
+    }
+
+    let user;
+
+    if (role === "student") {
+      user = await prisma.student.findFirst({ where: { id: userId } });
+    } else {
+      user = await prisma.teacher.findFirst({ where: { id: userId } });
+    }
+
+    if (!user) {
+      throw new CustomError(`${role} not found`, 404);
+    }
+
+    if (user.password !== oldPassword) {
+      throw new CustomError("Incorrect Old Password", 400);
+    }
+    const tableName = role.toLowerCase();
+    const model = prisma[tableName] as any;
+
+    await model.update({
+      where: { id: userId },
+      data: { password: newPassword },
+    });
+
+    res
+      .status(200)
+      .json({ success: true, message: "Password changed successfully" });
     return;
+  } catch (error) {
+    next(error);
   }
-
-  let user;
-
-  if (role === "student") {
-    user = await prisma.student.findFirst({ where: { id: userId } });
-  } else {
-    user = await prisma.teacher.findFirst({ where: { id: userId } });
-  }
-
-  if (!user) {
-    res.status(404).json({ success: false, message: `${role} not found` });
-    return;
-  }
-
-  if (user.password !== oldPassword) {
-    res.status(401).json({ success: false, message: "Incorrect old password" });
-    return;
-  }
-  const tableName = role.toLowerCase();
-  const model = prisma[tableName] as any;
-
-  await model.update({
-    where: { id: userId },
-    data: { password: newPassword },
-  });
-
-  res
-    .status(200)
-    .json({ success: true, message: "Password changed successfully" });
-  return;
 };
 
 export const verifyUser: RequestHandler = async (
@@ -239,11 +231,12 @@ export const verifyUser: RequestHandler = async (
     }
 
     let userDetails;
-    if ((req as any).role === "student") {
+    const role = (req as any).role;
+    if (role === "student") {
       userDetails = await prisma.student.findUnique({
         where: { id: user.id },
       });
-    } else if ((req as any).role === "teacher") {
+    } else if (role === "teacher") {
       userDetails = await prisma.teacher.findUnique({
         where: { id: user.id },
       });
@@ -259,7 +252,7 @@ export const verifyUser: RequestHandler = async (
       message: "User Verified Successfully",
       data: {
         ...userDetails,
-        role: (req as any).role,
+        role,
       },
     });
     return;

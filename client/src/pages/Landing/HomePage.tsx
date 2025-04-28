@@ -5,11 +5,10 @@ import { Features } from "../../components/HomePage/Features/Features.tsx";
 import { ImageSlider } from "../../components/HomePage/ImageSlider/ImageSlider.tsx";
 import { useState,useEffect } from "react";
 
-import { slides as mockSlides } from "@/constants/constants.ts";
 const BACKEND_URI = import.meta.env.VITE_BACKEND_URI!;
 
 const HomePage = () => {
-  const [slides,setSlides] = useState([mockSlides])
+  const [slides,setSlides] = useState([])
   useEffect(() => {
     const fetchSlides = async () => {
       try {
@@ -19,8 +18,8 @@ const HomePage = () => {
             "Content-Type": "application/json",
           },
         });
-        const data = await response.json()
-        setSlides(data.data);
+        const responseData = await response.json()
+        setSlides(responseData.data);
       } catch (error) {
         console.error("Error fetching slides:", error);
       }

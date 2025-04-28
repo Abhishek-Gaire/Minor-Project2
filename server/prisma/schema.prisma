@@ -202,10 +202,28 @@ model Teacher {
   school         School          @relation(fields: [schoolId], references: [id])
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
+
   teacherDetails TeacherDetails?
   Assignment     Assignment[]
+  materials Material[]
 }
 
+model Material {
+  id        Int      @id @default(autoincrement())
+  title     String
+  subject   String
+  type      String   // e.g., "pdf", "video", "document", etc.
+  fileUrl   String
+  fileName  String
+  fileType  String   // MIME type
+  fileSize  Int      // Size in bytes
+  teacherId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  teacher   Teacher  @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+}
 
 model TeacherDetails {
   id               String    @id @default(uuid())

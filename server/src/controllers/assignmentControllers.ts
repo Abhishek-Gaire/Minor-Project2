@@ -2,11 +2,9 @@ import { NextFunction, Request, RequestHandler, Response } from "express";
 import { CustomError } from "../exceptions/customError";
 import multer from "multer";
 
-import { v4 as uuidv4 } from "uuid";
-import path from "path";
-
 import supabase from "../config/supabase";
 import prisma from "../config/dbConfig";
+import uploadToSupabase from "../utils/supabaseFileUpload";
 
 // Configure multer for temporary file storage in memory
 const storage = multer.memoryStorage();
@@ -357,29 +355,10 @@ export const submitAssignment: RequestHandler = async (
         throw new CustomError("You have already submitted this assignment", 400);
       }
       
-      // Generate a unique filename
-      const fileExtension = path.extname(file.originalname);
-      const fileName = `${uuidv4()}${fileExtension}`;
-      const filePath = `assignments/${fileName}`;
-      
-      // Upload file to Supabase storage
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('minor2storage')
-        .upload(filePath, file.buffer, {
-          contentType: file.mimetype,
-          cacheControl: '3600'
-        });
-        
-      if (uploadError) {
-        throw new CustomError("Failed to upload file: " + uploadError.message, 500);
+      const {publicUrl,error} = await uploadToSupabase(file,"assignments");
+      if(error){
+        throw new CustomError("Supabase Upload Failed",400)
       }
-      
-      // Get the public URL for the uploaded file
-      const { data: publicUrlData } = supabase.storage
-        .from('minor2storage')
-        .getPublicUrl(filePath);
-        
-      const publicUrl = publicUrlData.publicUrl;
       
       // Create submission with public URL
       const submission = await prisma.submission.create({

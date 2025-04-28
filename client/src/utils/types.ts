@@ -10,6 +10,7 @@ export interface User {
   email: string;
   role?: string; // Optional, depending on your application
   grade?: string;
+  subjects?: string[];
 }
 
 export interface Admin {
