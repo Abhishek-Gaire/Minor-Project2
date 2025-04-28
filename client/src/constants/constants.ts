@@ -232,41 +232,41 @@ export const adminSidebarItems: NavItem[] = [
     to: `/admin/teachers`,
     icon: UserCircle,
   },
-  {
-    name: "Classes",
-    to: `/admin/classes`,
-    icon: BookOpen,
-  },
-  {
-    name: "Attendance",
-    to: `/admin/attendance`,
-    icon: Clock,
-  },
-  {
-    name: "Payments",
-    to: `/admin/payments`,
-    icon: DollarSign,
-  },
-  {
-    name: "Messages",
-    to: `/admin/messages`,
-    icon: MessageSquare,
-  },
-  {
-    name: "Courses",
-    to: `/admin/courses`,
-    icon: Book,
-  },
-  {
-    name: "Schedule",
-    to: `/admin/schedule`,
-    icon: Calendar,
-  },
-  {
-    name: "Notifications",
-    to: `/admin/notifications`,
-    icon: Bell,
-  },
+  // {
+  //   name: "Classes",
+  //   to: `/admin/classes`,
+  //   icon: BookOpen,
+  // },
+  // {
+  //   name: "Attendance",
+  //   to: `/admin/attendance`,
+  //   icon: Clock,
+  // },
+  // {
+  //   name: "Payments",
+  //   to: `/admin/payments`,
+  //   icon: DollarSign,
+  // },
+  // {
+  //   name: "Messages",
+  //   to: `/admin/messages`,
+  //   icon: MessageSquare,
+  // },
+  // {
+  //   name: "Courses",
+  //   to: `/admin/courses`,
+  //   icon: Book,
+  // },
+  // {
+  //   name: "Schedule",
+  //   to: `/admin/schedule`,
+  //   icon: Calendar,
+  // },
+  // {
+  //   name: "Notifications",
+  //   to: `/admin/notifications`,
+  //   icon: Bell,
+  // },
   {
     name: "Settings",
     to: `/admin/settings`,
@@ -298,6 +298,7 @@ export const employmentTypeMap = {
   CONTRACT: "Contract",
   TEMPORARY: "Temporary",
 };
+
 // List of all available subjects
 export const allSubjects = [
   "Algebra",

@@ -123,4 +123,5 @@ export const materialSchema = z.object({
   title:z.string(),
   subject:z.string(),
   type:z.string(),
+  uploadedBy:z.string(),
 })

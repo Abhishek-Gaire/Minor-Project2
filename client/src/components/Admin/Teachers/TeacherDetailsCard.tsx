@@ -8,16 +8,18 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Loader2 } from "lucide-react";
 
 const TeacherDetailsCard = ({
+  isLoading,
   currentTeachers,
   statusMap,
   currentPage,
   totalPages,
   setCurrentPage,
-  setIsViewDialogOpen,
-  setCurrentTeacher,
-  openEditDialog,
+  onEditTeacher,
+  onViewTeacher,
+  onDeleteTeacher,
 }) => {
   return (
     <Card>
@@ -36,6 +38,13 @@ const TeacherDetailsCard = ({
             </TableRow>
           </TableHeader>
           <TableBody>
+            {isLoading && (
+              <TableRow>
+                <TableCell colSpan={8} className="text-center flex items-center justify-center py-4">
+                  <Loader2 className="h-8 w-8 animate-spin text-gray-500" />
+                </TableCell>
+              </TableRow>
+            )}
             {currentTeachers.map((teacher) => (
               <TableRow key={teacher.id}>
                 <TableCell className="font-medium">{teacher.name}</TableCell>
@@ -60,17 +69,17 @@ const TeacherDetailsCard = ({
                 <TableCell>{teacher.email}</TableCell>
                 <TableCell>
                   <div className="flex flex-wrap gap-1">
-                    {teacher.grades.slice(0, 2).map((grade: string) => (
+                    {teacher.grade.slice(0, 2).map((g: string) => (
                       <span
-                        key={grade}
+                        key={g}
                         className="px-2 py-1 bg-gray-100 rounded-full text-xs"
                       >
-                        {grade}
+                        {g}
                       </span>
                     ))}
-                    {teacher.grades.length > 2 && (
+                    {teacher.grade.length > 2 && (
                       <span className="px-2 py-1 bg-gray-100 rounded-full text-xs">
-                        +{teacher.grades.length - 2}
+                        +{teacher.grade.length - 2}
                       </span>
                     )}
                   </div>
@@ -92,27 +101,27 @@ const TeacherDetailsCard = ({
                   </span>
                 </TableCell>
                 <TableCell className="space-x-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      setCurrentTeacher(teacher);
-                      setIsViewDialogOpen(true);
-                    }}
-                  >
+                  <Button variant="outline" size="sm" onClick={() =>onViewTeacher(teacher)}>
                     View
                   </Button>
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => openEditDialog(teacher)}
+                    onClick={() => onEditTeacher(teacher)}
                   >
                     Edit
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => onDeleteTeacher(teacher.id)}
+                  >
+                    Delete
                   </Button>
                 </TableCell>
               </TableRow>
             ))}
-            {currentTeachers.length === 0 && (
+            {currentTeachers.length === 0 && !isLoading && (
               <TableRow>
                 <TableCell colSpan={7} className="text-center py-4">
                   No teachers found matching your filters

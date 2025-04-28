@@ -16,7 +16,7 @@ const AdminLogin = () => {
 
   // Redirect if admin is already logged in
   if (admin) {
-    return <Navigate to="/admin/dashboard" replace />;
+    return <Navigate to="/admin/adminDashboard" replace />;
   }
 
   const handleLogin = async (data: LoginFormInputs) => {

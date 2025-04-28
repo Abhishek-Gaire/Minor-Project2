@@ -53,23 +53,23 @@ const AddNewMaterials = ({
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="course" className="text-right">
+                <Label htmlFor="subject" className="text-right">
                   Subject
                 </Label>
                 <Select
-                  name="course"
-                  value={newMaterial.course}
+                  name="subject"
+                  value={newMaterial.subject}
                   onValueChange={(value) =>
-                    setNewMaterial((prev) => ({ ...prev, course: value }))
+                    setNewMaterial((prev) => ({ ...prev, subject: value }))
                   }
                 >
                   <SelectTrigger className="col-span-3">
                     <SelectValue placeholder="Select a subject" />
                   </SelectTrigger>
                   <SelectContent>
-                    {user?.subjects?.map((course) => (
-                      <SelectItem key={course} value={course}>
-                        {course}
+                    {user?.subjects?.map((subject) => (
+                      <SelectItem key={subject} value={subject}>
+                        {subject}
                       </SelectItem>
                     ))}
                   </SelectContent>

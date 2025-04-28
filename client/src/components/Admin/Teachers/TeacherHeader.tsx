@@ -1,9 +1,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Button } from "react-day-picker";
+import { Button } from "@/components/ui/button";
 
 const TeacherHeader = ({
-  setIsAddDialogOpen,
+  onAddTeacher,
   totalTeachersCount,
   fullTimeCount,
   partTimeCount,
@@ -21,7 +21,7 @@ const TeacherHeader = ({
         <h1 className="text-2xl font-bold tracking-tight">
           Teachers Management
         </h1>
-        <Button onClick={() => setIsAddDialogOpen(true)}>
+        <Button onClick={() => onAddTeacher()}>
           + Add New Teacher
         </Button>
       </div>

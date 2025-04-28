@@ -8,20 +8,43 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { BookMarked, FileSpreadsheet, FileText, Video } from "lucide-react";
+type MaterialType = "reading" | "video" | "reference" | "guide" | "notes";
 
-const FilteredMaterialsCard = ({ material,api }) => {
-  const getMaterialIcon = (MaterialIcon) => {
-    return <MaterialIcon className="h-5 w-5 text-gray-600" />;
+const FilteredMaterialsCard = ({ material, api }) => {
+  const uploadedDate = new Date(material.uploadedDate).toLocaleDateString(
+    "en-US",
+    {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    }
+  );
+  const getIconForType = (type: MaterialType): React.ReactNode => {
+    switch (type) {
+      case "reading":
+        return <BookMarked />;
+      case "video":
+        return <Video />;
+      case "reference":
+        return <FileSpreadsheet />;
+      case "guide":
+      case "notes":
+        return <FileText />;
+      default:
+        return <FileText />;
+    }
   };
   return (
     <Card key={material.id} className="hover:shadow-md transition-shadow">
       <CardHeader className="pb-2">
         <div className="flex items-center">
-          {getMaterialIcon(material.icon)}
+          <span className="mr-2">{getIconForType(material.type)}</span>
           <CardTitle className="text-lg ml-2">{material.title}</CardTitle>
         </div>
+
         <CardDescription>
-          {material.course} • Added: {material.uploadDate}
+          {material.subject} • Added: {uploadedDate}
         </CardDescription>
       </CardHeader>
       <CardContent className="pb-2">
@@ -36,11 +59,11 @@ const FilteredMaterialsCard = ({ material,api }) => {
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => api.downloadMaterial(material.id)}
+          onClick={() => api.downloadMaterial(material)}
         >
           Download
         </Button>
-        <Button size="sm" onClick={() => api.viewMaterial(material.id)}>
+        <Button size="sm" onClick={() => api.viewMaterial(material)}>
           View
         </Button>
       </CardFooter>

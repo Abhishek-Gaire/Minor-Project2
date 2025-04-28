@@ -75,7 +75,7 @@ const StudentsPage = () => {
   };
 
   const handleEditStudent = (student: any) => {
-    navigate(`/students/edit/${student.id}`);
+    navigate(`/admin/students/edit/${student.id}`);
   };
 
   const handleSearch = debounce((term: string) => {

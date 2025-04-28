@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { PrismaClient } from "@prisma/client";
+import { Grade, PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
 import {
   teacherSchema,
@@ -7,6 +7,7 @@ import {
   teacherPasswordSchema,
 } from "../../types/schema";
 import { CustomError } from "../../exceptions/customError";
+import { generatePassword } from "../../utils/password";
 
 const prisma = new PrismaClient();
 
@@ -17,11 +18,26 @@ export const createTeacher = async (
   next: NextFunction
 ) => {
   try {
+    const admin = (req as any).admin;
+    if (!admin) {
+      throw new CustomError("Unauthorized", 401);
+    }
+
+    // Generate random password
+    const generatedPassword = generatePassword(12);
+
+    // Add schoolId and generatedPassword into req.body
+    const modifiedBody = {
+      ...req.body,
+      schoolId: admin.schoolId,
+      password: generatedPassword,
+    };
+
     // Validate request body
-    const validatedData = teacherSchema.parse(req.body);
+    const validatedData = teacherSchema.parse(modifiedBody);
 
     // Hash password
-    const hashedPassword = await bcrypt.hash(validatedData.password, 10);
+    const hashedPassword = await bcrypt.hash(generatedPassword, 10);
 
     // Check if email already exists
     const existingTeacher = await prisma.teacher.findUnique({
@@ -44,21 +60,27 @@ export const createTeacher = async (
       specialization,
       emergencyContact,
       joinDate,
-      schoolId,
       additionalNotes,
       ...teacherData
     } = validatedData;
 
     // Create teacher and details in a transaction
     const newTeacher = await prisma.$transaction(async (tx) => {
+      const gradeKey = `G${teacherData.grade}` as keyof typeof Grade;
+
+      if (!(gradeKey in Grade)) {
+        throw new Error(`Invalid grade: ${teacherData.grade}`);
+      }
+
       // Create teacher record
       const teacher = await tx.teacher.create({
         data: {
           name: teacherData.name,
           email: teacherData.email,
           password: hashedPassword,
-          schoolId: schoolId,
+          schoolId: admin.schoolId,
           subjects: teacherData.subjects,
+          grade: [Grade[gradeKey]],
           phone: teacherData.phone,
           classes: teacherData.classes || 0,
           status: (teacherData.status || "ACTIVE") as any,
@@ -127,24 +149,17 @@ export const getAllTeachers = async (
     if (!admin) {
       throw new CustomError("Not Authorized", 401);
     }
-    const teachers = await prisma.teacher.findMany({
+    const teachersRaw = await prisma.teacher.findMany({
       where: {
         schoolId: admin.schoolId,
       },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        subjects: true,
-        grade: true,
-        phone: true,
-        classes: true,
-        status: true,
-        employmentType: true,
-        createdAt: true,
+      include: {
+        teacherDetails: true,
       },
     });
 
+    // Remove password manually
+    const teachers = teachersRaw.map(({ password, ...rest }) => rest);
     res.status(200).json({
       status: true,
       message: "Teachers retrieved successfully",

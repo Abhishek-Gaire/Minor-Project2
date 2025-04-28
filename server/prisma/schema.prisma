@@ -164,6 +164,10 @@ enum Gender {
 }
 
 enum Grade {
+  G1
+  G2
+  G3
+  G4
   G5
   G6
   G7
@@ -218,7 +222,8 @@ model Material {
   fileType  String   // MIME type
   fileSize  Int      // Size in bytes
   teacherId String
-  createdAt DateTime @default(now())
+  uploadedBy String
+  uploadedDate DateTime
   updatedAt DateTime @updatedAt
   
   // Relations

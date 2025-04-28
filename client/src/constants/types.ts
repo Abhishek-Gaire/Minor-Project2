@@ -157,7 +157,6 @@ export const studentFormSchema = z.object({
 export const teacherSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Invalid email format"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
   subjects: z.array(z.string()).min(1, "At least one subject is required"),
   phone: z.string().optional(),
   grade:z.string(),

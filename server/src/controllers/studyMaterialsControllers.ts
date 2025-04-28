@@ -32,10 +32,10 @@ export const createMaterials: RequestHandler[] = [
       if (!teacherExists) {
         throw new CustomError("Teacher Not Found", 404);
       }
-
+console.log(req.body);
       const validatedBody = materialSchema.parse(req.body);
 
-      const { title, subject, type } = validatedBody;
+      const { title, subject, type, uploadedBy} = validatedBody;
       const file = req.file;
 
       if (!file) {
@@ -61,6 +61,8 @@ export const createMaterials: RequestHandler[] = [
           fileType: file.mimetype,
           fileSize: file.size,
           teacherId: teacherExists.id,
+          uploadedBy,
+          uploadedDate: new Date(),
         },
       });
 
@@ -103,7 +105,7 @@ export const getMaterials: RequestHandler = async (
     const materials = await prisma.material.findMany({
       where: whereClause,
       orderBy: {
-        createdAt: "desc",
+        uploadedDate: "desc",
       },
       include: {
         teacher: {

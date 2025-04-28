@@ -3,18 +3,29 @@ import SchoolAdminMessage from "@/pages/Admin/SchoolAdminMessage.tsx";
 import SchoolAdminSettings from "@/pages/Admin/SchoolAdminSettings.tsx";
 import SchoolAdminPayments from "@/pages/Admin/SchoolAdminPayments.tsx";
 import AdminDashboard from "@/pages/Admin/SchoolAdminDashboard.tsx";
-import TeachersManagementPage from "@/pages/Admin/SchoolAdminTeachers.tsx";
+import TeachersManagementPage from "@/pages/Admin/Teacher/SchoolAdminTeachers";
 import ClassManagementPage from "@/pages/Admin/SchoolAdminClasses.tsx";
 import AttendanceManagementPage from "@/pages/Admin/SchoolAdminAttendance.tsx";
 import SchoolAdminCourses from "@/pages/Admin/SchoolAdminCourses.tsx";
 import SchoolAdminSchedule from "@/pages/Admin/SchoolAdminSchedule.tsx";
 import SchoolAdminNotifications from "@/pages/Admin/SchoolAdminNotifications.tsx";
 import AdminAddForm from "@/pages/Admin/AdminAddStudents";
+import AddTeacherPage from "@/pages/Admin/Teacher/AdminAddTeachers";
+import EditTeacherPage from "@/pages/Admin/Teacher/AdminEditTeachers";
+import ViewTeacherPage from "@/pages/Admin/Teacher/AdminViewTeachers";
 
 const adminRoutes = [
   { index: true, element: <AdminDashboard /> },
   { path: "adminDashboard", element: <AdminDashboard /> },
-  { path: "teachers", element: <TeachersManagementPage /> },
+  {
+    path: "teachers",
+    children: [
+      { index: true, element: <TeachersManagementPage /> },
+      { path: "add", element: <AddTeacherPage /> },
+      { path: "edit/:id", element: <EditTeacherPage /> },
+      { path: "view/:id", element: <ViewTeacherPage /> },
+    ],
+  },
   { path: "classes", element: <ClassManagementPage /> },
   { path: "attendance", element: <AttendanceManagementPage /> },
   {

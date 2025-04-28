@@ -39,12 +39,17 @@ const StudyMaterialsPage = () => {
     fetchMaterials: async () => {
       setIsLoading(true);
       try {
-        const response = await fetch(`${BACKEND_URI}/api/v1/teacher/materials`);
+        const response = await fetch(
+          `${BACKEND_URI}/api/v1/teacher/materials`,
+          {
+            credentials: "include",
+          }
+        );
         if (!response.ok) {
-          throw new Error('Failed to fetch materials');
+          throw new Error("Failed to fetch materials");
         }
         const data = await response.json();
-        setMaterials(data);
+        setMaterials(data.data);
         setIsLoading(false);
       } catch (err) {
         setError("Failed to load study materials");
@@ -56,55 +61,62 @@ const StudyMaterialsPage = () => {
       if (userRole !== "teacher") {
         throw new Error("Unauthorized: Only teachers can add materials");
       }
-    
+
       if (!materialData.file) {
         throw new Error("File is required for adding materials");
       }
-    
+
       setIsLoading(true);
       try {
         // Create FormData for the file upload
         const formData = new FormData();
-        
+
         // Add the file
-        formData.append('file', materialData.file);
-        
+        formData.append("file", materialData.file);
+
         // Add other material data as separate fields or as JSON
         const metadataFields = { ...materialData };
         delete metadataFields.file; // Remove file from metadata
-        
+        console.log(materialData);
         // You can either append each field individually:
-        Object.keys(metadataFields).forEach(key => {
+        Object.keys(metadataFields).forEach((key) => {
           formData.append(key, metadataFields[key]);
         });
-        
+
         // Make actual API call
-        const response = await fetch(`${BACKEND_URI}/api/v1/teacher/materials`, {
-          method: 'POST',
-          body: formData,
-          // No Content-Type header - browser will set it with boundary parameter
-        });
-        
+        const response = await fetch(
+          `${BACKEND_URI}/api/v1/teacher/materials`,
+          {
+            method: "POST",
+            body: formData,
+            // No Content-Type header - browser will set it with boundary parameter
+            credentials: "include",
+          }
+        );
+
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}));
-          throw new Error(errorData.message || 'Failed to add material');
+          throw new Error(errorData.message || "Failed to add material");
         }
-        
+
         // Get the newly created material with server-generated ID
-        const newMaterialWithId = await response.json();
-        
+        const resData = await response.json();
+
         // Update local state with the new material
-        setMaterials((prev) => [...prev, {
-          ...newMaterialWithId,
-          icon: getIconForType(newMaterialWithId.type),
-        }]);
-        
+        setMaterials((prev) => [
+          ...prev,
+          {
+            ...resData.data,
+            icon: getIconForType(resData.data.type),
+          },
+        ]);
+
         toast({
           title: "Material Added",
           description: `"${materialData.title}" has been added successfully.`,
         });
-        
-        return newMaterialWithId;
+
+        return resData.data;
       } catch (err) {
         setError(err.message || "Failed to add material");
         toast({
@@ -119,31 +131,11 @@ const StudyMaterialsPage = () => {
     },
 
     // Download material
-    downloadMaterial: async (id) => {
+    downloadMaterial: async (data) => {
       try {
-        setIsLoading(true);
-        // Make an API call to get the Supabase publicURL
-        const response = await fetch(
-          `${BACKEND_URI}/api/v1/teacher/materials/${id}/download`
-        );
-
-        if (!response.ok) {
-          throw new Error("Failed to download material");
-        }
-
-        const data = await response.json();
-
-        if (data.publicURL) {
+        if (data.fileUrl) {
           // Open the Supabase public URL in a new tab
-          window.open(data.publicURL, "_blank");
-
-          // Alternatively, if you want to force download instead of opening in browser:
-          // const a = document.createElement('a');
-          // a.href = data.publicURL;
-          // a.download = data.filename || 'material';
-          // document.body.appendChild(a);
-          // a.click();
-          // document.body.removeChild(a);
+          window.open(data.fileUrl, "_blank");
         } else {
           throw new Error("No publicURL returned from server");
         }
@@ -158,60 +150,129 @@ const StudyMaterialsPage = () => {
           description: err.message || "Unable to download the material.",
           variant: "destructive",
         });
-      } finally {
-        setIsLoading(false);
       }
     },
 
-    // View material
-    viewMaterial: async (id) => {
+    viewMaterial: async (data) => {
       try {
-        setIsLoading(true);
-        // Make an API call to get the view URL or material content
-        const response = await fetch(
-          `${BACKEND_URI}/api/v1/teacher/materials/${id}/view`
-        );
+        // Check the file type and use appropriate viewer
+        if (data.fileUrl) {
+          if (data.fileType === "application/pdf") {
+            // For PDFs - browser can handle these natively
+            const viewerUrl = data.fileUrl;
+            window.open(viewerUrl, "_blank");
+          } else if (data.fileType.includes("video/")) {
+            // For videos - create a modal with video player
+            const modal = document.createElement("div");
+            modal.className = "file-viewer-modal";
+            modal.innerHTML = `
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h2>${data.fileName}</h2>
+                  <button class="close-btn">&times;</button>
+                </div>
+                <div class="modal-body">
+                  <video controls width="100%" height="auto">
+                    <source src="${data.fileUrl}" type="${data.fileType}">
+                    Your browser does not support the video tag.
+                  </video>
+                </div>
+              </div>
+            `;
 
-        if (!response.ok) {
-          throw new Error("Failed to view material");
+            document.body.appendChild(modal);
+            setupModalListeners(modal);
+          } else if (data.fileType.includes("word")) {
+            // For Word documents - use Office Online viewer
+            const viewerUrl = `https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(
+              data.fileUrl
+            )}`;
+            window.open(viewerUrl, "_blank");
+          } else {
+            // Default case - try to open in new tab, may download if not viewable
+            window.open(data.fileUrl, "_blank");
+          }
+
+          toast({
+            title: "Viewing Material",
+            description: "Opening material viewer...",
+          });
         }
-
-        const data = await response.json();
-
-        if (data.viewUrl) {
-          // Open the view URL in a new tab or modal
-          window.open(data.viewUrl, "_blank");
-        }
-
-        toast({
-          title: "Viewing Material",
-          description: "Opening material viewer...",
-        });
       } catch (err) {
         toast({
           title: "Error",
           description: "Unable to view this material.",
           variant: "destructive",
         });
-      } finally {
-        setIsLoading(false);
+        console.error(err);
       }
     },
   };
+  // Helper function to set up modal event listeners
+  function setupModalListeners(modal) {
+    // Add event listener to close button
+    modal.querySelector(".close-btn").addEventListener("click", () => {
+      document.body.removeChild(modal);
+    });
 
-  const mockMaterials = [
-    {
-      id: 1,
-      title: "Calculus Textbook Ch. 5-7",
-      course: "Mathematics",
-      type: "reading",
-      icon: BookMarked,
-      uploadedBy: "Dr. Smith",
-      uploadDate: "Mar 10, 2025",
-    },
-  ];
+    // Close when clicking outside the content
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) {
+        document.body.removeChild(modal);
+      }
+    });
 
-  // Helper function to get icon based on material type
+    // Add CSS for modal if not already added
+    if (!document.getElementById("viewer-modal-style")) {
+      const style = document.createElement("style");
+      style.id = "viewer-modal-style";
+      style.textContent = `
+      .file-viewer-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.7);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      }
+      .modal-content {
+        background: white;
+        width: 80%;
+        height: 80%;
+        border-radius: 8px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+      .modal-header {
+        padding: 10px 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #eee;
+      }
+      .modal-body {
+        flex: 1;
+        overflow: auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .close-btn {
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+      }
+    `;
+      document.head.appendChild(style);
+    }
+  }
+  // // Helper function to get icon based on material type
   const getIconForType = (type) => {
     switch (type) {
       case "reading":
@@ -265,11 +326,6 @@ const StudyMaterialsPage = () => {
       await api.addMaterial({
         ...newMaterial,
         uploadedBy: user?.name || `Teacher Of Grade ${user.grade}`,
-        uploadDate: new Date().toLocaleDateString("en-US", {
-          month: "short",
-          day: "numeric",
-          year: "numeric",
-        }),
       });
 
       // Reset form
