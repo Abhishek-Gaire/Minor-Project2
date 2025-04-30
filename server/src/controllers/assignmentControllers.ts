@@ -96,6 +96,7 @@ export const getAssignments: RequestHandler = async (
     if (grade) {
       filters.grade = Number(grade);
     }
+    
     // Fetch assignments with filters
     const assignments = await prisma.assignment.findMany({
       where: filters,
