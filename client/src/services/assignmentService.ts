@@ -47,10 +47,14 @@ export interface SubmissionForm {
 // API Functions
 export const assignmentService = {
   // Get all assignments (with filtering capability)
-  async getAssignments(filters?: { status?: string; searchTerm?: string }) {
+  async getAssignments(filters?: { status?: string; searchTerm?: string },grade?: string) {
     try {
+      const numberGrade = grade?.split(" ")[1];
       const response = await axios.get(`${API_BASE_URL}/api/v1/assignments/get`, { 
-        params: filters 
+        params: {
+          ...filters,
+          grade : numberGrade
+        }
       });
       return response.data;
     } catch (error) {

@@ -141,7 +141,7 @@ const StudentSubmissionView: React.FC<StudentSubmissionViewProps> = ({
             )}
           </div>
 
-          <div className="mb-6">
+          {/* <div className="mb-6">
             <label className="block text-sm font-medium mb-2">
               Comments (Optional)
             </label>
@@ -151,8 +151,8 @@ const StudentSubmissionView: React.FC<StudentSubmissionViewProps> = ({
               onChange={(e) => setComment(e.target.value)}
               rows={3}
               placeholder="Add any comments about your submission..."
-            />
-          </div>
+            /> */}
+          {/* </div> */}
 
           <div className="flex justify-end">
             <button

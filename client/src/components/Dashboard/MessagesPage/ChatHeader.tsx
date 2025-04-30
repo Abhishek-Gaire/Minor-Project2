@@ -1,14 +1,14 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar.tsx";
-import { Button } from "@/components/ui/button.tsx";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu.tsx";
+// import { Button } from "@/components/ui/button.tsx";
+// import {
+//   DropdownMenu,
+//   DropdownMenuContent,
+//   DropdownMenuItem,
+//   DropdownMenuTrigger,
+// } from "@/components/ui/dropdown-menu.tsx";
 import { getAvatarColor, getInitials } from "@/lib/utils";
 
-import { Clock, MoreHorizontal } from "lucide-react";
+// import { Clock, MoreHorizontal } from "lucide-react";
 
 const ChatHeader = ({ selectedUser ,isOnline=false}) => {
   return (
@@ -29,7 +29,7 @@ const ChatHeader = ({ selectedUser ,isOnline=false}) => {
           </div>
         </div>
       </div>
-      <div className="flex items-center gap-2">
+      {/* <div className="flex items-center gap-2">
         <Button variant="outline" size="icon">
           <Clock className="h-4 w-4" />
         </Button>
@@ -46,7 +46,7 @@ const ChatHeader = ({ selectedUser ,isOnline=false}) => {
             <DropdownMenuItem>Archive Conversation</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-      </div>
+      </div> */}
     </div>
   );
 };

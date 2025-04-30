@@ -244,7 +244,7 @@ const AssignmentDetails: React.FC = () => {
             <p>{assignment.pointsPossible}</p>
           </div>
           <div className="bg-gray-50 p-4 rounded-lg">
-            <h3 className="font-medium mb-1">Students</h3>
+            <h3 className="font-medium mb-1">Submitted Students</h3>
             <p>{assignment.totalStudents || 0}</p>
           </div>
         </div>

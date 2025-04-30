@@ -15,14 +15,14 @@ const upload = multer({
   },
 });
 
-export const createAssignMent: RequestHandler = async (
+export const createAssignment: RequestHandler = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
     const {
-      teacherId,
+      teacherName,
       status,
       subject,
       grade,
@@ -33,8 +33,8 @@ export const createAssignMent: RequestHandler = async (
     } = req.body;
 
     // Verify if teacher exists
-    const teacher = await prisma.teacher.findUnique({
-      where: { id: teacherId },
+    const teacher = await prisma.teacher.findFirst({
+      where: { name: teacherName },
     });
     if (!teacher) {
       throw new CustomError("Teacher not found", 404);
@@ -50,7 +50,7 @@ export const createAssignMent: RequestHandler = async (
         dueDate: new Date(dueDate),
         pointsPossible,
         status,
-        teacherId,
+        teacherName,
       },
     });
 
@@ -74,7 +74,7 @@ export const getAssignments: RequestHandler = async (
   next: NextFunction
 ) => {
   try {
-    const { status, searchTerm } = req.query;
+    const { status, searchTerm, grade } = req.query;
 
     // Build filter conditions
     const filters: any = {};
@@ -91,6 +91,10 @@ export const getAssignments: RequestHandler = async (
           description: { contains: searchTerm as string, mode: "insensitive" },
         },
       ];
+    }
+
+    if (grade) {
+      filters.grade = Number(grade);
     }
     // Fetch assignments with filters
     const assignments = await prisma.assignment.findMany({
@@ -114,6 +118,7 @@ export const getAssignments: RequestHandler = async (
       },
     });
 
+    console.log(assignments)
     // Format assignments to match expected API response
     const formattedAssignments = assignments.map((assignment) => {
       return {
@@ -512,10 +517,27 @@ export const getSubmissionsByStudentsId: RequestHandler = async (
       throw new CustomError("Submissions not found", 404);
     }
 
+    let data;
+    if(submissions.length === 0){
+      const teacher = await prisma.teacher.findUnique({
+        where:{
+          id:studentId
+        }
+      })
+      data = await prisma.assignment.findMany({
+        where:{
+          teacherName:teacher?.name
+        },
+        include:{
+          submissions:true
+        }
+      })
+    }
+    console.log(data)
     res.status(200).json({
       success: true,
       message: "Submissions fetched successfully",
-      data: submissions,
+      data: submissions.length > 0 ? submissions : data,
     });
   } catch (error) {
     next(error);

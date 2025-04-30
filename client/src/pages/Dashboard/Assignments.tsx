@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Plus, Calendar, Clock, CheckCircle, AlertCircle} from "lucide-react";
+import { Plus, Calendar, Clock, CheckCircle, AlertCircle } from "lucide-react";
 import { useAuth } from "@/contexts/useAuth";
 import CreateAssignment from "@/components/Dashboard/Assignments/CreateAssignment";
 import AssignementCard from "@/components/Dashboard/Assignments/AssignemntCard";
@@ -20,15 +20,17 @@ const Assignments: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   // Create assignment state
-  const [showCreateAssignmentModal, setShowCreateAssignmentModal] = useState(false);
-  const [newAssignmentForm, setNewAssignmentForm] = useState<CreateAssignmentForm>({
-    title: "",
-    subject: "",
-    grade: 7,
-    description: "",
-    dueDate: "",
-    pointsPossible: 100,
-  });
+  const [showCreateAssignmentModal, setShowCreateAssignmentModal] =
+    useState(false);
+  const [newAssignmentForm, setNewAssignmentForm] =
+    useState<CreateAssignmentForm>({
+      title: "",
+      subject: "",
+      grade: 7,
+      description: "",
+      dueDate: "",
+      pointsPossible: 100,
+    });
 
   // Fetch assignments when component mounts or when search/filters change
   useEffect(() => {
@@ -48,7 +50,10 @@ const Assignments: React.FC = () => {
         filters.searchTerm = searchTerm;
       }
 
-      const response = await assignmentService.getAssignments(filters);
+      const response = await assignmentService.getAssignments(
+        filters,
+        user.grade
+      );
       setAssignments(response.data);
       setError(null);
     } catch (err) {
@@ -92,7 +97,11 @@ const Assignments: React.FC = () => {
   // Create Assignment Function
   const handleCreateAssignment = async () => {
     // Validate form
-    if (!newAssignmentForm.title || !newAssignmentForm.subject || !newAssignmentForm.dueDate) {
+    if (
+      !newAssignmentForm.title ||
+      !newAssignmentForm.subject ||
+      !newAssignmentForm.dueDate
+    ) {
       toast.error("Please fill in all required fields");
       return;
     }

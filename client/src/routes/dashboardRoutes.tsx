@@ -1,16 +1,17 @@
-import Dashboard from "@/pages/Dashboard/Dashboard.tsx";
-import Students from "@/pages/Dashboard/Students.tsx";
-import Courses from "@/pages/Dashboard/Courses.tsx";
-import Assignments from "@/pages/Dashboard/Assignments.tsx";
-import ClassChatPage from "@/pages/Dashboard/ClassChat.tsx";
-import MessagesPage from "@/pages/Dashboard/Messages.tsx";
-import OnlineClassPage from "@/pages/Dashboard/OnlineClass.tsx";
-import Grades from "@/pages/Dashboard/Grades.tsx";
-import ProfilePage from "@/pages/Dashboard/ProfilePage";
-import StudyMaterialsPage from "@/pages/Dashboard/StudyMaterials";
-import CalendarPage from "@/pages/Dashboard/CalendarPage";
-import TeacherAttendancePage from "@/pages/Dashboard/AttendancePage";
-import AssignmentDetails from "@/pages/Dashboard/AssignmentDetails";
+import { lazy } from "react";
+
+const Dashboard = lazy(() => import("@/pages/Dashboard/Dashboard.tsx"));
+// const Students = lazy(() => import("@/pages/Dashboard/Students.tsx"));
+const Courses = lazy(() => import("@/pages/Dashboard/Courses.tsx"));
+const Assignments = lazy(() => import("@/pages/Dashboard/Assignments.tsx"));
+const AssignmentDetails = lazy(() => import("@/pages/Dashboard/AssignmentDetails"));
+const ClassChatPage = lazy(() => import("@/pages/Dashboard/ClassChat.tsx"));
+const MessagesPage = lazy(() => import("@/pages/Dashboard/Messages.tsx"));
+const OnlineClassPage = lazy(() => import("@/pages/Dashboard/OnlineClass.tsx"));
+const Grades = lazy(() => import("@/pages/Dashboard/Grades.tsx"));
+const ProfilePage = lazy(() => import("@/pages/Dashboard/ProfilePage"));
+const StudyMaterialsPage = lazy(() => import("@/pages/Dashboard/StudyMaterials"));
+const CalendarPage = lazy(() => import("@/pages/Dashboard/CalendarPage"));
 
 const dashboardRoutes = [
   { index: true, element: <Dashboard /> },

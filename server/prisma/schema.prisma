@@ -195,7 +195,7 @@ model ClassChatMessages {
 
 model Teacher {
   id             String          @id @default(uuid())
-  name           String
+  name           String          @unique
   email          String          @unique
   password       String
   subjects       String[]

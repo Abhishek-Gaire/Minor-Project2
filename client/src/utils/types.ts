@@ -53,3 +53,62 @@ export interface ClassSession {
   endTime: Date;
   status: "upcoming" | "ongoing" | "finished";
 }
+
+export interface Submission {
+  id: number;
+  assignmentId: number;
+  studentId: string;
+  studentName: string;
+  feedback: string;
+  grade: number;
+  gradedAt: string;
+  submissionDate: string;
+  submissionFile: string | null;
+  submissionUrl: string;
+}
+
+export interface Assignment {
+  id: number;
+  title: string;
+  subject: string;
+  description: string;
+  dueDate: string;
+  pointsPossible: number;
+  status: string;
+  submissions: Submission[];
+  teacherName: string;
+  totalStudents: number | null;
+  updatedAt: string;
+}
+
+export interface TeacherGrade {
+  studentId: string;
+  studentName: string;
+  subject: string;
+  assignmentTitle: string;
+  pointsPossible: number;
+  submission: {
+    id: number;
+    grade: number;
+    feedback: string;
+    submissionDate: string;
+    submissionFile: string | null;
+    submissionUrl: string;
+    assignmentId: number;
+  };
+}
+
+export interface StudentGrade {
+  id: number;
+  studentId: string;
+  studentName: string;
+  grade: number;
+  submissionDate: string;
+  feedback: string;
+  assignment: {
+    title: string;
+    subject: string;
+    teacherName: string;
+    pointsPossible: number;
+  };
+}

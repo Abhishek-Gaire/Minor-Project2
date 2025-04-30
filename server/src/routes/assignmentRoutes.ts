@@ -1,7 +1,7 @@
 import express, { Router } from "express";
 
 import {
-  createAssignMent,
+  createAssignment,
   deleteAssignment,
   getAssignments,
   getAssignmentById,
@@ -14,7 +14,7 @@ import {
 
 const router: Router = express.Router();
 
-router.post("/create", createAssignMent);
+router.post("/create", createAssignment);
 router.get("/get", getAssignments);
 router.get("/get/:id", getAssignmentById);
 router.put("/update/:id", updateAssignment);

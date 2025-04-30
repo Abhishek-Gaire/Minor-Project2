@@ -61,8 +61,8 @@ const Filters = ({
         >
           <option value="">All Assignments</option>
           {assignments.map((assignment) => (
-            <option key={assignment} value={assignment}>
-              {assignment}
+            <option key={assignment.title} value={assignment.title}>
+              {assignment.title}
             </option>
           ))}
         </select>

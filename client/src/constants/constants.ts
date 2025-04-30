@@ -217,11 +217,11 @@ export const superadminSidebarItems: NavItem[] = [
 ];
 
 export const adminSidebarItems: NavItem[] = [
-  {
-    name: "Dashboard",
-    to: `/admin/adminDashboard`,
-    icon: Activity,
-  },
+  // {
+  //   name: "Dashboard",
+  //   to: `/admin/dashboard`,
+  //   icon: Activity,
+  // },
   {
     name: "Students",
     to: `/admin/students`,
@@ -301,36 +301,15 @@ export const employmentTypeMap = {
 
 // List of all available subjects
 export const allSubjects = [
-  "Algebra",
-  "Calculus",
-  "Statistics",
-  "Geometry",
-  "Physics",
-  "Chemistry",
-  "Biology",
-  "Environmental Science",
-  "World History",
-  "American History",
-  "Geography",
-  "Civics",
-  "English Literature",
-  "Creative Writing",
-  "Grammar",
-  "Spanish",
-  "French",
-  "German",
-  "Japanese",
-  "ESL",
+  "Social Studies",
+  "Science",
+  "Computer",
+  "Mathematics",
+  "Optional Mathematics",
+  "English",
+  "Nepali",
+  "Environment and Public Health",
   "Physical Education",
-  "Health",
-  "Art",
-  "Design",
-  "Music Theory",
-  "Band",
-  "Orchestra",
-  "Drama",
-  "Computer Science",
-  "Economics",
-  "Psychology",
-  "Sociology",
+  "Account",
+  "Moral Studies"
 ];

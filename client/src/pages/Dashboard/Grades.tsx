@@ -8,155 +8,7 @@ import GradesTable from "@/components/Dashboard/GradesPage/GradesTable";
 import Pagination from "@/components/Dashboard/GradesPage/Pagination";
 import FeedbackModal from "@/components/Dashboard/GradesPage/FeedbackModal";
 import axios from "axios";
-
-interface GradeEntry {
-  id: number;
-  studentName: string;
-  studentId: string;
-  course: string;
-  classGrade: number; // Grade level (5-10)
-  assignment: string;
-  grade: number;
-  maxGrade: number;
-  submissionDate: string;
-  gradedBy: string;
-  feedback?: string;
-  status: "Excellent" | "Good" | "Average" | "Needs Improvement" | "Failed";
-}
-
-// Mock data for grades
-const gradesData: GradeEntry[] = [
-  {
-    id: 1,
-    studentName: "Emily Johnson",
-    studentId: "STU-0001",
-    course: "Math 7A",
-    classGrade: 7,
-    assignment: "Fractions and Decimals Quiz",
-    grade: 95,
-    maxGrade: 100,
-    submissionDate: "2024-02-10",
-    gradedBy: "Ms. Rebecca Adams",
-    feedback: "Excellent work! Your solutions were clear and methodical.",
-    status: "Excellent",
-  },
-  {
-    id: 2,
-    studentName: "Michael Smith",
-    studentId: "STU-0002",
-    course: "Math 7A",
-    classGrade: 7,
-    assignment: "Fractions and Decimals Quiz",
-    grade: 88,
-    maxGrade: 100,
-    submissionDate: "2024-02-09",
-    gradedBy: "Ms. Rebecca Adams",
-    feedback: "Good effort! Watch your work on problem #4.",
-    status: "Good",
-  },
-  {
-    id: 3,
-    studentName: "Sophia Chen",
-    studentId: "STU-0003",
-    course: "Science 7B",
-    classGrade: 7,
-    assignment: "Ecosystems Project",
-    grade: 92,
-    maxGrade: 100,
-    submissionDate: "2024-02-12",
-    gradedBy: "Mr. James Wilson",
-    feedback: "Outstanding research and presentation!",
-    status: "Excellent",
-  },
-  {
-    id: 4,
-    studentName: "Daniel Rodriguez",
-    studentId: "STU-0004",
-    course: "English 7C",
-    classGrade: 7,
-    assignment: "Book Report - Charlotte's Web",
-    grade: 75,
-    maxGrade: 100,
-    submissionDate: "2024-02-08",
-    gradedBy: "Mrs. Sarah Thompson",
-    feedback: "Good ideas but work on paragraph structure.",
-    status: "Average",
-  },
-  {
-    id: 5,
-    studentName: "Jessica Williams",
-    studentId: "STU-0005",
-    course: "Science 7B",
-    classGrade: 7,
-    assignment: "Ecosystems Project",
-    grade: 65,
-    maxGrade: 100,
-    submissionDate: "2024-02-11",
-    gradedBy: "Mr. James Wilson",
-    feedback: "Missing key components of the assignment. Please see me.",
-    status: "Needs Improvement",
-  },
-  {
-    id: 6,
-    studentName: "Ryan Thompson",
-    studentId: "STU-0006",
-    course: "Math 7A",
-    classGrade: 7,
-    assignment: "Fractions and Decimals Quiz",
-    grade: 42,
-    maxGrade: 100,
-    submissionDate: "2024-02-08",
-    gradedBy: "Ms. Rebecca Adams",
-    feedback: "Please schedule tutoring session to review concepts.",
-    status: "Failed",
-  },
-];
-
-// Mock data for student-specific view
-const studentGradesData: GradeEntry[] = [
-  {
-    id: 1,
-    studentName: "Demo User",
-    studentId: "USR-001",
-    course: "Math 7A",
-    classGrade: 7,
-    assignment: "Fractions and Decimals Quiz",
-    grade: 88,
-    maxGrade: 100,
-    submissionDate: "2024-02-09",
-    gradedBy: "Ms. Rebecca Adams",
-    feedback: "Good effort! Watch your work on problem #4.",
-    status: "Good",
-  },
-  {
-    id: 2,
-    studentName: "Demo User",
-    studentId: "USR-001",
-    course: "Science 7B",
-    classGrade: 7,
-    assignment: "Ecosystems Project",
-    grade: 92,
-    maxGrade: 100,
-    submissionDate: "2024-02-12",
-    gradedBy: "Mr. James Wilson",
-    feedback: "Outstanding research and presentation!",
-    status: "Excellent",
-  },
-  {
-    id: 3,
-    studentName: "Demo User",
-    studentId: "USR-001",
-    course: "English 7C",
-    classGrade: 7,
-    assignment: "Book Report - Charlotte's Web",
-    grade: 75,
-    maxGrade: 100,
-    submissionDate: "2024-02-08",
-    gradedBy: "Mrs. Sarah Thompson",
-    feedback: "Good ideas but work on paragraph structure.",
-    status: "Average",
-  },
-];
+import { Assignment, StudentGrade } from "@/utils/types";
 
 const Grades: React.FC = () => {
   const { user } = useAuth();
@@ -167,64 +19,139 @@ const Grades: React.FC = () => {
   const [selectedAssignment, setSelectedAssignment] = useState<string | null>(
     null
   );
-  const [feedbackModal, setFeedbackModal] = useState<GradeEntry | null>(null);
+  const [feedbackModal, setFeedbackModal] = useState(null);
 
-  // Based on role, determine which grades to show
-  const allGrades = isTeacher ? gradesData : studentGradesData;
-
-  // Get a list of courses based on user role
-  const courses = useMemo(
-    () => Array.from(new Set(allGrades.map((grade) => grade.course))),
-    [allGrades]
-  );
+  const courses = useMemo(() => {
+    return Array.from(
+      new Set(
+        grades
+          .map((grade) =>
+            isTeacher ? grade.subject : grade.assignment?.subject
+          )
+          .filter(Boolean) // 👈 filter out undefined/null just in case
+      )
+    );
+  }, [grades, isTeacher]);
 
   useEffect(() => {
     const fetchGrades = async () => {
       try {
-        const response = await axios.get(`http://localhost:3000/api/v1/assignments/grades/${user.id}`);
-        setGrades(response.data);
+        const response = await axios.get(
+          `http://localhost:3000/api/v1/assignments/grades/${user.id}`
+        );
+        setGrades(response.data.data);
       } catch (error) {
-        console.error('Error fetching grades:', error);
+        console.error("Error fetching grades:", error);
       }
     };
     fetchGrades();
   }, []);
-  console.log(grades);
+
   // Get a list of assignments based on selected course
   const assignments = useMemo(() => {
-    const filtered = allGrades.filter(
-      (grade) => !selectedCourse || grade.course === selectedCourse
+    let filtered = [];
+
+    if (!grades || grades.length === 0) {
+      return [];
+    }
+
+    // Type guards
+    function isTeacherGrade(grade: any): boolean {
+      return grade.submission !== undefined;
+    }
+
+    function isStudentGrade(grade: any): boolean {
+      return grade.assignment !== undefined;
+    }
+
+    // Filter by selected course if any
+    filtered = grades.filter((grade) => {
+      if (!selectedCourse) return true;
+
+      // Get the subject based on whether this is a teacher or student grade
+      const subject = isTeacherGrade(grade)
+        ? grade.subject
+        : grade.assignment?.subject;
+
+      return subject === selectedCourse;
+    });
+
+    // Map to get unique assignments
+    const uniqueAssignments = Array.from(
+      new Set(
+        filtered
+          .map((grade) => {
+            if (isTeacherGrade(grade)) {
+              // For teacher: return assignment title or ID depending on your data structure
+              return grade.assignmentTitle || grade.assignmentId;
+            } else if (isStudentGrade(grade)) {
+              // For student: return assignment title or ID from the assignment object
+              return grade.assignment?.title || grade.assignment?.id;
+            }
+            return null; // Fallback
+          })
+          .filter(Boolean) // Remove any null values
+      )
     );
-    return Array.from(new Set(filtered.map((grade) => grade.assignment)));
-  }, [allGrades, selectedCourse]);
 
-  // Apply filters based on search and selections
-  const filteredGrades = allGrades.filter(
-    (grade) =>
-      (grade.studentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        grade.studentId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        grade.assignment.toLowerCase().includes(searchTerm.toLowerCase())) &&
-      (!selectedCourse || grade.course === selectedCourse) &&
-      (!selectedAssignment || grade.assignment === selectedAssignment)
-  );
+    return uniqueAssignments;
+  }, [grades, selectedCourse, isTeacher]); // Added isTeacher dependency
 
-  // Calculate stats for teacher view
+  const filteredGrades = useMemo(() => {
+    if (isTeacher) {
+      return (grades as Assignment[])
+        .flatMap((assignment) =>
+          (assignment.submissions || []).map((submission) => ({
+            assignmentTitle: assignment.title,
+            subject: assignment.subject,
+            studentName: submission.studentName,
+            studentId: submission.studentId,
+            submission,
+            pointsPossible: assignment.pointsPossible,
+          }))
+        )
+        .filter(
+          (item) =>
+            (item.studentName
+              .toLowerCase()
+              .includes(searchTerm.toLowerCase()) ||
+              item.studentId.toLowerCase().includes(searchTerm.toLowerCase()) ||
+              item.assignmentTitle
+                .toLowerCase()
+                .includes(searchTerm.toLowerCase())) &&
+            (!selectedCourse || item.subject === selectedCourse) &&
+            (!selectedAssignment || item.assignmentTitle === selectedAssignment)
+        );
+    } else {
+      return (grades as StudentGrade[]).filter(
+        (grade) =>
+          (grade.studentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            grade.studentId.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            grade.title.toLowerCase().includes(searchTerm.toLowerCase())) &&
+          (!selectedCourse || grade.subject === selectedCourse) &&
+          (!selectedAssignment || grade.title === selectedAssignment)
+      );
+    }
+  }, [grades, isTeacher, searchTerm, selectedCourse, selectedAssignment]);
+
   const stats = useMemo(() => {
     if (!isTeacher) return null;
+    console.log(filteredGrades);
 
     const courseData = filteredGrades.filter(
       (g) =>
-        (!selectedCourse || g.course === selectedCourse) &&
-        (!selectedAssignment || g.assignment === selectedAssignment)
+        (!selectedCourse || g.subject === selectedCourse) &&
+        (!selectedAssignment || g.assignmentTitle === selectedAssignment)
     );
 
     if (courseData.length === 0) return null;
 
     const totalStudents = courseData.length;
     const avgGrade =
-      courseData.reduce((sum, g) => sum + g.grade, 0) / totalStudents;
-    const excellent = courseData.filter((g) => g.status === "Excellent").length;
-    const failed = courseData.filter((g) => g.status === "Failed").length;
+      courseData.reduce((sum, g) => sum + (g.submission.grade || 0), 0) /
+      totalStudents;
+    const excellent = courseData.filter((g) => g.submission.grade >= 90).length;
+    const failed = courseData.filter((g) => g.submission.grade < 50).length;
 
     return {
       totalStudents,
@@ -236,20 +163,24 @@ const Grades: React.FC = () => {
     };
   }, [filteredGrades, isTeacher, selectedCourse, selectedAssignment]);
 
-  const getStatusColor = (status: GradeEntry["status"]) => {
-    switch (status) {
-      case "Excellent":
-        return "bg-green-100 text-green-800";
-      case "Good":
-        return "bg-blue-100 text-blue-800";
-      case "Average":
-        return "bg-yellow-100 text-yellow-800";
-      case "Needs Improvement":
-        return "bg-orange-100 text-orange-800";
-      case "Failed":
-        return "bg-red-100 text-red-800";
-      default:
-        return "bg-gray-100 text-gray-800";
+  const getStatusColor = (grade: number) => {
+    let status: string;
+
+    if (grade >= 90) {
+      status = "Excellent";
+      return "bg-green-100 text-green-800";
+    } else if (grade >= 80) {
+      status = "Good";
+      return "bg-blue-100 text-blue-800";
+    } else if (grade >= 70) {
+      status = "Average";
+      return "bg-yellow-100 text-yellow-800";
+    } else if (grade >= 60) {
+      status = "Needs Improvement";
+      return "bg-orange-100 text-orange-800";
+    } else {
+      status = "Failed";
+      return "bg-red-100 text-red-800";
     }
   };
 
@@ -265,13 +196,13 @@ const Grades: React.FC = () => {
   const averageGrade = useMemo(() => {
     if (isTeacher) return null;
 
-    const userGrades = studentGradesData.map((g) => g.grade);
+    const userGrades = grades.map((g) => g.grade);
     if (userGrades.length === 0) return 0;
 
     return (
       userGrades.reduce((sum, grade) => sum + grade, 0) / userGrades.length
     ).toFixed(1) as unknown as number;
-  }, [isTeacher]);
+  }, [isTeacher, grades]);
 
   return (
     <div className={"min-h-screen bg-background"}>
@@ -304,7 +235,7 @@ const Grades: React.FC = () => {
             getGradeColor={getGradeColor}
             getStatusColor={getStatusColor}
           />
-          <Pagination filteredGrades={filteredGrades} allGrades={allGrades} />
+          <Pagination filteredGrades={filteredGrades} allGrades={grades} />
         </div>
 
         {/* Feedback Modal */}

@@ -69,48 +69,48 @@ const ViewTeacherPage = () => {
               <h2 className="text-lg font-semibold border-b pb-2">Basic Information</h2>
               <div className="grid grid-cols-3 gap-4 mt-2">
                 <div className="font-medium">ID:</div>
-                <div className="col-span-2">{teacher.id}</div>
+                <div className="col-span-2">{teacher?.id}</div>
 
                 <div className="font-medium">Name:</div>
-                <div className="col-span-2">{teacher.name}</div>
+                <div className="col-span-2">{teacher?.name}</div>
 
                 <div className="font-medium">Email:</div>
-                <div className="col-span-2">{teacher.email}</div>
+                <div className="col-span-2">{teacher?.email}</div>
 
                 <div className="font-medium">Phone:</div>
-                <div className="col-span-2">{teacher.phone || "N/A"}</div>
+                <div className="col-span-2">{teacher?.phone || "N/A"}</div>
 
                 <div className="font-medium">Status:</div>
                 <div className="col-span-2">
                   <span
                     className={`px-2 py-1 rounded-full text-xs ${
-                      teacher.status === "ACTIVE"
+                      teacher?.status === "ACTIVE"
                         ? "bg-green-100 text-green-800"
-                        : teacher.status === "ONLEAVE"
+                        : teacher?.status === "ONLEAVE"
                         ? "bg-yellow-100 text-yellow-800"
-                        : teacher.status === "INACTIVE"
+                        : teacher?.status === "INACTIVE"
                         ? "bg-gray-100 text-gray-800"
                         : "bg-red-100 text-red-800"
                     }`}
                   >
-                    {statusMap[teacher.status] || teacher.status}
+                    {statusMap[teacher?.status] || teacher?.status}
                   </span>
                 </div>
 
                 <div className="font-medium">Employment:</div>
                 <div className="col-span-2">
-                  {employmentTypeMap[teacher.employmentType] || teacher.employmentType}
+                  {employmentTypeMap[teacher?.employmentType] || teacher?.employmentType}
                 </div>
 
                 <div className="font-medium">Classes:</div>
-                <div className="col-span-2">{teacher.classes}</div>
+                <div className="col-span-2">{teacher?.classes}</div>
               </div>
             </div>
 
             <div>
               <h2 className="text-lg font-semibold border-b pb-2">Subjects</h2>
               <div className="flex flex-wrap gap-2 mt-2">
-                {teacher.subjects.map((subject) => (
+                {teacher?.subjects?.map((subject) => (
                   <span
                     key={subject}
                     className="px-2 py-1 bg-gray-100 rounded-full text-xs"
@@ -123,81 +123,81 @@ const ViewTeacherPage = () => {
           </div>
 
           <div className="space-y-4">
-            {(teacher.teacherDetails.address || teacher.teacherDetails.city || teacher.teacherDetails.state || teacher.teacherDetails.zipCode) && (
+            {(teacher?.teacherDetails?.address || teacher?.teacherDetails?.city || teacher?.teacherDetails?.state || teacher?.teacherDetails?.zipCode) && (
               <div>
                 <h2 className="text-lg font-semibold border-b pb-2">Address</h2>
                 <div className="mt-2">
-                  {teacher.teacherDetails.address && <div>{teacher.teacherDetails.address}</div>}
+                  {teacher?.teacherDetails?.address && <div>{teacher?.teacherDetails?.address}</div>}
                   <div>
-                    {teacher.teacherDetails.city && `${teacher.teacherDetails.city}, `}
-                    {teacher.teacherDetails.state&& `${teacher.teacherDetails.state} `}
-                    {teacher.teacherDetails.zipCode}
+                    {teacher?.teacherDetails?.city && `${teacher?.teacherDetails?.city}, `}
+                    {teacher?.teacherDetails?.state&& `${teacher?.teacherDetails?.state} `}
+                    {teacher?.teacherDetails?.zipCode}
                   </div>
                 </div>
               </div>
             )}
 
-            {(teacher.teacherDetails.qualification || teacher.teacherDetails.experience > 0 || teacher.teacherDetails.specialization) && (
+            {(teacher?.teacherDetails?.qualification || teacher?.teacherDetails?.experience > 0 || teacher?.teacherDetails?.specialization) && (
               <div>
                 <h2 className="text-lg font-semibold border-b pb-2">Qualifications</h2>
                 <div className="grid grid-cols-3 gap-4 mt-2">
-                  {teacher.teacherDetails.qualification && (
+                  {teacher?.teacherDetails?.qualification && (
                     <>
                       <div className="font-medium">Qualification:</div>
-                      <div className="col-span-2">{teacher.teacherDetails.qualification}</div>
+                      <div className="col-span-2">{teacher?.teacherDetails?.qualification}</div>
                     </>
                   )}
 
-                  {teacher.teacherDetails.experience > 0 && (
+                  {teacher?.teacherDetails?.experience > 0 && (
                     <>
                       <div className="font-medium">Experience:</div>
-                      <div className="col-span-2">{teacher.teacherDetails.experience} years</div>
+                      <div className="col-span-2">{teacher?.teacherDetails?.experience} years</div>
                     </>
                   )}
 
-                  {teacher.teacherDetails.specialization && (
+                  {teacher?.teacherDetails?.specialization && (
                     <>
                       <div className="font-medium">Specialization:</div>
-                      <div className="col-span-2">{teacher.teacherDetails.specialization}</div>
+                      <div className="col-span-2">{teacher?.teacherDetails?.specialization}</div>
                     </>
                   )}
                 </div>
               </div>
             )}
 
-            {(teacher.teacherDetails.dateOfBirth || teacher.teacherDetails.joinDate || teacher.teacherDetails.emergencyContact) && (
+            {(teacher?.teacherDetails?.dateOfBirth || teacher?.teacherDetails?.joinDate || teacher?.teacherDetails?.emergencyContact) && (
               <div>
                 <h2 className="text-lg font-semibold border-b pb-2">Additional Details</h2>
                 <div className="grid grid-cols-3 gap-4 mt-2">
-                  {teacher.teacherDetails.dateOfBirth && (
+                  {teacher?.teacherDetails?.dateOfBirth && (
                     <>
                       <div className="font-medium">Date of Birth:</div>
-                      <div className="col-span-2">{teacher.teacherDetails.dateOfBirth}</div>
+                      <div className="col-span-2">{teacher?.teacherDetails?.dateOfBirth}</div>
                     </>
                   )}
 
-                  {teacher.teacherDetails.joinDate && (
+                  {teacher?.teacherDetails?.joinDate && (
                     <>
                       <div className="font-medium">Joined:</div>
-                      <div className="col-span-2">{teacher.teacherDetails.joinDate}</div>
+                      <div className="col-span-2">{teacher?.teacherDetails?.joinDate}</div>
                     </>
                   )}
 
-                  {teacher.teacherDetails.emergencyContact && (
+                  {teacher?.teacherDetails?.emergencyContact && (
                     <>
                       <div className="font-medium">Emergency Contact:</div>
-                      <div className="col-span-2">{teacher.teacherDetails.emergencyContact}</div>
+                      <div className="col-span-2">{teacher?.teacherDetails?.emergencyContact}</div>
                     </>
                   )}
                 </div>
               </div>
             )}
 
-            {teacher.teacherDetails.additionalNotes && (
+            {teacher?.teacherDetails?.additionalNotes && (
               <div>
                 <h2 className="text-lg font-semibold border-b pb-2">Notes</h2>
                 <div className="mt-2 p-3 bg-gray-50 rounded">
-                  {teacher.teacherDetails.additionalNotes}
+                  {teacher?.teacherDetails?.additionalNotes}
                 </div>
               </div>
             )}

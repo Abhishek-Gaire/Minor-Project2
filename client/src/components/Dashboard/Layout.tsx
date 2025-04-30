@@ -8,6 +8,8 @@ import { useAuth } from "@/contexts/useAuth.ts";
 import { cn } from "@/lib/utils.ts";
 import { useIsMobile } from "@/hooks/use-mobile.ts";
 import { ThemeProvider } from "@/contexts/ThemeContext.tsx";
+import { Suspense } from "react";
+import { Loader2 } from "lucide-react";
 
 const Layout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -68,7 +70,9 @@ const Layout = () => {
           {/* Main Content */}
           <main className="p-4 sm:p-6">
             <div className="animate-fadeIn max-w-[100vw] overflow-x-auto">
-              <Outlet />
+              <Suspense fallback={<Loader2 className="animate-spin" />}>
+                <Outlet />
+              </Suspense>
             </div>
           </main>
         </div>

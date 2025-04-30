@@ -10,24 +10,27 @@ const FeedbackModal = ({ feedbackModal, getGradeColor, setFeedbackModal }) => {
           <div>
             <p className="text-sm text-muted-foreground">Assignment</p>
             <p className="font-medium text-card-foreground">
-              {feedbackModal.assignment}
+              {feedbackModal?.title}
             </p>
           </div>
 
           <div>
-            <p className="text-sm text-muted-foreground">Course</p>
+            <p className="text-sm text-muted-foreground">Subject</p>
             <p className="font-medium text-card-foreground">
-              {feedbackModal.course}
+              {feedbackModal?.subject}
             </p>
           </div>
 
           <div>
             <p className="text-sm text-muted-foreground">Grade</p>
-            <p className={`font-bold ${getGradeColor(feedbackModal.grade)}`}>
-              {feedbackModal.grade}/{feedbackModal.maxGrade} (
-              {((feedbackModal.grade / feedbackModal.maxGrade) * 100).toFixed(
-                1
-              )}
+            <p className={`font-bold ${getGradeColor(feedbackModal?.grade)}`}>
+              {feedbackModal?.grade}/{feedbackModal?.pointsPossible}{" "}
+              (
+              {(
+                (feedbackModal?.grade /
+                  feedbackModal?.pointsPossible) *
+                100
+              ).toFixed(1)}
               %)
             </p>
           </div>
@@ -35,7 +38,7 @@ const FeedbackModal = ({ feedbackModal, getGradeColor, setFeedbackModal }) => {
           <div>
             <p className="text-sm text-muted-foreground">Teacher Feedback</p>
             <p className="bg-accent p-3 rounded text-foreground">
-              {feedbackModal.feedback}
+              {feedbackModal?.feedback}
             </p>
           </div>
 

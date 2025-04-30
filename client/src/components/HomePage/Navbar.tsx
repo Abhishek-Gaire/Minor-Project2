@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { School } from "lucide-react";
 
 import { HostMeetingButton } from "../Meetings/HostMeetingButton";
-import { navigation } from "../../constants/constants";
+import { navigation } from "@/constants/constants";
 
 const Navbar = () => {
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -19,9 +18,9 @@ const Navbar = () => {
           {/* Logo and Branding */}
           <div className="flex items-center">
             <Link to="/" className="flex items-center">
-              <School className="h-8 w-8 text-indigo-600" />
+              <img src="/logo.png" alt="Logo" className="w-16 object-contain" />
               <span className="ml-2 text-xl font-bold text-gray-900">
-                EduConnect
+                Smart Class
               </span>
             </Link>
           </div>
