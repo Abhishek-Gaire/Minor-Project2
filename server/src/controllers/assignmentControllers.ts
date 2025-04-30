@@ -75,7 +75,7 @@ export const getAssignments: RequestHandler = async (
 ) => {
   try {
     const { status, searchTerm, grade } = req.query;
-
+    console.log(grade);
     // Build filter conditions
     const filters: any = {};
 
@@ -90,13 +90,13 @@ export const getAssignments: RequestHandler = async (
         {
           description: { contains: searchTerm as string, mode: "insensitive" },
         },
+        {teacherName: { contains: searchTerm as string, mode: "insensitive" }},
       ];
     }
 
-    if (grade) {
+    if (grade) {  
       filters.grade = Number(grade);
     }
-    
     // Fetch assignments with filters
     const assignments = await prisma.assignment.findMany({
       where: filters,

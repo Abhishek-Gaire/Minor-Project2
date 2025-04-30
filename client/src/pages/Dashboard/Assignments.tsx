@@ -40,20 +40,29 @@ const Assignments: React.FC = () => {
   const fetchAssignments = async () => {
     try {
       setIsLoading(true);
+      let grade: string | undefined;
       const filters: { status?: string; searchTerm?: string } = {};
+
+      if (user.role === "student") {
+        grade = user.grade;
+      }
 
       if (selectedStatus) {
         filters.status = selectedStatus;
       }
 
       if (searchTerm) {
-        filters.searchTerm = searchTerm;
+        if (user.role === "teacher") {
+          filters.searchTerm = `${searchTerm} ${user.name}`;
+        } else {
+          filters.searchTerm = searchTerm;
+        }
+      } else if (user.role === "teacher") {
+        // If there's no searchTerm but the user is a teacher, use just their name
+        filters.searchTerm = user.name;
       }
 
-      const response = await assignmentService.getAssignments(
-        filters,
-        user.grade
-      );
+      const response = await assignmentService.getAssignments(filters, grade);
       setAssignments(response.data);
       setError(null);
     } catch (err) {

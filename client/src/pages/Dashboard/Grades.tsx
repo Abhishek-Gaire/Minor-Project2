@@ -8,7 +8,7 @@ import GradesTable from "@/components/Dashboard/GradesPage/GradesTable";
 import Pagination from "@/components/Dashboard/GradesPage/Pagination";
 import FeedbackModal from "@/components/Dashboard/GradesPage/FeedbackModal";
 import axios from "axios";
-import { Assignment, StudentGrade } from "@/utils/types";
+import { Assignment, StudentGrade, Submission } from "@/utils/types";
 
 const Grades: React.FC = () => {
   const { user } = useAuth();
@@ -98,12 +98,14 @@ const Grades: React.FC = () => {
   }, [grades, selectedCourse, isTeacher]); // Added isTeacher dependency
 
   const filteredGrades = useMemo(() => {
+    // console.log(grades);
     if (isTeacher) {
       return (grades as Assignment[])
         .flatMap((assignment) =>
           (assignment.submissions || []).map((submission) => ({
             assignmentTitle: assignment.title,
             subject: assignment.subject,
+            grade: assignment.grade,
             studentName: submission.studentName,
             studentId: submission.studentId,
             submission,
@@ -127,41 +129,50 @@ const Grades: React.FC = () => {
         (grade) =>
           (grade.studentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
             grade.studentId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            grade.title.toLowerCase().includes(searchTerm.toLowerCase())) &&
-          (!selectedCourse || grade.subject === selectedCourse) &&
-          (!selectedAssignment || grade.title === selectedAssignment)
+            grade.assignment.title
+              .toLowerCase()
+              .includes(searchTerm.toLowerCase())) &&
+          (!selectedCourse || grade.assignment.subject === selectedCourse) &&
+          (!selectedAssignment || grade.assignment.title === selectedAssignment)
       );
     }
   }, [grades, isTeacher, searchTerm, selectedCourse, selectedAssignment]);
 
   const stats = useMemo(() => {
-    if (!isTeacher) return null;
-    console.log(filteredGrades);
-
-    const courseData = filteredGrades.filter(
-      (g) =>
-        (!selectedCourse || g.subject === selectedCourse) &&
-        (!selectedAssignment || g.assignmentTitle === selectedAssignment)
-    );
-
-    if (courseData.length === 0) return null;
-
-    const totalStudents = courseData.length;
-    const avgGrade =
-      courseData.reduce((sum, g) => sum + (g.submission.grade || 0), 0) /
-      totalStudents;
-    const excellent = courseData.filter((g) => g.submission.grade >= 90).length;
-    const failed = courseData.filter((g) => g.submission.grade < 50).length;
-
-    return {
-      totalStudents,
-      avgGrade: avgGrade.toFixed(1),
-      excellent,
-      excellentPercent: ((excellent / totalStudents) * 100).toFixed(0),
-      failed,
-      failedPercent: ((failed / totalStudents) * 100).toFixed(0),
-    };
+    if (isTeacher) {
+      const courseData = (filteredGrades as {
+        assignmentTitle: string;
+        subject: string;
+        studentName: string;
+        studentId: string;
+        submission: Submission;
+        pointsPossible: number;
+      }[]).filter(
+        (g) =>
+          (!selectedCourse || g.subject === selectedCourse) &&
+          (!selectedAssignment || g.assignmentTitle === selectedAssignment)
+      );
+  
+      if (courseData.length === 0) return null;
+  
+      const totalStudents = courseData.length;
+      const avgGrade =
+        courseData.reduce((sum, g) => sum + (g.submission.grade || 0), 0) /
+        totalStudents;
+      const excellent = courseData.filter((g) => g.submission.grade >= 90).length;
+      const failed = courseData.filter((g) => g.submission.grade < 50).length;
+  
+      return {
+        totalStudents,
+        avgGrade: avgGrade.toFixed(1),
+        excellent,
+        excellentPercent: ((excellent / totalStudents) * 100).toFixed(0),
+        failed,
+        failedPercent: ((failed / totalStudents) * 100).toFixed(0),
+      };
+    }
   }, [filteredGrades, isTeacher, selectedCourse, selectedAssignment]);
+  
 
   const getStatusColor = (grade: number) => {
     let status: string;

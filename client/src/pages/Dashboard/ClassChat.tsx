@@ -11,11 +11,13 @@ const BACKEND_URI = import.meta.env.VITE_BACKEND_URI!;
 
 const ClassChatPage: React.FC = () => {
   const { user } = useAuth();
-  console.log(user.grade)
   const [classMessages, setClassMessages] = useState<ClassMessage[]>([]);
   const [loading, setLoading] = useState(true);
   const [socket, setSocket] = useState<Socket | null>(null);
-  const [selectedClass, setSelectedClass] = useState<string | null>(user?.grade); // Track selected class
+  const [selectedClass, setSelectedClass] = useState<string | null>(
+    null
+  ); // Track selected 
+  const className = selectedClass || user?.grade;
   const messageEndRef = useRef<HTMLDivElement>(null);
 
   // Initialize socket connection
@@ -50,14 +52,15 @@ const ClassChatPage: React.FC = () => {
 
   // Join Room For Class Chat
   useEffect(() => {
-    if (socket && user && selectedClass) {
+    
+    if (socket && user && className) {
       socket.emit("joinClassRoom", {
         userName: user.name,
-        conversationId: selectedClass, // Use selected class instead of user.grade
+        conversationId: className, // Use selected class instead of user.grade
       });
-      socket.emit("getClassHistory", { className: selectedClass }); // Fetch history for selected class
+      socket.emit("getClassHistory", { className }); // Fetch history for selected class
     }
-  }, [socket, user, selectedClass]);
+  }, [socket, user, className]);
 
   // Scroll to bottom
   const scrollToBottom = () => {
@@ -83,33 +86,32 @@ const ClassChatPage: React.FC = () => {
     scrollToBottom();
   }, [classMessages]);
 
-// Render class selection dropdown for teachers
-const renderClassSelection = () => {
-  const classes = Array.isArray(user.grade)
-    ? user.grade
-    : user.grade
-    ? [user.grade]
-    : ["Grade 1", "Grade 2", "Grade 3", "Grade 4", "Grade 5"]; // Fallback example list
+  // Render class selection dropdown for teachers
+  const renderClassSelection = () => {
+    const classes = Array.isArray(user.grade)
+      ? user.grade
+      : user.grade
+      ? [user.grade]
+      : ["Grade 1", "Grade 2", "Grade 3", "Grade 4", "Grade 5"]; // Fallback example list
 
-  return (
-    <div className="flex flex-col items-center justify-center h-full">
-      <h2 className="text-xl font-semibold mb-4">Select a Class</h2>
-      <select
-        className="p-2 border rounded"
-        value={selectedClass || ""}
-        onChange={(e) => setSelectedClass(e.target.value)}
-      >
-        <option value="">-- Select a Class --</option>
-        {classes.map((className) => (
-          <option key={className} value={className}>
-            {className}
-          </option>
-        ))}
-      </select>
-    </div>
-  );
-};
-
+    return (
+      <div className="flex flex-col items-center justify-center h-full">
+        <h2 className="text-xl font-semibold mb-4">Select a Class</h2>
+        <select
+          className="p-2 border rounded"
+          value={selectedClass || ""}
+          onChange={(e) => setSelectedClass(e.target.value)}
+        >
+          <option value="">-- Select a Class --</option>
+          {classes.map((className) => (
+            <option key={className} value={className}>
+              {className}
+            </option>
+          ))}
+        </select>
+      </div>
+    );
+  };
 
   return (
     <div className="flex flex-col h-[87vh] bg-background">
@@ -156,7 +158,7 @@ const renderClassSelection = () => {
         </ScrollArea>
       )}
 
-      {selectedClass && (
+      {className && (
         <MessageInput
           sender={user}
           sendClassChatMessage={sendClassChatMessage}

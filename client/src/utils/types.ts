@@ -72,6 +72,7 @@ export interface Assignment {
   title: string;
   subject: string;
   description: string;
+  grade: number;
   dueDate: string;
   pointsPossible: number;
   status: string;

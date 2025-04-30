@@ -21,7 +21,6 @@ const GradesTable: React.FC<GradesTableProps> = ({
   ): entry is TeacherGrade {
     return (entry as TeacherGrade).submission !== undefined;
   }
-
   function isStudentGrade(
     entry: TeacherGrade | StudentGrade
   ): entry is StudentGrade {
