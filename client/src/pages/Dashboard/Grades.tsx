@@ -10,6 +10,7 @@ import FeedbackModal from "@/components/Dashboard/GradesPage/FeedbackModal";
 import axios from "axios";
 import { Assignment, StudentGrade, Submission } from "@/utils/types";
 
+const BACKEND_URI = import.meta.env.VITE_BACKEND_URI!;
 const Grades: React.FC = () => {
   const { user } = useAuth();
   const isTeacher = user.role === "teacher";
@@ -37,7 +38,7 @@ const Grades: React.FC = () => {
     const fetchGrades = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3000/api/v1/assignments/grades/${user.id}`
+          `${BACKEND_URI}/api/v1/assignments/grades/${user.id}`
         );
         setGrades(response.data.data);
       } catch (error) {
