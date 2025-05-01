@@ -47,15 +47,19 @@ export const adminLogin: RequestHandler = async (
     }
 
     // Generate JWT token
-    const token = jwt.sign({ id: adminExists.id,schoolId:adminExists.schoolId }, JWT_SECRET, {
-      expiresIn: "24h",
-    });
+    const token = jwt.sign(
+      { id: adminExists.id, schoolId: adminExists.schoolId },
+      JWT_SECRET,
+      {
+        expiresIn: "24h",
+      }
+    );
 
     // Set HTTP-only cookie
     res.cookie("adminAccessToken", token, {
       httpOnly: true,
-      secure: false, // Set to true in production with HTTPS
-      sameSite: "lax",
+      secure: process.env.NODE_ENV! === "production", // Secure only in production (HTTPS)
+      sameSite: process.env.NODE_ENV! === "production" ? "none" : "lax", // Cross-origin in production, lax in development
       path: "/",
     });
 
@@ -102,13 +106,11 @@ export const adminForgotPassword: RequestHandler = async (
     // Send email logic (replace with your email service)
     console.log(`Admin reset token for ${email}: ${resetToken}`);
 
-    res
-      .status(200)
-      .json({
-        success: true,
-        message: "Reset link sent to your email",
-        resetToken,
-      });
+    res.status(200).json({
+      success: true,
+      message: "Reset link sent to your email",
+      resetToken,
+    });
   } catch (error: any) {
     res.status(500).json({
       success: false,
@@ -124,12 +126,10 @@ export const adminResetPassword: RequestHandler = async (
   const { token, newPassword } = req.body;
 
   if (!token || !newPassword) {
-    res
-      .status(400)
-      .json({
-        success: false,
-        message: "Please provide token and new password",
-      });
+    res.status(400).json({
+      success: false,
+      message: "Please provide token and new password",
+    });
     return;
   }
 
@@ -159,12 +159,10 @@ export const adminChangePassword: RequestHandler = async (
   const adminId = (req as any).user.id; // Extracted from middleware after authentication
 
   if (!oldPassword || !newPassword) {
-    res
-      .status(400)
-      .json({
-        success: false,
-        message: "Please provide old and new passwords",
-      });
+    res.status(400).json({
+      success: false,
+      message: "Please provide old and new passwords",
+    });
     return;
   }
 
@@ -250,8 +248,8 @@ export const adminLogout: RequestHandler = async (
     // Clear the admin access token cookie
     res.clearCookie("adminAccessToken", {
       httpOnly: true,
-      secure: false, // Set to true in production with HTTPS
-      sameSite: "lax",
+      secure: process.env.NODE_ENV! === "production", // Secure only in production (HTTPS)
+      sameSite: process.env.NODE_ENV! === "production" ? "none" : "lax", // Cross-origin in production, lax in development
       path: "/",
     });
 

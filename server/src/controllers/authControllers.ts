@@ -37,8 +37,8 @@ export const login: RequestHandler = async (
 
       res.cookie("studentAccessToken", token, {
         httpOnly: true,
-        secure: false,
-        sameSite: "lax",
+        secure: process.env.NODE_ENV! === "production", // Secure only in production (HTTPS)
+        sameSite: process.env.NODE_ENV! === "production" ? "none" : "lax", // Cross-origin in production, lax in development
         path: "/",
       });
     } else {
@@ -65,8 +65,8 @@ export const login: RequestHandler = async (
 
       res.cookie("teacherAccessToken", token, {
         httpOnly: true,
-        secure: false,
-        sameSite: "lax",
+        secure: process.env.NODE_ENV! === "production", // Secure only in production (HTTPS)
+        sameSite: process.env.NODE_ENV! === "production" ? "none" : "lax", // Cross-origin in production, lax in development
         path: "/",
       });
     }
@@ -274,15 +274,15 @@ export const userLogout: RequestHandler = async (
     if (role === "student") {
       res.clearCookie("studentAccessToken", {
         httpOnly: true,
-        secure: false, // Set to true in production with HTTPS
-        sameSite: "lax",
+        secure: process.env.NODE_ENV! === "production", // Secure only in production (HTTPS)
+        sameSite: process.env.NODE_ENV! === "production" ? "none" : "lax", // Cross-origin in production, lax in development
         path: "/",
       });
     } else if (role === "teacher") {
       res.clearCookie("teacherAccessToken", {
         httpOnly: true,
-        secure: false, // Set to true in production with HTTPS
-        sameSite: "lax",
+        secure: process.env.NODE_ENV! === "production", // Secure only in production (HTTPS)
+        sameSite: process.env.NODE_ENV! === "production" ? "none" : "lax", // Cross-origin in production, lax in development
         path: "/",
       });
     } else {
