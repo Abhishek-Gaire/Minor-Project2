@@ -45,13 +45,14 @@ export interface AuthContextType {
 }
 
 export interface ClassSession {
-  id: string;
-  title: string;
+  id?: string;
+  subject: string;
   description: string;
-  instructor: string;
+  teacherName: string;
+  classNumber: number;
   startTime: Date;
   endTime: Date;
-  status: "upcoming" | "ongoing" | "finished";
+  status?: "upcoming" | "ongoing" | "finished";
 }
 
 export interface Submission {

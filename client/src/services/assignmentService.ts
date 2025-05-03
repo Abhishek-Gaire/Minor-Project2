@@ -1,5 +1,3 @@
-// src/services/assignmentService.ts
-
 import axios from "axios";
 
 // Define base URL for API calls

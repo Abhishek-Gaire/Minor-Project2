@@ -1,11 +1,12 @@
 import { RouterProvider } from "react-router-dom";
 import { router } from "./routes";
 import { AuthProvider } from "./contexts/AuthProvider.tsx";
-import { AdminProvider } from "./contexts/AdminProvider.tsx"; // Import your AdminProvider
+import { AdminProvider } from "./contexts/AdminProvider.tsx";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Toaster } from "@/components/ui/toaster.tsx";
 import { Toaster as Sonner } from "@/components/ui/sonner.tsx";
+import { Toaster as HotToast } from "react-hot-toast";
 
 export default function App() {
   return (
@@ -13,6 +14,7 @@ export default function App() {
       <AdminProvider>
         <Toaster />
         <Sonner />
+        <HotToast position="top-right" />
         {/* Global Toast Container */}
         <ToastContainer
           position="top-right"

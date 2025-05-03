@@ -82,13 +82,15 @@ export interface ClassMessage {
 }
 
 // Define the schema for form validation
-
 export const classFormSchema = z
   .object({
-    title: z.string().min(1, { message: "Title is required" }),
+    subject: z.string().min(1, { message: "Subject is required" }),
     description: z.string().min(1, { message: "Description is required" }),
+    teacherName: z.string().min(1, { message: "Teacher name is required" }),
+    classNumber: z.number().int().positive({ message: "Class number must be a positive integer" }),
     startTime: z.string().min(1, { message: "Start time is required" }),
     endTime: z.string().min(1, { message: "End time is required" }),
+    status: z.enum(["upcoming", "ongoing", "finished"]).default("upcoming"),
   })
   .superRefine((data, ctx) => {
     const start = new Date(data.startTime);

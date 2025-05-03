@@ -10,6 +10,9 @@ export default defineConfig({
     exclude: ["lucide-react"],
   },
   plugins: [react()],
+  define: {
+    global: 'window', // ✅ Tell Vite to replace "global" with "window"
+  },
   css: {
     postcss: {
       plugins: [tailwindcss, autoprefixer],

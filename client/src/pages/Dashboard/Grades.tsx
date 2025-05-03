@@ -99,7 +99,6 @@ const Grades: React.FC = () => {
   }, [grades, selectedCourse, isTeacher]); // Added isTeacher dependency
 
   const filteredGrades = useMemo(() => {
-    // console.log(grades);
     if (isTeacher) {
       return (grades as Assignment[])
         .flatMap((assignment) =>
@@ -128,13 +127,13 @@ const Grades: React.FC = () => {
     } else {
       return (grades as StudentGrade[]).filter(
         (grade) =>
-          (grade.studentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            grade.studentId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            grade.assignment.title
-              .toLowerCase()
-              .includes(searchTerm.toLowerCase())) &&
-          (!selectedCourse || grade.assignment.subject === selectedCourse) &&
-          (!selectedAssignment || grade.assignment.title === selectedAssignment)
+          (grade?.studentName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            grade?.studentId?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            grade?.assignment?.title
+              ?.toLowerCase()
+              ?.includes(searchTerm.toLowerCase())) &&
+          (!selectedCourse || grade?.assignment?.subject === selectedCourse) &&
+          (!selectedAssignment || grade?.assignment?.title === selectedAssignment)
       );
     }
   }, [grades, isTeacher, searchTerm, selectedCourse, selectedAssignment]);
@@ -173,7 +172,6 @@ const Grades: React.FC = () => {
       };
     }
   }, [filteredGrades, isTeacher, selectedCourse, selectedAssignment]);
-  
 
   const getStatusColor = (grade: number) => {
     let status: string;

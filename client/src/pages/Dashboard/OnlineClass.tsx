@@ -1,407 +1,226 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Video, Calendar, Monitor } from "lucide-react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/contexts/useAuth";
-import Header from "@/components/Dashboard/OnlineClass/Header";
-import TabNavigation from "@/components/Dashboard/OnlineClass/TabNavigation";
-import FilteredClasses from "@/components/Dashboard/OnlineClass/FilteredClasses";
 import { ClassSession } from "@/utils/types";
-import AddClassForm from "@/components/Dashboard/OnlineClass/AddClassForm";
-import { ClassFormData, Participant } from "@/constants/types";
-import Footer from "@/components/Dashboard/OnlineClass/Footer";
-import ShowOnlineClassChat from "@/components/Dashboard/OnlineClass/ShowOnlineClassChat";
-import ParticipantVideos from "@/components/Dashboard/OnlineClass/ParticipantVideos";
+import { ClassFormData } from "@/constants/types";
+import DashboardView from "@/components/Dashboard/OnlineClass/DashboardView";
+import { useNavigate } from "react-router-dom";
+import { onlineClassService } from "@/services/onlineClassServices";
+import { toast } from "react-hot-toast";
+import { useHMSActions } from "@100mslive/react-sdk";
 
-// Main Component
+const teacherRoomCode = import.meta.env.VITE_TEACHER_ROOMCODE!;
+const studentRoomCode = import.meta.env.VITE_STUDENT_ROOMCODE!;
+
 const OnlineClassPage: React.FC = () => {
   const { user } = useAuth();
-  // State management
-  const userRole = user.role;
-  const [inClass, setInClass] = useState<boolean>(false);
+  const navigate = useNavigate();
+  const hmsActions = useHMSActions();
+
+  const userRole = user?.role || "student";
+  const userName = user?.name || "User";
+  const userId = user?.id;
+
+  const [isLoading, setIsLoading] = useState(true);
   const [showAddClassForm, setShowAddClassForm] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<
     "upcoming" | "ongoing" | "finished"
   >("ongoing");
+  const [classSessions, setClassSessions] = useState<ClassSession[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
-  // Class sessions data
-  const [classSessions, setClassSessions] = useState<ClassSession[]>([
-    {
-      id: "1",
-      title: "Physics 101 - Quantum Mechanics",
-      description:
-        "Introduction to wave functions and the Schrödinger equation",
-      instructor: "Dr. Johnson",
-      startTime: new Date(new Date().setHours(new Date().getHours() - 1)),
-      endTime: new Date(new Date().setHours(new Date().getHours() + 1)),
-      status: "ongoing",
-    },
-    {
-      id: "2",
-      title: "Physics 101 - Relativity",
-      description: "Special and general relativity principles",
-      instructor: "Dr. Johnson",
-      startTime: new Date(new Date().setDate(new Date().getDate() + 2)),
-      endTime: new Date(new Date().setDate(new Date().getDate() + 2)),
-      status: "upcoming",
-    },
-    {
-      id: "3",
-      title: "Physics 101 - Classical Mechanics",
-      description: "Newton's laws and applications",
-      instructor: "Dr. Johnson",
-      startTime: new Date(new Date().setDate(new Date().getDate() - 3)),
-      endTime: new Date(new Date().setDate(new Date().getDate() - 3)),
-      status: "finished",
-    },
-  ]);
+  const fetchClasses = useCallback(async () => {
+    if (!userId) return;
 
-  // Controls for video call
-  const [audioEnabled, setAudioEnabled] = useState(true);
-  const [videoEnabled, setVideoEnabled] = useState(true);
-  const [showChat, setShowChat] = useState(false);
-  const [mediaStream, setMediaStream] = useState<MediaStream | null>(null);
-  const [isScreenSharing, setIsScreenSharing] = useState(false);
-  const [screenStream, setScreenStream] = useState<MediaStream | null>(null);
-  const isTeacher = userRole === "teacher";
-  const videoRef = useRef<HTMLVideoElement>(null);
-  // Participants state
-  const [participants, setParticipants] = useState<Participant[]>([
-    {
-      id: 1,
-      name: "Dr. Johnson",
-      isSpeaking: false,
-      videoEnabled: false,
-      audioEnabled: true,
-      isTeacher: true,
-    },
-    {
-      id: 2,
-      name: "Sarah Kim",
-      isSpeaking: false,
-      videoEnabled: false,
-      audioEnabled: true,
-    },
-    {
-      id: 3,
-      name: "Alex Chen",
-      isSpeaking: true,
-      videoEnabled: true,
-      audioEnabled: true,
-    },
-    {
-      id: 4,
-      name: "Maya Patel",
-      isSpeaking: false,
-      videoEnabled: false,
-      audioEnabled: false,
-    },
-    {
-      id: 5,
-      name: "James Wilson",
-      isSpeaking: false,
-      videoEnabled: true,
-      audioEnabled: true,
-    },
-  ]);
-
-  useEffect(() => {
-    // Initialize video stream
-    async function setupStream() {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: true,
-          audio: true,
-        });
-        setMediaStream(stream);
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-        }
-      } catch (err) {
-        console.error("Error accessing media devices:", err);
-      }
-    }
-
-    setupStream().then();
-  }, [inClass]);
-
-  // Functions for video call controls
-  const toggleAudio = () => {
-    if (mediaStream) {
-      const audioTracks = mediaStream.getAudioTracks();
-      audioTracks.forEach((track) => {
-        track.enabled = !audioEnabled;
-      });
-    }
-    setAudioEnabled(!audioEnabled);
-  };
-
-  const toggleVideo = () => {
-    if (mediaStream) {
-      const videoTracks = mediaStream.getVideoTracks();
-      videoTracks.forEach((track) => {
-        track.enabled = !videoEnabled;
-      });
-    }
-    setVideoEnabled(!videoEnabled);
-  };
-
-  // Clean up screen sharing when component unmounts
-  useEffect(() => {
-    return () => {
-      stopScreenSharing();
-    };
-  }, []);
-
-  // Function to start screen sharing
-  const startScreenSharing = async () => {
     try {
-      // Request screen capture permission and get media stream
-      const stream = await navigator.mediaDevices.getDisplayMedia({
-        video: true,
-        audio: true,
+      setIsLoading(true);
+      const res = await onlineClassService.getClasses(userId);
+      setClassSessions(res.data);
+      setError(null);
+    } catch (err) {
+      console.error("Failed to fetch classes:", err);
+      setError("Failed to load classes. Please try again later.");
+      toast.error("Failed to load classes");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [userId]);
+
+  useEffect(() => {
+    fetchClasses();
+  }, [fetchClasses]);
+
+  const fetchToken = async () => {
+    try {
+      const token = await hmsActions.getAuthTokenByRoomCode({
+        roomCode: userRole === "teacher" ? teacherRoomCode : studentRoomCode,
+      });
+      return token;
+    } catch (err) {
+      console.error("Failed to fetch token:", err);
+      throw err;
+    }
+  };
+
+  const handleCreateRoom = async (id: string) => {
+    if (userRole !== "teacher") {
+      toast.error("Only teachers can create classrooms");
+      return;
+    }
+
+    try {
+      toast.loading("Creating classroom...");
+      const token = await fetchToken();
+      await hmsActions.join({
+        userName,
+        authToken: token,
+        settings: { isAudioMuted: false, isVideoMuted: false },
       });
 
-      // Save stream to state
-      setScreenStream(stream);
-      setIsScreenSharing(true);
-      setMediaStream(null);
-
-      // Handle when user stops sharing via browser controls
-      stream.getVideoTracks()[0].onended = () => {
-        stopScreenSharing();
-      };
-
-      console.log("Screen sharing started successfully");
-    } catch (error) {
-      console.error("Error starting screen share:", error);
-      setIsScreenSharing(false);
+      toast.dismiss();
+      toast.success("Classroom created successfully!");
+      localStorage.setItem("userName", userName);
+      localStorage.setItem("userRole", "teacher");
+      localStorage.setItem("classId", id);
+      navigate(`/dashboard/${userRole}/classroom/${id}`);
+    } catch (err) {
+      toast.dismiss();
+      toast.error("Failed to create classroom");
+      console.error("Create room error:", err);
     }
-  };
-
-  // Function to stop screen sharing
-  const stopScreenSharing = () => {
-    if (screenStream) {
-      // Stop all tracks in the stream
-      screenStream.getTracks().forEach((track) => track.stop());
-      setScreenStream(null);
-      setMediaStream(null);
-    }
-    setIsScreenSharing(false);
-  };
-
-  // Toggle screen sharing
-  const toggleScreenShare = () => {
-    if (isScreenSharing) {
-      stopScreenSharing();
-    } else {
-      startScreenSharing();
-    }
-  };
-
-  // Clean up function to stop media tracks when leaving
-  const stopMediaDevices = () => {
-    if (mediaStream) {
-      mediaStream.getTracks().forEach((track) => {
-        track.stop();
-      });
-      setMediaStream(null);
-    }
-  };
-
-  // Functions for class management
-  const handleAddClass = (formData: ClassFormData) => {
-    const newClass: ClassSession = {
-      id: Date.now().toString(),
-      title: formData.title,
-      description: formData.description,
-      instructor: userRole === "teacher" ? "You" : "Unknown",
-      startTime: new Date(formData.startTime),
-      endTime: new Date(formData.endTime),
-      status: "upcoming",
-    };
-
-    setClassSessions([...classSessions, newClass]);
-    setShowAddClassForm(false);
-  };
-
-  const handleDeleteClass = (id: string) => {
-    setClassSessions(classSessions.filter((cls) => cls.id !== id));
   };
 
   const handleJoinClass = async (id: string) => {
-    setInClass(true);
+    try {
+      toast.loading("Joining classroom...");
+      const token = await fetchToken();
+      await hmsActions.join({
+        userName,
+        authToken: token,
+        settings: { isAudioMuted: false, isVideoMuted: false },
+      });
+
+      toast.dismiss();
+      toast.success("Joined classroom successfully!");
+      localStorage.setItem("userName", userName);
+      localStorage.setItem("userRole", userRole);
+      localStorage.setItem("classId", id);
+      navigate(`/dashboard/${userRole}/classroom/${id}`);
+    } catch (err) {
+      toast.dismiss();
+      toast.error("Failed to join classroom");
+      console.error("Join room error:", err);
+    }
   };
 
-  const handleLeaveClass = () => {
-    // Clean up media devices when leaving the class
-    stopMediaDevices();
-    stopScreenSharing();
-    setInClass(false);
+  const handleAddClass = async (formData: ClassFormData) => {
+    try {
+      toast.loading("Adding new class...");
+      const newClass = {
+        subject: formData.subject,
+        description: formData.description,
+        teacherName: userName,
+        teacherId: userId,
+        classNumber: formData.classNumber,
+        startTime: new Date(formData.startTime),
+        endTime: new Date(formData.endTime),
+      };
+
+      const res = await onlineClassService.addClass(newClass);
+      setClassSessions((prev) => [...prev, res.data]);
+
+      toast.dismiss();
+      toast.success("Class added successfully!");
+      setShowAddClassForm(false);
+    } catch (err) {
+      toast.dismiss();
+      toast.error("Failed to add class");
+      console.error("Failed to add class:", err);
+    }
+  };
+
+  const handleDeleteClass = async (id: string) => {
+    try {
+      toast.loading("Deleting class...");
+      await onlineClassService.deleteClass(id);
+      setClassSessions((prev) => prev.filter((cls) => cls.id !== id));
+      toast.dismiss();
+      toast.success("Class deleted successfully!");
+    } catch (err) {
+      toast.dismiss();
+      toast.error("Failed to delete class");
+      console.error("Failed to delete class:", err);
+    }
   };
 
   const handleStartClass = async (id: string) => {
-    setClassSessions(
-      classSessions.map((cls) =>
-        cls.id === id ? { ...cls, status: "ongoing" } : cls
-      )
-    );
-    setInClass(true);
+    if (userRole !== "teacher") {
+      toast.error("Only teachers can start classes");
+      return;
+    }
+
+    try {
+      toast.loading("Starting class...");
+      await onlineClassService.updateClassStatus(id, { status: "ongoing" });
+      setClassSessions((prev) =>
+        prev.map((cls) => (cls.id === id ? { ...cls, status: "ongoing" } : cls))
+      );
+      toast.dismiss();
+      toast.success("Class started!");
+      handleCreateRoom(id);
+    } catch (err) {
+      toast.dismiss();
+      toast.error("Failed to start class");
+      console.error("Failed to start class:", err);
+    }
   };
 
-  // Cleanup effect when component unmounts
-  useEffect(() => {
-    return () => {
-      stopMediaDevices();
-      stopScreenSharing();
-    };
-  }, []);
+  const handleEndClass = async (id: string) => {
+    try {
+      toast.loading("Ending class...");
+      await onlineClassService.updateClassStatus(id, { status: "finished" });
+      setClassSessions((prev) =>
+        prev.map((cls) =>
+          cls.id === id ? { ...cls, status: "finished" } : cls
+        )
+      );
+      toast.dismiss();
+      toast.success("Class ended!");
+    } catch (err) {
+      toast.dismiss();
+      toast.error("Failed to end class");
+      console.error("Failed to end class:", err);
+    }
+  };
 
-  // Filter classes based on the active tab
   const filteredClasses = classSessions.filter(
     (cls) => cls.status === activeTab
   );
 
-  // Render dashboard or video call UI based on inClass state
   return (
-    <div className="flex flex-col h-[87vh] bg-gray-900 text-white">
-      {!inClass ? (
-        // Dashboard View
-        <div className="flex-1 p-6 overflow-auto">
-          <Header
-            userRole={userRole}
-            setShowAddClassForm={setShowAddClassForm}
-          />
-
-          {/* Tab Navigation */}
-          <TabNavigation activeTab={activeTab} setActiveTab={setActiveTab} />
-
-          {/* Class List */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredClasses.length > 0 ? (
-              filteredClasses.map((cls) => (
-                <FilteredClasses
-                  cls={cls}
-                  userRole={userRole}
-                  key={cls.id}
-                  handleDeleteClass={handleDeleteClass}
-                  handleJoinClass={handleJoinClass}
-                  handleStartClass={handleStartClass}
-                />
-              ))
-            ) : (
-              <div className="col-span-3 text-center py-16 text-gray-400">
-                <Calendar size={48} className="mx-auto mb-4 opacity-50" />
-                <p className="text-lg">No {activeTab} classes found</p>
-                {userRole === "teacher" && activeTab === "upcoming" && (
-                  <button
-                    className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg"
-                    onClick={() => setShowAddClassForm(true)}
-                  >
-                    Add Your First Class
-                  </button>
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* Add Class Form Modal */}
-          {showAddClassForm && (
-            <AddClassForm
-              onSubmit={handleAddClass}
-              onCancel={() => setShowAddClassForm(false)}
-            />
-          )}
-        </div>
-      ) : (
-        // Video Call View
-        <div className="flex-1 flex overflow-hidden">
-          <div
-            className={`flex-1 p-4 flex flex-col ${
-              showChat ? "w-2/3" : "w-full"
-            }`}
-          >
-            {/* Main screen - Teacher's screen share or video */}
-            <div className="bg-black rounded-lg flex-1 relative mb-4">
-              <div className="absolute inset-0 flex items-center justify-center">
-                {isScreenSharing && screenStream ? (
-                  <div className="w-full h-full">
-                    <video
-                      ref={(video) => {
-                        // Set video source when component mounts or stream changes
-                        if (video && screenStream) {
-                          video.srcObject = screenStream;
-                        }
-                      }}
-                      autoPlay
-                      className="w-full h-full object-contain"
-                    />
-                  </div>
-                ) : mediaStream ? (
-                  <video
-                    ref={videoRef}
-                    autoPlay
-                    muted
-                    playsInline
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="text-center">
-                    <Video size={48} className="mx-auto mb-2 opacity-50" />
-                    <p>Dr. Johnson's camera is off</p>
-                  </div>
-                )}
-              </div>
-
-              <div className="absolute bottom-4 left-4 bg-blue-500 px-2 py-1 rounded text-sm flex items-center">
-                <span className="mr-1">Dr. Johnson</span>
-                {participants[0].isSpeaking && (
-                  <span className="animate-pulse">●</span>
-                )}
-              </div>
-
-              {/* Screen sharing toggle button for teacher only */}
-              {isTeacher && (
-                <div className="absolute top-4 right-4">
-                  <button
-                    className={`flex items-center px-3 py-2 rounded ${
-                      isScreenSharing ? "bg-red-500" : "bg-green-500"
-                    }`}
-                    onClick={toggleScreenShare}
-                  >
-                    <Monitor size={18} className="mr-2" />
-                    <span>
-                      {isScreenSharing ? "Stop Sharing" : "Share Screen"}
-                    </span>
-                  </button>
-                </div>
-              )}
-            </div>
-
-            {/* Participant videos */}
-            <div className="grid grid-cols-4 gap-2 h-32">
-              {participants.slice(1).map((participant) => (
-                <ParticipantVideos
-                  participant={participant}
-                  key={participant.id}
-                />
-              ))}
-            </div>
-          </div>
-
-          {showChat && <ShowOnlineClassChat setShowChat={setShowChat} />}
+    <div className="flex flex-col h-[87vh] bg-primary-foreground text-primary-background">
+      {error && (
+        <div className="p-4 bg-red-100 text-red-700 mb-4 rounded-md">
+          {error}
+          <button className="ml-2 underline" onClick={fetchClasses}>
+            Retry
+          </button>
         </div>
       )}
 
-      {/* Footer with controls */}
-      <Footer
-        inClass={inClass}
-        toggleAudio={toggleAudio}
-        audioEnabled={audioEnabled}
-        toggleVideo={toggleVideo}
-        videoEnabled={videoEnabled}
-        showChat={showChat}
-        setShowChat={setShowChat}
-        handleLeaveClass={handleLeaveClass}
-        participants={participants}
+      <DashboardView
+        user={user}
+        setShowAddClassForm={setShowAddClassForm}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        filteredClasses={filteredClasses}
+        handleAddClass={handleAddClass}
+        handleDeleteClass={handleDeleteClass}
+        handleCreateRoom={handleCreateRoom}
+        handleJoinClass={handleJoinClass}
+        handleStartClass={handleStartClass}
+        handleEndClass={handleEndClass}
+        showAddClassForm={showAddClassForm}
+        isLoading={isLoading}
       />
     </div>
   );
