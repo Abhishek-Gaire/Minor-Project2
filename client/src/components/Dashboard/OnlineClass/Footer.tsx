@@ -26,6 +26,7 @@ const Footer = ({
   participants,
   isTeacher,
 }) => {
+
   const { isLocalAudioEnabled, isLocalVideoEnabled, toggleAudio, toggleVideo } =
     useAVToggle();
   const amIScreenSharing = useHMSStore(selectIsLocalScreenShared);
@@ -139,9 +140,7 @@ const Footer = ({
                   {participant.name}
                 </span>
                 <span className="text-xs text-primary-foreground">
-                  {participant.isTeacher && "Teacher"}
-                  {!participant.audioEnabled && ".Muted"}
-                  {participant.isSpeaking && ".Speaking"}
+                  {participant.roleName === "broadcaster" && "Teacher"}
                 </span>
               </li>
             ))}

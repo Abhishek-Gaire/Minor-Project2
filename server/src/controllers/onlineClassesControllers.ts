@@ -18,9 +18,9 @@ export const getClasses: RequestHandler = async (
       throw new CustomError("Not Authorized", 401);
     }
     const userId = req.params.userId;
-    
+
     // Verify the requesting user is authorized to see these classes
-    if (user.id !== userId ) {
+    if (user.id !== userId) {
       throw new CustomError("Not authorized to access these classes", 403);
     }
     const whereClause: any = {};
@@ -29,7 +29,7 @@ export const getClasses: RequestHandler = async (
     if (user.role === "student") {
       const student = await prisma.student.findUnique({
         where: {
-          id: userId
+          id: userId,
         },
       });
       const classNumber = student?.grade.split("")[1];
@@ -37,23 +37,23 @@ export const getClasses: RequestHandler = async (
     } else if (user.role === "teacher") {
       const teacher = await prisma.teacher.findUnique({
         where: {
-          id: userId
+          id: userId,
         },
       });
       whereClause.teacherName = teacher?.name;
     }
-    
+
     const classes = await prisma.classSession.findMany({
       where: whereClause,
       orderBy: {
-        startTime: "asc"
+        startTime: "asc",
       },
     });
 
     res.status(200).json({
       success: true,
       message: "Classes fetched successfully",
-      data: classes
+      data: classes,
     });
   } catch (error) {
     next(error);
@@ -75,10 +75,10 @@ export const getClassById: RequestHandler = async (
     }
 
     const classId = req.params.classId;
-    
+
     const classSession = await prisma.classSession.findUnique({
       where: {
-        id: classId
+        id: classId,
       },
     });
 
@@ -89,7 +89,7 @@ export const getClassById: RequestHandler = async (
     res.status(200).json({
       success: true,
       message: "Class fetched successfully",
-      data: classSession
+      data: classSession,
     });
   } catch (error) {
     next(error);
@@ -110,7 +110,15 @@ export const createClass: RequestHandler = async (
       throw new CustomError("Not Authorized", 401);
     }
 
-    const { subject, description, teacherName, classNumber, startTime, endTime, status } = req.body;   
+    const {
+      subject,
+      description,
+      teacherName,
+      classNumber,
+      startTime,
+      endTime,
+      status,
+    } = req.body;
 
     if (endTime <= startTime) {
       throw new CustomError("End time must be after start time", 400);
@@ -125,14 +133,14 @@ export const createClass: RequestHandler = async (
         classNumber,
         startTime,
         endTime,
-        status: status || "upcoming"
-      }
+        status: status || "upcoming",
+      },
     });
 
     res.status(201).json({
       success: true,
       message: "Class created successfully",
-      data: newClass
+      data: newClass,
     });
   } catch (error) {
     next(error);
@@ -154,23 +162,31 @@ export const updateClass: RequestHandler = async (
     }
 
     const classId = req.params.classId;
-    
+
     // Find the class first
     const existingClass = await prisma.classSession.findUnique({
       where: {
-        id: classId
-      }
+        id: classId,
+      },
     });
 
     if (!existingClass) {
       throw new CustomError("Class not found", 404);
     }
 
-    const { subject, description, teacherName, classNumber, startTime, endTime, status } = req.body;
+    const {
+      subject,
+      description,
+      teacherName,
+      classNumber,
+      startTime,
+      endTime,
+      status,
+    } = req.body;
 
     // Prepare update data
     const updateData: any = {};
-    
+
     if (subject) updateData.subject = subject;
     if (description) updateData.description = description;
     if (teacherName) updateData.teacherName = teacherName;
@@ -193,15 +209,15 @@ export const updateClass: RequestHandler = async (
     // Update the class
     const updatedClass = await prisma.classSession.update({
       where: {
-        id: classId
+        id: classId,
       },
-      data: updateData
+      data: updateData,
     });
 
     res.status(200).json({
       success: true,
       message: "Class updated successfully",
-      data: updatedClass
+      data: updatedClass,
     });
   } catch (error) {
     next(error);
@@ -223,33 +239,28 @@ export const deleteClass: RequestHandler = async (
     }
 
     const classId = req.params.classId;
-    
+
     // Find the class first
     const existingClass = await prisma.classSession.findUnique({
       where: {
-        id: classId
-      }
+        id: classId,
+      },
     });
 
     if (!existingClass) {
       throw new CustomError("Class not found", 404);
     }
 
-    // Check authorization - only the teacher of the class or an admin can delete it
-    if (user.role !== "admin" && (user.role !== "teacher" || existingClass.teacherName !== user.name)) {
-      throw new CustomError("Not authorized to delete this class", 403);
-    }
-
     // Delete the class
     await prisma.classSession.delete({
       where: {
-        id: classId
-      }
+        id: classId,
+      },
     });
 
     res.status(200).json({
       success: true,
-      message: "Class deleted successfully"
+      message: "Class deleted successfully",
     });
   } catch (error) {
     next(error);

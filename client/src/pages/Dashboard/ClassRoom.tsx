@@ -10,7 +10,9 @@ import {
   useHMSStore,
   selectPeers,
   selectPeersScreenSharing,
+  HMSMessage,
 } from "@100mslive/react-sdk";
+import { v4 as uuidv4 } from "uuid";
 
 const ClassRoom = () => {
   const { user } = useAuth();
@@ -19,7 +21,7 @@ const ClassRoom = () => {
   const peers = useHMSStore(selectPeers);
   const presenters = useHMSStore(selectPeersScreenSharing);
 
-  const messages = useState([]);
+  const [messages, setMessages] = useState<HMSMessage[]>([]);
 
   const userRole = user.role;
   const userName = user.name;
@@ -56,9 +58,28 @@ const ClassRoom = () => {
 
   const sendLiveMessage = () => {
     if (!messageInput.trim()) return;
+  
     hmsActions.sendBroadcastMessage(messageInput);
+  
+    const newMessage: HMSMessage = {
+      id: uuidv4(), // Must be unique
+      sender: undefined, // or provide HMSPeerID if available
+      senderName: userName,
+      senderUserId: user.id, // if available, otherwise omit or set undefined
+      senderRole: userRole,
+      recipientPeer: undefined,
+      recipientRoles: undefined,
+      time: new Date(),
+      read: true,
+      type: "chat", // or another type if you're using custom types
+      message: messageInput,
+      ignored: false,
+    };
+  
+    setMessages((prev) => [...prev, newMessage]);
     setMessageInput("");
   };
+  
 
   const handleLeaveClass = () => {
     hmsActions.leave();
@@ -69,7 +90,6 @@ const ClassRoom = () => {
     <div className="flex flex-col h-[87vh] bg-primary-foreground text-primary-background">
       <ClassRoomUI
         users={users}
-        userName={userName}
         sendLiveMessage={sendLiveMessage}
         messages={messages}
         messageInput={messageInput}

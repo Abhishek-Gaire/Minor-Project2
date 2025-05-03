@@ -68,6 +68,7 @@ const OnlineClassPage: React.FC = () => {
     }
 
     try {
+      await onlineClassService.updateClassStatus(id, { status: "ongoing" });
       toast.loading("Creating classroom...");
       const token = await fetchToken();
       await hmsActions.join({
@@ -160,7 +161,6 @@ const OnlineClassPage: React.FC = () => {
 
     try {
       toast.loading("Starting class...");
-      await onlineClassService.updateClassStatus(id, { status: "ongoing" });
       setClassSessions((prev) =>
         prev.map((cls) => (cls.id === id ? { ...cls, status: "ongoing" } : cls))
       );

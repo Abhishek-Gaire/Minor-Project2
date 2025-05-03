@@ -10,9 +10,10 @@ import { HMSPeer } from "@100mslive/react-sdk";
 interface Props {
   participant: HMSPeer;
   users: User[];
+  fullView?: boolean; // Added fullView prop
 }
 
-const ParticipantVideos = ({ participant, users }: Props) => {
+const ParticipantVideos = ({ participant, users, fullView = false }: Props) => {
   const { videoRef } = useVideo({
     trackId: participant.videoTrack,
   });
@@ -24,23 +25,34 @@ const ParticipantVideos = ({ participant, users }: Props) => {
     selectIsPeerVideoEnabled(participant.id)
   );
 
+  // Find user details
+  const user = users.find((u) => u.id === participant.id);
+  const userName = user?.name || "User";
+  const isTeacher = user?.role === "teacher";
+
+  // Adjust classes based on fullView prop
+  const containerClasses = `bg-secondary rounded-lg relative overflow-hidden h-full aspect-video`;
+
+  // Adjust video size for better view in fullView mode
+  const videoClasses = `w-full h-full ${
+    fullView ? "object-contain" : "object-cover"
+  }`;
+
+  // Enhanced name label for fullView
+  const nameLabelClasses = `text-xs bg-primary-foreground bg-opacity-50 px-2 py-1 rounded ${
+    fullView && isTeacher ? "font-medium" : ""
+  }`;
+
+  // Adjust mic icon size and position based on fullView
+  const micIconSize = fullView ? 20 : 16;
+  const micIconPosition = "absolute top-2 right-2 text-red-500 z-10";
+
   return (
-    <div className="bg-secondary rounded-lg relative overflow-hidden h-full">
+    <div className={containerClasses}>
+      {/* Audio mute indicator - now visible in both normal and fullView modes */}
       {!isPeerAudioEnabled && (
-        <div
-          style={{
-            position: "absolute",
-            top: "1rem",
-            right: "1rem",
-            zIndex: "100",
-            backgroundColor: "#293042",
-            padding: "0.5rem",
-            borderRadius: "0.75rem",
-            height: "2rem",
-            width: "2rem",
-          }}
-        >
-          <MicOff height={16} width={16} />
+        <div className={micIconPosition}>
+          <MicOff height={micIconSize} width={micIconSize} />
         </div>
       )}
 
@@ -50,19 +62,27 @@ const ParticipantVideos = ({ participant, users }: Props) => {
           autoPlay
           playsInline
           muted
-          className="w-full h-full object-cover"
+          className={videoClasses}
         />
       ) : (
-        <div className="w-full h-full flex items-center justify-center">
-          <Camera size={24} className="text-secondary-foreground" />
+        <div className="w-full h-full flex items-center justify-center bg-gray-800">
+          <div className="flex flex-col items-center">
+            <Camera
+              size={fullView ? 48 : 24}
+              className="text-secondary-foreground mb-2"
+            />
+            {fullView && (
+              <span className="text-sm text-gray-300">{userName}</span>
+            )}
+          </div>
         </div>
       )}
 
       <div className="absolute bottom-2 left-2 right-2 flex justify-between items-center">
-        <span className="text-xs bg-primary-foreground bg-opacity-50 px-2 py-1 rounded">
-          {users.find((u) => u.id === participant.id)?.name || "User"}
+        <span className={nameLabelClasses}>
+          {userName}
+          {isTeacher && (fullView ? " (Teacher)" : "")}
         </span>
-        {!isPeerAudioEnabled && <MicOff size={14} className="text-red-500" />}
       </div>
     </div>
   );

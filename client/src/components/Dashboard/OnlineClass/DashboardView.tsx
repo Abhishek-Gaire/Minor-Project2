@@ -44,7 +44,7 @@ const DashboardView = ({
                 handleCreateRoom={handleCreateRoom}
                 handleJoinClass={handleJoinClass}
                 handleStartClass={handleStartClass}
-                // handleEndClass={handleEndClass}
+                handleEndClass={handleEndClass}
               />
             ))
           ) : (

@@ -7,6 +7,7 @@ interface FilteredClassesProps {
   handleJoinClass: (id: string) => void;
   handleCreateRoom: (roomId: string) => void;
   handleStartClass: (id: string) => void;
+  handleEndClass: (id: string) => void;
   handleDeleteClass: (id: string) => void;
 }
 
@@ -16,20 +17,26 @@ const FilteredClasses = ({
   handleJoinClass,
   handleCreateRoom,
   handleStartClass,
+  handleEndClass,
   handleDeleteClass,
 }: FilteredClassesProps) => {
   // console.log(cls)
   // Convert string dates to Date objects
   const startDateTime = new Date(cls.startTime);
   const endDateTime = new Date(cls.endTime);
+
   return (
     <div key={cls.id} className="bg-secondary rounded-lg overflow-hidden">
       <div className="p-4">
         <h3 className="font-semibold text-lg mb-1">{cls.subject}</h3>
-        <p className="text-secondary-foreground text-sm mb-3">{cls.description}</p>
+        <p className="text-secondary-foreground text-sm mb-3">
+          {cls.description}
+        </p>
 
         <div className="flex justify-between items-center text-sm mb-3">
-          <span className="text-secondary-foreground">Instructor: {cls.teacherName}</span>
+          <span className="text-secondary-foreground">
+            Instructor: {cls.teacherName}
+          </span>
           <span className="bg-secondary px-2 py-1 rounded">
             {cls.status === "ongoing" && (
               <span className="flex items-center text-green-400">
@@ -93,7 +100,17 @@ const FilteredClasses = ({
             </button>
           )}
 
-          {userRole === "teacher" && (
+          {userRole === "teacher" && cls.status === "ongoing" && (
+            <button
+              className="flex items-center px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg"
+              onClick={() => handleEndClass(cls.id)}
+            >
+              <LogIn size={16} className="mr-2" />
+              Finish Class
+            </button>
+          )}
+
+          {userRole === "teacher" && cls.status === "finished" && (
             <button
               className="flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg"
               onClick={() => handleDeleteClass(cls.id)}
