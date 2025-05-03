@@ -14,6 +14,8 @@ export const getClasses: RequestHandler = async (
 ) => {
   try {
     const user = (req as any).user;
+    const role = (req as any).role;
+
     if (!user) {
       throw new CustomError("Not Authorized", 401);
     }
@@ -23,28 +25,34 @@ export const getClasses: RequestHandler = async (
     if (user.id !== userId) {
       throw new CustomError("Not authorized to access these classes", 403);
     }
-    const whereClause: any = {};
+    let userC;
+    let classNumber,teacherName;
     // For students: fetch classes they're enrolled in
     // For teachers: fetch classes they teach
-    if (user.role === "student") {
-      const student = await prisma.student.findUnique({
+    if (role === "student") {
+      userC= await prisma.student.findUnique({
         where: {
           id: userId,
         },
       });
-      const classNumber = student?.grade.split("")[1];
-      whereClause.classNumber = classNumber;
-    } else if (user.role === "teacher") {
-      const teacher = await prisma.teacher.findUnique({
+      classNumber = userC!.grade.split("")[1];
+    } else if (role === "teacher") {
+      userC= await prisma.teacher.findUnique({
         where: {
           id: userId,
         },
       });
-      whereClause.teacherName = teacher?.name;
+      teacherName = userC!.name;
     }
 
+    const whereClause = {
+      classNumber: role === "student" ? Number(classNumber) : undefined,
+      teacherName: role === "teacher" ? teacherName : undefined,
+    };
     const classes = await prisma.classSession.findMany({
-      where: whereClause,
+      where: {
+        ...whereClause
+      },
       orderBy: {
         startTime: "asc",
       },

@@ -62,7 +62,7 @@ export function RegistrationForm({
       };
 
       // Send the POST request
-      const res = await fetch(`${BACKEND_URI}/api/v1/school/register`, {
+      const res = await fetch(`${BACKEND_URI}/api/v1/schools/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -19,8 +19,7 @@ const ProfilePage = ({ initialActiveTab = "profile" }) => {
     email: user.email,
     role: user.role,
     subject: "Mathematics",
-    bio: "Passionate math educator with 5 years of experience teaching high school algebra and calculus.",
-    avatar: "/api/placeholder/150/150",
+    
   });
 
   // // Demo notification settings
@@ -158,7 +157,7 @@ const ProfilePage = ({ initialActiveTab = "profile" }) => {
         )}
 
         {/* Security Tab */}
-        {activeTab === "security" && <SecurityTab />}
+        {activeTab === "security" && <SecurityTab user={user} />}
 
         {/* Help Tab */}
         {activeTab === "help" && <HelpTab role={user.role} />}

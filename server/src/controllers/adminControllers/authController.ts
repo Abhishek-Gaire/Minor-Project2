@@ -1,8 +1,9 @@
-import { Request, Response, RequestHandler } from "express";
+import { Request, Response, RequestHandler, NextFunction } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import { PrismaClient } from "@prisma/client";
+import { CustomError } from "../../exceptions/customError";
 dotenv.config();
 
 const JWT_SECRET = process.env.JWT_SECRET!;
@@ -153,63 +154,58 @@ export const adminResetPassword: RequestHandler = async (
 
 export const adminChangePassword: RequestHandler = async (
   req: Request,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) => {
-  const { oldPassword, newPassword } = req.body;
-  const adminId = (req as any).user.id; // Extracted from middleware after authentication
+  const { currentPassword, newPassword,confirmPassword } = req.body;
 
-  if (!oldPassword || !newPassword) {
-    res.status(400).json({
-      success: false,
-      message: "Please provide old and new passwords",
-    });
-    return;
+  const adminId = (req as any).admin.id; // Extracted from middleware after authentication
+
+  if (!currentPassword || !newPassword || !confirmPassword) {
+    throw new CustomError("Please provide old and new passwords", 400);
   }
 
   try {
     const admin = await prisma.admin.findFirst({ where: { id: adminId } });
 
     if (!admin) {
-      res.status(404).json({ success: false, message: "Admin not found" });
-      return;
+      throw new CustomError("Admin not found", 404);
     }
 
-    if (admin.password !== oldPassword) {
-      res
-        .status(401)
-        .json({ success: false, message: "Incorrect old password" });
-      return;
+    const isMatch = await bcrypt.compare(currentPassword, admin.password);
+    if (!isMatch) {
+      throw new CustomError("Incorrect current password", 401);
     }
+
+    if (newPassword !== confirmPassword) {
+      throw new CustomError("Passwords do not match", 400);
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 12);
 
     await prisma.admin.update({
       where: { id: adminId },
-      data: { password: newPassword }, // Hash password in production
+      data: { password: hashedPassword }, // Hash password in production
     });
 
     res
       .status(200)
       .json({ success: true, message: "Password changed successfully" });
   } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      message: error.message || "Internal server error",
-    });
+    next(error);
   }
 };
 
 export const adminVerify: RequestHandler = async (
   req: Request,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) => {
   try {
     const { admin } = req as any;
 
     if (!admin) {
-      res.status(404).json({
-        success: false,
-        message: "Authorization failed",
-      });
-      return;
+      throw new CustomError("Authorization failed", 404);
     }
 
     const adminDetails = await prisma.admin.findUnique({
@@ -217,11 +213,7 @@ export const adminVerify: RequestHandler = async (
     });
 
     if (!adminDetails) {
-      res.status(404).json({
-        success: false,
-        message: "Admin not found",
-      });
-      return;
+      throw new CustomError("Admin not found", 404);
     }
 
     res.status(200).json({
@@ -232,17 +224,15 @@ export const adminVerify: RequestHandler = async (
       },
     });
   } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      message: error.message || "Internal server error",
-    });
+    next(error);
   }
 };
 
 // Admin Logout Controller
 export const adminLogout: RequestHandler = async (
   req: Request,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) => {
   try {
     // Clear the admin access token cookie
@@ -258,9 +248,6 @@ export const adminLogout: RequestHandler = async (
       message: "Admin logged out successfully",
     });
   } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      message: error.message || "Internal server error",
-    });
+    next(error);
   }
 };

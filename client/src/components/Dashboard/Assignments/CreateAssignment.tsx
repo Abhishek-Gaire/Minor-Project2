@@ -31,7 +31,7 @@ const CreateAssignment: React.FC<CreateAssignmentProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-[hsl(var(--card))] p-6 rounded-lg w-[600px] max-h-[90vh] overflow-y-auto">
+      <div className="bg-card p-6 rounded-lg w-[600px] max-h-[90vh] overflow-y-auto">
         <h2 className="text-2xl font-semibold mb-6">Create New Assignment</h2>
 
         <div className="space-y-4">
@@ -44,7 +44,7 @@ const CreateAssignment: React.FC<CreateAssignmentProps> = ({
               name="title"
               value={newAssignmentForm.title}
               onChange={handleFormChange}
-              className="w-full p-2 border rounded-md"
+              className="w-full p-2 border rounded-md bg-primary-foreground text-primary"
               required
             />
           </div>
@@ -58,7 +58,7 @@ const CreateAssignment: React.FC<CreateAssignmentProps> = ({
               name="subject"
               value={newAssignmentForm.subject}
               onChange={handleFormChange}
-              className="w-full p-2 border rounded-md"
+              className="w-full p-2 border rounded-md bg-primary-foreground text-primary"
               required
             />
           </div>
@@ -71,7 +71,7 @@ const CreateAssignment: React.FC<CreateAssignmentProps> = ({
               name="grade"
               value={newAssignmentForm.grade}
               onChange={handleFormChange}
-              className="w-full p-2 border rounded-md"
+              className="w-full p-2 border rounded-md bg-primary-foreground text-primary"
               required
             >
               {[5, 6, 7, 8, 9, 10].map((grade) => (
@@ -88,7 +88,7 @@ const CreateAssignment: React.FC<CreateAssignmentProps> = ({
               name="description"
               value={newAssignmentForm.description}
               onChange={handleFormChange}
-              className="w-full p-2 border rounded-md"
+              className="w-full p-2 border rounded-md bg-primary-foreground text-primary"
               rows={4}
             />
           </div>
@@ -102,7 +102,7 @@ const CreateAssignment: React.FC<CreateAssignmentProps> = ({
               name="dueDate"
               value={newAssignmentForm.dueDate}
               onChange={handleFormChange}
-              className="w-full p-2 border rounded-md"
+              className="w-full p-2 border rounded-md bg-primary-foreground text-primary"
               required
             />
           </div>
@@ -116,7 +116,7 @@ const CreateAssignment: React.FC<CreateAssignmentProps> = ({
               name="pointsPossible"
               value={newAssignmentForm.pointsPossible}
               onChange={handleFormChange}
-              className="w-full p-2 border rounded-md"
+              className="w-full p-2 border rounded-md bg-primary-foreground text-primary"
               min={1}
               max={1000}
               required

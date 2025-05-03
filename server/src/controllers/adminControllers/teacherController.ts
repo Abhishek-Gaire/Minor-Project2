@@ -8,6 +8,7 @@ import {
 } from "../../types/schema";
 import { CustomError } from "../../exceptions/customError";
 import { generatePassword } from "../../utils/password";
+import { createMailOptions, sendEmail } from "../../config/nodemailerConfig";
 
 const prisma = new PrismaClient();
 
@@ -122,6 +123,74 @@ export const createTeacher = async (
 
       return teacher;
     });
+
+    // Generate HTML email content
+    const html = `
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Teacher Account Created</title>
+        </head>
+        <body style="margin: 0; padding: 0; font-family: Arial, Helvetica, sans-serif; background-color: #f4f4f4;">
+          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+            <tr>
+              <td style="background-color: #4CAF50; padding: 30px; text-align: center; border-top-left-radius: 8px; border-top-right-radius: 8px;">
+                <h1 style="color: #ffffff; margin: 0; font-size: 28px;">Welcome, Teacher!</h1>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 30px; color: #333333; line-height: 1.6;">
+                <h2 style="color: #4CAF50; font-size: 22px; margin-top: 0;">Your Account is Ready!</h2>
+                <p style="font-size: 16px; margin: 0 0 20px;">
+                  Congratulations, ${
+                    newTeacher.name
+                  }! Your teacher account has been successfully created. You can now log in to manage your classes and resources.
+                </p>
+                <p style="font-size: 16px; margin: 0 0 20px;">
+                  Use the temporary password below to log in. For security, please change your password after your first login.
+                </p>
+                
+                <div style="background-color: #e8f5e9; padding: 15px; border-radius: 6px; text-align: center; margin: 20px 0;">
+                  <p style="font-size: 16px; margin: 0; color: #333333;">Your Password: <strong style="color: #4CAF50;">${generatedPassword}</strong></p>
+                  <p style="font-size: 14px; margin: 5px 0 0; color: #666666;">(Change this password after logging in)</p>
+                </div>
+              
+                <div style="text-align: center; margin: 30px 0;">
+                  <a href=${process.env
+                    .FRONTEND_URL!}/login style="display: inline-block; padding: 14px 30px; background-color: #4CAF50; color: #ffffff; text-decoration: none; font-size: 16px; font-weight: bold; border-radius: 6px; transition: background-color 0.3s;">Log In Now</a>
+                </div>
+                <p style="font-size: 16px; margin: 0 0 20px;">
+                  Or copy and paste this link into your browser:<br>
+                  <a href=${process.env
+                    .FRONTEND_URL!}/login style="color: #4CAF50; text-decoration: underline;">${process
+      .env.FRONTEND_URL!}/login</a>
+                </p>
+                </td>
+                </tr>
+                <tr>
+                  <td style="background-color: #f4f4f4; padding: 20px; text-align: center; color: #666666; font-size: 14px; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;">
+                    <p style="margin: 0;">© 2025 Your School App. All rights reserved.</p>
+                  </td>
+                </tr>
+            </table>
+        </body>
+        </html>
+      `;
+      
+    // Create email options
+    const mailOptions = createMailOptions(
+      validatedData.email,
+      "Your Teacher Account Has Been Created",
+      html
+    );
+
+    // Send the email
+    const emailResponse = await sendEmail(mailOptions);
+    if (!emailResponse) {
+      throw new CustomError("Email not sent", 500);
+    }
 
     res.status(201).json({
       status: true,
@@ -367,6 +436,7 @@ export const changePassword = async (
   try {
     const { id } = req.params;
     const validatedData = teacherPasswordSchema.parse(req.body);
+    console.log(validatedData);
 
     // Check if teacher exists
     const teacher = await prisma.teacher.findUnique({
@@ -395,6 +465,63 @@ export const changePassword = async (
       where: { id },
       data: { password: hashedPassword },
     });
+
+    // Generate HTML email content
+    const html = `
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Password Changed Successfully</title>
+      </head>
+      <body style="margin: 0; padding: 0; font-family: Arial, Helvetica, sans-serif; background-color: #f4f4f4;">
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+          <tr>
+            <td style="background-color: #4CAF50; padding: 30px; text-align: center; border-top-left-radius: 8px; border-top-right-radius: 8px;">
+              <h1 style="color: #ffffff; margin: 0; font-size: 28px;">Password Updated!</h1>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 30px; color: #333333; line-height: 1.6;">
+              <h2 style="color: #4CAF50; font-size: 22px; margin-top: 0;">Dear ${teacher.name},</h2>
+              <p style="font-size: 16px; margin: 0 0 20px;">
+                Your password has been successfully changed. You can now log in to your teacher account using your new password.
+              </p>
+              <p style="font-size: 16px; margin: 0 0 20px;">
+                For your security, please ensure you keep your new password safe and do not share it with anyone.
+              </p>
+              <div style="text-align: center; margin: 30px 0;">
+                <a href=${process.env.FRONTEND_URI!} style="display: inline-block; padding: 14px 30px; background-color: #4CAF50; color: #ffffff; text-decoration: none; font-size: 16px; font-weight: bold; border-radius: 6px; transition: background-color 0.3s;">Log In Now</a>
+              </div>
+              <p style="font-size: 16px; margin: 0 0 20px;">
+                Or copy and paste this link into your browser:<br>
+                <a href=${process.env.FRONTEND_URI!} style="color: #4CAF50; text-decoration: underline;">${process.env.FRONTEND_URI!}</a>
+              </p>
+              <p style="font-size: 16px; margin: 0;">
+                If you did not initiate this password change, please contact your adminstrator.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="background-color: #f4f4f4; padding: 20px; text-align: center; color: #666666; font-size: 14px; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;">
+              <p style="margin: 0;">© 2025 Your School App. All rights reserved.</p>
+            </td>
+          </tr>
+          </table>
+      </body>
+      </html>
+    `;
+
+    // Create email options
+    const mailOptions = createMailOptions(
+      teacher.email,
+      "Your Password Has Been Changed",
+      html
+    );
+
+    // Send the email
+    await sendEmail(mailOptions);
 
     res.status(200).json({
       status: true,

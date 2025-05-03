@@ -5,6 +5,7 @@ import bcrypt from "bcrypt";
 
 import { studentSchema } from "../../types/schema";
 import { generatePassword } from "../../utils/password";
+import { createMailOptions, sendEmail } from "../../config/nodemailerConfig";
 
 const prisma = new PrismaClient();
 
@@ -106,6 +107,67 @@ export const createStudent = async (
 
       return student;
     });
+
+    if (!newStudent) {
+      throw new CustomError("Failed to create student", 500);
+    }
+
+    const subject = "You are Registered as Student. Login to your account";
+    const html = `<!DOCTYPE html>
+      <html lang="en">
+      <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Student Registration Confirmation</title>
+      </head>
+      <body style="margin: 0; padding: 0; font-family: Arial, Helvetica, sans-serif; background-color: #f4f4f4;">
+          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+              <!-- Header -->
+              <tr>
+                  <td style="background-color: #2196F3; padding: 30px; text-align: center; border-top-left-radius: 8px; border-top-right-radius: 8px;">
+                      <h1 style="color: #ffffff; margin: 0; font-size: 28px;">Welcome, ${newStudent.name}!</h1>
+                  </td>
+              </tr>
+              <!-- Body -->
+              <tr>
+                  <td style="padding: 30px; color: #333333; line-height: 1.6;">
+                      <h2 style="color: #2196F3; font-size: 22px; margin-top: 0;">You’re Successfully Registered!</h2>
+                      <p style="font-size: 16px; margin: 0 0 20px;">
+                          Congratulations! Your account has been created, and you’re ready to start your learning journey with us.
+                      </p>
+                      <p style="font-size: 16px; margin: 0 0 20px;">
+                          Use the button below to log in to your account and explore your student dashboard.
+                      </p>
+                      <!-- Password Display -->
+                      <div style="background-color: #e3f2fd; padding: 15px; border-radius: 6px; text-align: center; margin: 20px 0;">
+                          <p style="font-size: 16px; margin: 0; color: #333333;">Your Password: <strong style="color: #2196F3;">${generatedPassword}</strong></p>
+                          <p style="font-size: 14px; margin: 5px 0 0; color: #666666;">(Please change your password after logging in for security)</p>
+                      </div>
+                      <!-- Login Button -->
+                      <div style="text-align: center; margin: 30px 0;">
+                          <a href=${process.env.FRONTEND_URL!}/login target="_blank" style="display: inline-block; padding: 14px 30px; background-color: #2196F3; color: #ffffff; text-decoration: none; font-size: 16px; font-weight: bold; border-radius: 6px; transition: background-color 0.3s;">Log In Now</a>
+                      </div>
+                      <p style="font-size: 16px; margin: 0 0 20px;">
+                          Or copy and paste this link into your browser:<br>
+                          <a href=${process.env.FRONTEND_URL!}/login target="_blank" style="color: #2196F3; text-decoration: underline;">${process.env.FRONTEND_URL!}/login</a>
+                      </p>
+                  </td>
+              </tr>
+              <!-- Footer -->
+              <tr>
+                  <td style="background-color: #f4f4f4; padding: 20px; text-align: center; color: #666666; font-size: 14px; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;">
+                      <p style="margin: 0;">&copy; 2025 Your School App. All rights reserved.</p>
+                  </td>
+              </tr>
+          </table>
+      </body>
+      </html>`;
+    const mailOptions = createMailOptions(validatedData.email, subject, html);
+    
+    const sendMail = await sendEmail(mailOptions);
+    if (!sendMail) {
+      throw new CustomError("Failed to send email", 500);
+    }
 
     res.status(201).json({
       status: true,

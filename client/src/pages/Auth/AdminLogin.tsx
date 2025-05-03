@@ -16,7 +16,7 @@ const AdminLogin = () => {
 
   // Redirect if admin is already logged in
   if (admin) {
-    return <Navigate to="/admin/dashboard" replace />;
+    return <Navigate to="/admin/students" replace />;
   }
 
   const handleLogin = async (data: LoginFormInputs) => {
@@ -32,7 +32,7 @@ const AdminLogin = () => {
     }
 
     toast.success("Admin Login Successful!");
-    navigate("/admin/dashboard", { replace: true });
+    navigate("/admin/students", { replace: true });
   };
 
   const goBackHome = () => {

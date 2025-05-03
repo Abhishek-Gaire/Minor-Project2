@@ -194,13 +194,13 @@ const AssignmentDetails: React.FC = () => {
       </button>
       
       {/* Assignment header */}
-      <div className="bg-[hsl(var(--card))] p-6 rounded-lg shadow-sm mb-6">
+      <div className="bg-card p-6 rounded-lg shadow-sm mb-6">
         <div className="flex justify-between items-start mb-4">
           <div>
             <h1 className="text-2xl font-bold mb-2">{assignment.title}</h1>
             <div className="flex items-center mb-2">
-              <span className="text-gray-500 mr-4">Subject: {assignment.subject}</span>
-              <span className="text-gray-500">Grade {assignment.grade}</span>
+              <span className="text-card-foreground mr-4">Subject: {assignment.subject}</span>
+              <span className="text-card-foreground">Grade {assignment.grade}</span>
             </div>
           </div>
           
@@ -214,13 +214,13 @@ const AssignmentDetails: React.FC = () => {
               <div className="flex space-x-2 mt-4">
                 <button
                   onClick={() => setShowEditModal(true)}
-                  className="flex items-center px-3 py-1 bg-blue-600 text-white rounded"
+                  className="flex items-center px-3 py-1 bg-blue-600 text-card-foreground rounded"
                 >
                   <Edit size={16} className="mr-1" /> Edit
                 </button>
                 <button
                   onClick={() => setShowDeleteModal(true)}
-                  className="flex items-center px-3 py-1 bg-red-600 text-white rounded"
+                  className="flex items-center px-3 py-1 bg-red-600 text-card-foreground rounded"
                 >
                   <Trash size={16} className="mr-1" /> Delete
                 </button>
@@ -229,21 +229,21 @@ const AssignmentDetails: React.FC = () => {
           </div>
         </div>
         
-        <div className="bg-gray-50 p-4 rounded-lg mb-4">
+        <div className="bg-card p-4 rounded-lg mb-4">
           <h3 className="font-medium mb-2">Description</h3>
           <p className="whitespace-pre-line">{assignment.description}</p>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-gray-50 p-4 rounded-lg">
+          <div className="bg-card p-4 rounded-lg">
             <h3 className="font-medium mb-1">Due Date</h3>
             <p>{new Date(assignment.dueDate).toLocaleString()}</p>
           </div>
-          <div className="bg-gray-50 p-4 rounded-lg">
+          <div className="bg-card p-4 rounded-lg">
             <h3 className="font-medium mb-1">Points Possible</h3>
             <p>{assignment.pointsPossible}</p>
           </div>
-          <div className="bg-gray-50 p-4 rounded-lg">
+          <div className="bg-card p-4 rounded-lg">
             <h3 className="font-medium mb-1">Submitted Students</h3>
             <p>{assignment.totalStudents || 0}</p>
           </div>
@@ -252,7 +252,7 @@ const AssignmentDetails: React.FC = () => {
       
       {/* Teacher view - Submissions list */}
       {user.role === "teacher" && (
-        <div className="bg-[hsl(var(--card))] p-6 rounded-lg shadow-sm">
+        <div className="bg-card p-6 rounded-lg shadow-sm">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold">Submissions</h2>
             <button 

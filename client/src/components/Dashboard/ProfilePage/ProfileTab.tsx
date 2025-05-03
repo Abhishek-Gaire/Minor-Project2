@@ -1,4 +1,3 @@
-
 const ProfileTab = ({ userData }) => {
   return (
     <div>
@@ -46,18 +45,20 @@ const ProfileTab = ({ userData }) => {
           </select>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-primary mb-1">
-            Subject
-          </label>
-          <input
-            type="text"
-            className="w-full p-2 border border-border bg-muted rounded-md"
-            value={userData.subject}
-            disabled
-                  // onChange={(e) => handleProfileUpdate("subject", e.target.value)}
-          />
-        </div>
+        {userData.role === "teacher" && (
+          <div>
+            <label className="block text-sm font-medium text-primary mb-1">
+              Subject
+            </label>
+            <input
+              type="text"
+              className="w-full p-2 border border-border bg-muted rounded-md"
+              value={userData.subject}
+              disabled
+              // onChange={(e) => handleProfileUpdate("subject", e.target.value)}
+            />
+          </div>
+        )}
 
         {/* <div>
           <label className="block text-sm font-medium text-[hsl(var(--muted-foreground))] mb-1">

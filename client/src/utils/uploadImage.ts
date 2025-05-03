@@ -1,11 +1,13 @@
 import { supabase } from "../lib/supabase";
+import { v4 as uuidv4 } from "uuid";
 
 const uploadImage = async (file: File) => {
+  const fileName = `${uuidv4()}-${file.name}`;
   const { data, error } = await supabase.storage
     .from("minor2storage")
-    .upload(`schoolImages/${file.name}`, file, {
+    .upload(`schoolImages/${fileName}`, file, {
       cacheControl: "3600",
-      upsert: false,
+      upsert: true,
     });
 
   if (error) {

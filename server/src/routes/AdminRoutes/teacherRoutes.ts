@@ -5,6 +5,7 @@ import {
   getTeacherById,
   updateTeacher,
   deleteTeacher,
+  changePassword,
 } from "../../controllers/adminControllers/teacherController";
 
 const adminTeacherRoutes: Router = express.Router();

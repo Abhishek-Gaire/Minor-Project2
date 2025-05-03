@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
-import { HostMeetingButton } from "../Meetings/HostMeetingButton";
+// import { HostMeetingButton } from "../Meetings/HostMeetingButton";
 import { navigation } from "@/constants/constants";
 
 const Navbar = () => {
@@ -44,10 +44,7 @@ const Navbar = () => {
 
           {/* Right-Aligned Actions */}
           <div className="hidden sm:flex items-center space-x-4">
-            <HostMeetingButton
-              from="desktopNav"
-              className="hidden sm:block lg:block md:hidden"
-            />
+          
             <Link
               to="/login"
               className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-500 transition-transform duration-200 transform hover:scale-105"
@@ -121,7 +118,6 @@ const Navbar = () => {
                 </div>
               ))}
 
-              <HostMeetingButton from="mobileNav" />
               <div className="flex justify-center border-b pb-2">
                 <Link
                   to="/login"

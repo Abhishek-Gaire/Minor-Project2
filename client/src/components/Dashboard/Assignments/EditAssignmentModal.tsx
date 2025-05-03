@@ -57,10 +57,10 @@ const EditAssignmentModal: React.FC<EditAssignmentModalProps> = ({
   
   return (
     <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
-      <div className="bg-white p-6 rounded-lg w-[600px] max-h-[90vh] overflow-y-auto">
+      <div className="bg-card p-6 rounded-lg w-[600px] max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-semibold">Edit Assignment</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+          <button onClick={onClose} className="text-card-foreground">
             <X size={20} />
           </button>
         </div>
@@ -74,7 +74,7 @@ const EditAssignmentModal: React.FC<EditAssignmentModalProps> = ({
                 name="title"
                 value={updatedAssignment.title}
                 onChange={handleInputChange}
-                className="w-full border border-gray-300 rounded-md p-2"
+                className="w-full border border-card-foreground rounded-md p-2 bg-muted focus:outline-none focus:ring-2 focus:ring-blue-500 text-card-foreground"
                 required
               />
             </div>
@@ -86,7 +86,7 @@ const EditAssignmentModal: React.FC<EditAssignmentModalProps> = ({
                 name="subject"
                 value={updatedAssignment.subject}
                 onChange={handleInputChange}
-                className="w-full border border-gray-300 rounded-md p-2"
+                className="w-full border border-card-foreground rounded-md p-2 bg-muted focus:outline-none focus:ring-2 focus:ring-blue-500 text-card-foreground"
                 required
               />
             </div>
@@ -97,7 +97,7 @@ const EditAssignmentModal: React.FC<EditAssignmentModalProps> = ({
                 name="grade"
                 value={updatedAssignment.grade}
                 onChange={handleInputChange}
-                className="w-full border border-gray-300 rounded-md p-2"
+                className="w-full border border-card-foreground rounded-md p-2 bg-muted focus:outline-none focus:ring-2 focus:ring-blue-500 text-card-foreground"
               >
                 {[6, 7, 8, 9, 10, 11, 12].map((grade) => (
                   <option key={grade} value={grade}>
@@ -113,7 +113,7 @@ const EditAssignmentModal: React.FC<EditAssignmentModalProps> = ({
                 name="description"
                 value={updatedAssignment.description}
                 onChange={handleInputChange}
-                className="w-full border border-gray-300 rounded-md p-2"
+                className="w-full border border-card-foreground rounded-md p-2 bg-muted focus:outline-none focus:ring-2 focus:ring-blue-500 text-card-foreground"
                 rows={4}
               />
             </div>
@@ -125,7 +125,7 @@ const EditAssignmentModal: React.FC<EditAssignmentModalProps> = ({
                 name="dueDate"
                 value={formatDateForInput(updatedAssignment.dueDate)}
                 onChange={handleInputChange}
-                className="w-full border border-gray-300 rounded-md p-2"
+                className="w-full border border-card-foreground rounded-md p-2 bg-muted focus:outline-none focus:ring-2 focus:ring-blue-500 text-card-foreground"
                 required
               />
             </div>
@@ -137,7 +137,7 @@ const EditAssignmentModal: React.FC<EditAssignmentModalProps> = ({
                 name="pointsPossible"
                 value={updatedAssignment.pointsPossible}
                 onChange={handleInputChange}
-                className="w-full border border-gray-300 rounded-md p-2"
+                className="w-full border border-card-foreground rounded-md p-2 bg-muted focus:outline-none focus:ring-2 focus:ring-blue-500 text-card-foreground"
                 min="0"
               />
             </div>
@@ -148,7 +148,7 @@ const EditAssignmentModal: React.FC<EditAssignmentModalProps> = ({
                 name="status"
                 value={updatedAssignment.status}
                 onChange={handleInputChange}
-                className="w-full border border-gray-300 rounded-md p-2"
+                className="w-full border border-card-foreground rounded-md p-2 bg-muted focus:outline-none focus:ring-2 focus:ring-blue-500 text-card-foreground"
               >
                 <option value="Upcoming">Upcoming</option>
                 <option value="Open">Open</option>
@@ -162,7 +162,7 @@ const EditAssignmentModal: React.FC<EditAssignmentModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50"
+              className="px-4 py-2 text-card-foreground border border-card-foreground rounded-md"
             >
               Cancel
             </button>
