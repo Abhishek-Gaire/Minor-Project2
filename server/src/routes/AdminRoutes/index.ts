@@ -9,10 +9,11 @@ import {
 
 import { verifyAdmin } from "../../middleware/adminAuth";
 import { adminTeacherRouter } from "./teacherRoutes";
+import { authRateLimiter } from "../../middleware/rateLimiter";
 
 const adminRouter: Router = express.Router();
 
-adminRouter.use(adminAuthRouter);
+adminRouter.use(authRateLimiter, adminAuthRouter);
 // Protected
 adminRouter.use(verifyAdmin);
 

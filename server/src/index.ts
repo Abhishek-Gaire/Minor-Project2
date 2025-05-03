@@ -10,11 +10,13 @@ import schoolRoutes from "./routes/institutionalRoutes";
 import adminRouter from "./routes/AdminRoutes";
 import assignmentRoutes from "./routes/assignmentRoutes";
 import { materialsRouter } from "./routes/materialRoutes";
+import { classSessionRouter } from "./routes/classSessionRoutes";
 
 import corsConfig, { socketCorsOptions } from "./config/corsConfig";
 import getLocalIP from "./exceptions/getLocalIP";
 
 import cookieParser from "cookie-parser";
+
 import {
   getCurrentUser,
   isUserInConversation,
@@ -28,6 +30,7 @@ import * as privateMessageService from "./services/privateMessageServices";
 
 import prisma from "./config/dbConfig";
 
+import { authRateLimiter, globalRateLimiter } from "./middleware/rateLimiter";
 
 // Store sockets by username for private messaging
 const userSockets = new Map<string, Socket>();
@@ -41,6 +44,9 @@ const io = new Server(server, {
   cors: socketCorsOptions,
 });
 
+// Apply the global rate limiter to all routes
+app.use(globalRateLimiter);
+
 // Add Morgan middleware before routes
 app.use(morgan("dev")); // Logs in format: :method :url :status :response-time ms
 
@@ -48,11 +54,12 @@ app.use(express.json()); // To parse JSON bodies
 app.use(cookieParser());
 
 // Routes
-app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/auth", authRateLimiter, authRoutes);
 app.use("/api/v1/schools", schoolRoutes);
 app.use("/api/v1/assignments", assignmentRoutes);
 app.use("/api/v1/admin", adminRouter);
-app.use("/api/v1/teacher",materialsRouter)
+app.use("/api/v1/teacher", materialsRouter);
+app.use("/api/v1/classes", classSessionRouter);
 
 app.use(errorHandler);
 
@@ -60,7 +67,7 @@ app.use(errorHandler);
 io.on("connection", (socket: Socket) => {
   console.log("New Connection", socket.id);
 
-  // Join Room
+  // Join Private Room
   socket.on("joinRoom", async ({ userName, conversationId }) => {
     const user = userJoin(socket.id, userName, conversationId);
 
@@ -74,6 +81,7 @@ io.on("connection", (socket: Socket) => {
     socket.join(conversationId);
   });
 
+  // Join Class Chat Room
   socket.on("joinClassRoom", async ({ userName, conversationId }) => {
     const user = userJoinClassChat(socket.id, userName, conversationId);
 
@@ -124,7 +132,7 @@ io.on("connection", (socket: Socket) => {
       socket.emit("error", { message: "Failed to retrieve class history" });
     }
   });
-  
+
   // Listen for Private Message
   socket.on(
     "sendPrivateMessage",

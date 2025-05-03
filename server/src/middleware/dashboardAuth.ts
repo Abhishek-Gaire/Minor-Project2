@@ -16,7 +16,7 @@ export const authenticate = (
 ) => {
   const token =
     req.cookies.studentAccessToken || req.cookies.teacherAccessToken;
-
+    
   if (!token) {
     res
       .status(401)

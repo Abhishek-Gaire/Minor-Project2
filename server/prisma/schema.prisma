@@ -264,3 +264,16 @@ enum EmploymentType {
   CONTRACT
   TEMPORARY
 }
+
+model ClassSession {
+  id          String   @id @default(uuid())
+  subject     String
+  description String
+  teacherName String
+  classNumber Int
+  startTime   DateTime
+  endTime     DateTime
+  status      String   @default("upcoming")
+
+  @@map("class_sessions")
+}
