@@ -49,7 +49,7 @@ const SecurityTab = () => {
           </button>
         </div>
 
-        <div>
+        {/* <div>
           <h3 className="text-lg font-medium mb-3">
             Two-Factor Authentication
           </h3>
@@ -94,7 +94,7 @@ const SecurityTab = () => {
               </button>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );

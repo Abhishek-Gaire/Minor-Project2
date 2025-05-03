@@ -33,11 +33,6 @@ const MaterialFilters = ({ materialFilter, setMaterialFilter }) => {
           Reference
         </Button>
       </div>
-      <div>
-        <Button variant="ghost" size="sm">
-          Sort by: Recent
-        </Button>
-      </div>
     </div>
   );
 };

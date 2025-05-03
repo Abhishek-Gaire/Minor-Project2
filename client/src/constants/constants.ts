@@ -10,8 +10,6 @@ import {
   Video,
   LayoutDashboard,
   MessageSquare,
-  CalendarCheck,
-  Calendar,
   Folder,
   User,
   Home,
@@ -20,11 +18,7 @@ import {
   Globe,
   BarChart,
   Database,
-  Activity,
   UserCircle,
-  DollarSign,
-  Book,
-  Bell,
   Settings,
 } from "lucide-react";
 import { NavItem } from "./types";
@@ -111,11 +105,6 @@ export const navigation = [
 
 export const teacherNavigation: NavItem[] = [
   {
-    name: "Dashboard",
-    to: "/dashboard/teacher",
-    icon: LayoutDashboard,
-  },
-  {
     name: "Gradebook",
     to: "/dashboard/teacher/gradebook",
     icon: GraduationCap,
@@ -138,11 +127,6 @@ export const teacherNavigation: NavItem[] = [
 ];
 
 export const studentNavigation: NavItem[] = [
-  {
-    name: "Dashboard",
-    to: "/dashboard/student",
-    icon: LayoutDashboard,
-  },
   { name: "Grades", to: "/dashboard/student/grades", icon: GraduationCap },
   {
     name: "Assignments",

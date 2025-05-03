@@ -4,8 +4,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LogOut, Bell, Menu, User } from "lucide-react";
-import { mockNotifications } from "@/constants/constants";
+import { LogOut, Menu, User } from "lucide-react";
 import { cn, getInitials } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 
@@ -41,39 +40,7 @@ const Header = ({
 
         {/* Right section */}
         <div className="flex items-center space-x-2 sm:space-x-4">
-          {/* Notifications */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="relative rounded-full p-2 text-[hsl(var(--muted-foreground))] hover:bg-[hsl(var(--muted))]">
-                <Bell className="h-5 w-5" />
-                <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align="end"
-              className="w-[90vw] sm:w-80 bg-[hsl(var(--background))] border border-[hsl(var(--border))]"
-            >
-              {mockNotifications.map((notification) => (
-                <DropdownMenuItem
-                  key={notification.id}
-                  className="p-3 hover:bg-[hsl(var(--muted))]"
-                >
-                  <div>
-                    <p className="font-medium text-sm text-[hsl(var(--foreground))]">
-                      {notification.title}
-                    </p>
-                    <p className="text-sm text-[hsl(var(--muted-foreground))]">
-                      {notification.message}
-                    </p>
-                    <p className="text-xs text-[hsl(var(--muted-foreground))] mt-1">
-                      {notification.time}
-                    </p>
-                  </div>
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-
+         
           {/* User Menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

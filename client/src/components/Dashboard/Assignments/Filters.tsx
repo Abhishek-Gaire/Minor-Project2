@@ -38,10 +38,10 @@ const Filters = ({
           className="absolute right-3 top-1/2 transform -translate-y-1/2 text-foreground pointer-events-none"
         />
       </div>
-      <button className="px-4 py-2 border rounded-lg flex items-center">
+      {/* <button className="px-4 py-2 border rounded-lg flex items-center">
         <Filter size={18} className="mr-2" />
         More Filters
-      </button>
+      </button> */}
     </div>
   );
 };

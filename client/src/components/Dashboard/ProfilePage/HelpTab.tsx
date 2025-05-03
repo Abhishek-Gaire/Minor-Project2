@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { ChevronRight, ChevronDown } from "lucide-react";
 
 const HelpTab = ({ role = "teacher" }) => {
@@ -8,11 +8,6 @@ const HelpTab = ({ role = "teacher" }) => {
   // Role-specific FAQ data
   const faqData = {
     teacher: [
-      {
-        question: "How do I create a new class?",
-        answer:
-          "To create a new class, go to the Dashboard and click on 'Create New Class'. Enter the class name, grade level, and subject. You can then customize the class settings and add a description or syllabus for your students.",
-      },
       {
         question: "How do I upload assignments?",
         answer:
@@ -28,18 +23,13 @@ const HelpTab = ({ role = "teacher" }) => {
         answer:
           "Go to your class page and click 'Start Live Session' in the Online Class tab. You can choose to enable video, share your screen, and use the interactive whiteboard. Students will receive a notification that class is starting.",
       },
-      {
-        question: "How do I message students privately?",
-        answer:
-          "Use the 'Messages' section to start a private conversation with any student in your classes. You can also select multiple students to create a group chat for project teams or study groups.",
-      },
+      // {
+      //   question: "How do I message students privately?",
+      //   answer:
+      //     "Use the 'Messages' section to start a private conversation with any student in your classes. You can also select multiple students to create a group chat for project teams or study groups.",
+      // },
     ],
     student: [
-      {
-        question: "How do I join a class?",
-        answer:
-          "To join a class, click 'Join Class' on your Dashboard and enter the class code provided by your teacher. Alternatively, if your teacher sent you an invitation link, simply click on it to join automatically.",
-      },
       {
         question: "How do I submit my assignments?",
         answer:
@@ -63,53 +53,53 @@ const HelpTab = ({ role = "teacher" }) => {
     ],
   };
 
-  // Role-specific documentation data
-  const documentationData = {
-    teacher: [
-      {
-        title: "Getting Started for Teachers",
-        description:
-          "Learn how to set up your classes, invite students, and organize your teaching materials.",
-      },
-      {
-        title: "Assignment Management",
-        description:
-          "Create effective assignments, track submissions, and provide timely feedback.",
-      },
-      {
-        title: "Virtual Classroom Tips",
-        description:
-          "Best practices for engaging students in online classes for grades 5-10.",
-      },
-      {
-        title: "Grading Tools & Rubrics",
-        description:
-          "Learn to use the grading system efficiently and create custom rubrics.",
-      },
-    ],
-    student: [
-      {
-        title: "Getting Started for Students",
-        description:
-          "Learn how to join classes, organize your assignments, and communicate with teachers.",
-      },
-      {
-        title: "Study Tools & Resources",
-        description:
-          "Discover built-in tools to help with homework, studying, and group projects.",
-      },
-      {
-        title: "Virtual Classroom Participation",
-        description:
-          "How to make the most of online classes and interactive features.",
-      },
-      {
-        title: "Assignment Submission Guide",
-        description:
-          "Tips for submitting your best work and tracking due dates.",
-      },
-    ],
-  };
+  // // Role-specific documentation data
+  // const documentationData = {
+  //   teacher: [
+  //     {
+  //       title: "Getting Started for Teachers",
+  //       description:
+  //         "Learn how to set up your classes, invite students, and organize your teaching materials.",
+  //     },
+  //     {
+  //       title: "Assignment Management",
+  //       description:
+  //         "Create effective assignments, track submissions, and provide timely feedback.",
+  //     },
+  //     {
+  //       title: "Virtual Classroom Tips",
+  //       description:
+  //         "Best practices for engaging students in online classes for grades 5-10.",
+  //     },
+  //     {
+  //       title: "Grading Tools & Rubrics",
+  //       description:
+  //         "Learn to use the grading system efficiently and create custom rubrics.",
+  //     },
+  //   ],
+  //   student: [
+  //     {
+  //       title: "Getting Started for Students",
+  //       description:
+  //         "Learn how to join classes, organize your assignments, and communicate with teachers.",
+  //     },
+  //     {
+  //       title: "Study Tools & Resources",
+  //       description:
+  //         "Discover built-in tools to help with homework, studying, and group projects.",
+  //     },
+  //     {
+  //       title: "Virtual Classroom Participation",
+  //       description:
+  //         "How to make the most of online classes and interactive features.",
+  //     },
+  //     {
+  //       title: "Assignment Submission Guide",
+  //       description:
+  //         "Tips for submitting your best work and tracking due dates.",
+  //     },
+  //   ],
+  // };
 
   // Handle FAQ toggle
   const toggleFAQ = (index) => {
@@ -156,7 +146,7 @@ const HelpTab = ({ role = "teacher" }) => {
           </div>
         </div>
 
-        <div>
+        {/* <div>
           <h3 className="text-lg font-medium mb-3">Contact Support</h3>
 
           <div className="space-y-3">
@@ -224,7 +214,7 @@ const HelpTab = ({ role = "teacher" }) => {
               </div>
             ))}
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );

@@ -21,7 +21,7 @@ const StudyMaterialsPage = lazy(
 const CalendarPage = lazy(() => import("@/pages/Dashboard/CalendarPage"));
 
 const dashboardRoutes = [
-  { index: true, element: <Dashboard /> },
+  { index: true, element: <ProfilePage /> },
   // { path: "students", element: <Students /> },
   { path: "courses", element: <Courses /> },
   {

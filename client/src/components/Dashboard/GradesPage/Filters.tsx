@@ -51,7 +51,7 @@ const Filters = ({
           className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground pointer-events-none"
         />
       </div>
-
+      {/* 
       <div className="relative">
         <select
           className="appearance-none pl-4 pr-10 py-2 border border-input rounded-lg bg-card text-foreground]"
@@ -70,14 +70,14 @@ const Filters = ({
           size={18}
           className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground pointer-events-none"
         />
-      </div>
-
+      </div> */}
+      {/* 
       {isTeacher && (
         <button className="px-4 py-2 border border-input rounded-lg flex items-center bg-[hsl(var(--background))] text-foreground]">
           <Filter size={18} className="mr-2" />
           More Filters
         </button>
-      )}
+      )} */}
     </div>
   );
 };

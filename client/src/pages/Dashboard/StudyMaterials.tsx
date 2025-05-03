@@ -102,24 +102,6 @@ const StudyMaterialsPage = () => {
       document.head.appendChild(style);
     }
   }
-
-  // Helper function to get icon based on material type
-  const getIconForType = (type) => {
-    switch (type) {
-      case "reading":
-        return BookMarked;
-      case "video":
-        return Video;
-      case "reference":
-        return FileSpreadsheet;
-      case "guide":
-      case "notes":
-        return FileText;
-      default:
-        return FileText;
-    }
-  };
-
   // Load data on component mount
   useEffect(() => {
     fetchMaterials();
@@ -376,13 +358,6 @@ const StudyMaterialsPage = () => {
                     />
                   ))}
                 </div>
-              )}
-
-              {filteredMaterials.length > 0 && (
-                <Button variant="outline" className="w-full">
-                  <Layers className="h-4 w-4 mr-2" />
-                  Load More Materials
-                </Button>
               )}
 
               {filteredMaterials.length === 0 && !isLoading && (
