@@ -1,11 +1,11 @@
 import { XIcon } from "lucide-react";
 import { useEffect, useRef } from "react";
-import { HMSMessageType } from "@100mslive/react-sdk";
+import { HMSMessage } from "@100mslive/react-sdk";
 
 type ShowOnlineClassChatProps = {
   setShowChat: (value: boolean) => void;
   sendLiveMessage: () => void;
-  messages: HMSMessageType[];
+  messages: HMSMessage[];
   messageInput: string;
   setMessageInput: (value: string) => void;
 };
@@ -36,14 +36,14 @@ const ShowOnlineClassChat = ({
         {messages.map((msg, index) => (
           <div key={index} className="mb-4">
             <div className="text-xs text-primary mb-1">
-              {msg.userName}
-              {msg.role === "teacher" ? " (Teacher)" : " (Student)"}
+              {msg.senderName}
+              {msg.senderRole === "teacher" ? " (Teacher)" : " (Student)"}
             </div>
             <div className="bg-primary-foreground rounded-lg p-2">
               {msg.message}
             </div>
             <div className="text-xs text-muted-foreground mt-1">
-              {new Date(msg.timestamp).toLocaleString()}
+              {new Date(msg.time).toLocaleString()}
             </div>
           </div>
         ))}
